@@ -5,10 +5,15 @@ import os
 
 app = FastAPI(title="A-Help API")
 
-# CORS — чтобы фронт с Vercel мог стучаться в этот бэк
+# CORS — фронт с Vercel + локальный dev
+ALLOWED_ORIGINS = os.getenv(
+    "ALLOWED_ORIGINS",
+    "http://localhost:5173,https://avi-help.vercel.app"
+).split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # на проде сузим до домена Vercel
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
