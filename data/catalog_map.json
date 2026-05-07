@@ -1,0 +1,4238 @@
+{
+  "categories": {
+    "300": "Частые вопросы",
+    "315": "Как опубликовать объявление: самые важные советы",
+    "359": "Отклонили объявление: что делать",
+    "1": "Мои объявления",
+    "2": "Проблемы с объявлением",
+    "3": "Профиль",
+    "5": "Безопасность",
+    "6": "Заказы с доставкой",
+    "7": "Отзывы и рейтинг",
+    "8": "Оплата",
+    "9": "Продвинуть объявление",
+    "302": "Тарифы",
+    "10": "Авито для бизнеса",
+    "11": "Связаться с пользователем",
+    "12": "Поиск",
+    "13": "Сервисы"
+  },
+  "sections": {
+    "135": "Разместить бесплатно",
+    "138": "Опубликовать и продлить",
+    "143": "Редактировать",
+    "144": "Удалить и восстановить",
+    "145": "Как выглядит моё объявление",
+    "147": "Не удаётся разместить",
+    "150": "Заблокировали",
+    "151": "Объявления нет в поиске",
+    "373": "У объявления мало просмотров",
+    "603": "Зарегистрироваться и войти",
+    "34": "Не получается войти",
+    "22": "Профиль заблокирован",
+    "161": "Подтвердить данные",
+    "21": "Настроить профиль",
+    "25": "Удалить профиль",
+    "52": "Защита от мошенников",
+    "56": "Скрыть номер",
+    "57": "Защитить профиль",
+    "58": "Приходит спам",
+    "59": "Защитить бренд",
+    "481": "Заказать, проверить, получить",
+    "61": "Как работает доставка",
+    "344": "Отмена, возврат, повреждение",
+    "476": "Всё про деньги",
+    "484": "Отправить",
+    "482": "Где заказ",
+    "483": "Продлить и изменить",
+    "535": "Рейтинг",
+    "539": "Оставить отзыв",
+    "542": "Удалить отзыв",
+    "543": "Отзыв пропал",
+    "544": "Запросить отзыв или ответить на отзыв",
+    "545": "Не могу оставить отзыв",
+    "41": "Проблемы с оплатой",
+    "49": "Кошелёк Авито и бонусы",
+    "63": "Другие способы оплаты",
+    "293": "Доставка",
+    "131": "Услуги продвижения",
+    "133": "Управлять услугами",
+    "134": "Автопродление услуг",
+    "624": "Профессиональный план",
+    "16": "Компания на Авито",
+    "103": "Автозагрузка и API",
+    "114": "Тарифы",
+    "122": "Кабинет Авито Pro",
+    "46": "Позвонить",
+    "47": "Не могу позвонить",
+    "48": "Написать сообщение",
+    "51": "Не могу написать",
+    "808": "Ассистент в чате",
+    "70": "Искать товар или услугу",
+    "81": "Поиск по локации",
+    "85": "Избранное и сохранённый поиск",
+    "96": "Отметки на объявлениях",
+    "845": "Цифровые продукты",
+    "842": "Авито Гарантия в Товарах",
+    "841": "Отчёт об исполнителе в Услугах",
+    "843": "Биржа грузоперевозок",
+    "774": "Защита сделки в Услугах",
+    "553": "Авито Авто",
+    "353": "Товары",
+    "303": "Недвижимость",
+    "311": "Авто",
+    "306": "Услуги",
+    "321": "Авто и транспорт",
+    "364": "Вещи, техника и другие товары",
+    "363": "Авто и транспорт",
+    "362": "Недвижимость",
+    "361": "Услуги",
+    "360": "Работа"
+  },
+  "articles": {
+    "2693": {
+      "url": "https://support.avito.ru/articles/2693",
+      "title": "Сколько проверяют объявление",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": null,
+      "section": null
+    },
+    "2255": {
+      "url": "https://support.avito.ru/articles/2255",
+      "title": "В объявлении не мой телефон",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": null,
+      "section": null
+    },
+    "2695": {
+      "url": "https://support.avito.ru/articles/2695",
+      "title": "Мое объявление не на первом месте",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": null,
+      "section": null
+    },
+    "2279": {
+      "url": "https://support.avito.ru/articles/2279",
+      "title": "Объявления сняты с публикации",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": null,
+      "section": null
+    },
+    "4376": {
+      "url": "https://support.avito.ru/articles/4376",
+      "title": "Вход в связанные профили",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": null,
+      "section": null
+    },
+    "4320": {
+      "url": "https://support.avito.ru/articles/4320",
+      "title": "Как поддерживать достоверность цен в Товарах",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": null,
+      "section": null
+    },
+    "4317": {
+      "url": "https://support.avito.ru/articles/4317",
+      "title": "Как поддерживать достоверность цен в Недвижимости",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": null,
+      "section": null
+    },
+    "4316": {
+      "url": "https://support.avito.ru/articles/4316",
+      "title": "Как поддерживать актуальность объявлений в Недвижимости",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": null,
+      "section": null
+    },
+    "4377": {
+      "url": "https://support.avito.ru/articles/4377",
+      "title": "Связанные профили",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": null,
+      "section": null
+    },
+    "4360": {
+      "url": "https://support.avito.ru/articles/4360",
+      "title": "Профессиональный профиль",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": null,
+      "section": null
+    },
+    "4318": {
+      "url": "https://support.avito.ru/articles/4318",
+      "title": "Как поддерживать достоверность описаний в Авто",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": null,
+      "section": null
+    },
+    "4321": {
+      "url": "https://support.avito.ru/articles/4321",
+      "title": "Мой уровень сервиса",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": null,
+      "section": null
+    },
+    "4319": {
+      "url": "https://support.avito.ru/articles/4319",
+      "title": "Как поддерживать достоверность цен в Авто",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": null,
+      "section": null
+    },
+    "4315": {
+      "url": "https://support.avito.ru/articles/4315",
+      "title": "Как поддерживать достоверность описаний в Недвижимости",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": null,
+      "section": null
+    },
+    "4454": {
+      "url": "https://support.avito.ru/articles/4454",
+      "title": "Совместный доступ к профилю",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": null,
+      "section": null
+    },
+    "2674": {
+      "url": "https://support.avito.ru/articles/2674",
+      "title": "Направить официальный запрос",
+      "category_id": 5,
+      "category": "Безопасность",
+      "section_id": null,
+      "section": null
+    },
+    "4331": {
+      "url": "https://support.avito.ru/articles/4331",
+      "title": "Доставка: как не попасться мошенникам",
+      "category_id": 5,
+      "category": "Безопасность",
+      "section_id": null,
+      "section": null
+    },
+    "2057": {
+      "url": "https://support.avito.ru/articles/2057",
+      "title": "Правила для отзывов",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": null,
+      "section": null
+    },
+    "3008": {
+      "url": "https://support.avito.ru/articles/3008",
+      "title": "Когда отзыв опубликуют",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": null,
+      "section": null
+    },
+    "3007": {
+      "url": "https://support.avito.ru/articles/3007",
+      "title": "Когда не получится оставить отзыв",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": null,
+      "section": null
+    },
+    "3132": {
+      "url": "https://support.avito.ru/articles/3132",
+      "title": "Изменили этап сделки",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": null,
+      "section": null
+    },
+    "2675": {
+      "url": "https://support.avito.ru/articles/2675",
+      "title": "Как правильно снять видео с перепиской",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": null,
+      "section": null
+    },
+    "2106": {
+      "url": "https://support.avito.ru/articles/2106",
+      "title": "Продвинуть без услуг",
+      "category_id": 9,
+      "category": "Продвинуть объявление",
+      "section_id": null,
+      "section": null
+    },
+    "4301": {
+      "url": "https://support.avito.ru/articles/4301",
+      "title": "Настройка цены целевого действия",
+      "category_id": 9,
+      "category": "Продвинуть объявление",
+      "section_id": null,
+      "section": null
+    },
+    "4290": {
+      "url": "https://support.avito.ru/articles/4290",
+      "title": "Разослать спецпредложения",
+      "category_id": 9,
+      "category": "Продвинуть объявление",
+      "section_id": null,
+      "section": null
+    },
+    "3995": {
+      "url": "https://support.avito.ru/articles/3995",
+      "title": "Подборка предложений для продавца",
+      "category_id": 9,
+      "category": "Продвинуть объявление",
+      "section_id": null,
+      "section": null
+    },
+    "2538": {
+      "url": "https://support.avito.ru/articles/2538",
+      "title": "Почему скрыт номер, с которого звонили",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": null,
+      "section": null
+    },
+    "2972": {
+      "url": "https://support.avito.ru/articles/2972",
+      "title": "Онлайн-запись YCLIENTS для салонов красоты",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": null,
+      "section": null
+    },
+    "4296": {
+      "url": "https://support.avito.ru/articles/4296",
+      "title": "Адреса для объявлений",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": null,
+      "section": null
+    },
+    "4228": {
+      "url": "https://support.avito.ru/articles/4228",
+      "title": "Посчитать количество объявлений",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": null,
+      "section": null
+    },
+    "3996": {
+      "url": "https://support.avito.ru/articles/3996",
+      "title": "Как оценить спрос и предложение",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": null,
+      "section": null
+    },
+    "4229": {
+      "url": "https://support.avito.ru/articles/4229",
+      "title": "Статистика для профессиональных продавцов",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": null,
+      "section": null
+    },
+    "2717": {
+      "url": "https://support.avito.ru/articles/2717",
+      "title": "Настроить звонки через Авито",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": null,
+      "section": null
+    },
+    "2926": {
+      "url": "https://support.avito.ru/articles/2926",
+      "title": "Не приходят звонки через приложение",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": null,
+      "section": null
+    },
+    "3047": {
+      "url": "https://support.avito.ru/articles/3047",
+      "title": "Чат после звонка",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": null,
+      "section": null
+    },
+    "4164": {
+      "url": "https://support.avito.ru/articles/4164",
+      "title": "Задача на подбор исполнителей",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": null,
+      "section": null
+    },
+    "4458": {
+      "url": "https://support.avito.ru/articles/4458",
+      "title": "Доступ к контактам заказчиков в Услугах",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": null,
+      "section": null
+    },
+    "3051": {
+      "url": "https://support.avito.ru/articles/3051",
+      "title": "Как найти своё объявление в поиске: главные советы",
+      "category_id": 12,
+      "category": "Поиск",
+      "section_id": null,
+      "section": null
+    },
+    "4188": {
+      "url": "https://support.avito.ru/articles/4188",
+      "title": "Авито Путешествия",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": null,
+      "section": null
+    },
+    "4216": {
+      "url": "https://support.avito.ru/articles/4216",
+      "title": "Онлайн-запись в Услугах",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": null,
+      "section": null
+    },
+    "4298": {
+      "url": "https://support.avito.ru/articles/4298",
+      "title": "Подписка «Бизнес 360»",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": null,
+      "section": null
+    },
+    "4299": {
+      "url": "https://support.avito.ru/articles/4299",
+      "title": "Авито Бизнес 360",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": null,
+      "section": null
+    },
+    "3992": {
+      "url": "https://support.avito.ru/articles/3992",
+      "title": "Партнёрская сеть",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": null,
+      "section": null
+    },
+    "2964": {
+      "url": "https://support.avito.ru/articles/2964",
+      "title": "Авито Премиум",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": null,
+      "section": null
+    },
+    "3027": {
+      "url": "https://support.avito.ru/articles/3027",
+      "title": "Если подлинность товара вызывает сомнения",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": null,
+      "section": null
+    },
+    "3315": {
+      "url": "https://support.avito.ru/articles/3315",
+      "title": "Критерии и категории для Авито Бизнес 360",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": null,
+      "section": null
+    },
+    "3533": {
+      "url": "https://support.avito.ruhttps://ads-help.avito.com/",
+      "title": "Авито Реклама",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": null,
+      "section": null
+    },
+    "3556": {
+      "url": "https://support.avito.ru/articles/3556",
+      "title": "Программа Комфортная сделка",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": null,
+      "section": null
+    },
+    "2295": {
+      "url": "https://support.avito.ru/articles/2295",
+      "title": "Благотворительные программы",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": null,
+      "section": null
+    },
+    "4406": {
+      "url": "https://support.avito.ru/articles/4406",
+      "title": "Вывести деньги",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 16,
+      "section": "Компания на Авито"
+    },
+    "4352": {
+      "url": "https://support.avito.ru/articles/4352",
+      "title": "Электронный документооборот",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 16,
+      "section": "Компания на Авито"
+    },
+    "4309": {
+      "url": "https://support.avito.ru/articles/4309",
+      "title": "Регистрация компании",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 16,
+      "section": "Компания на Авито"
+    },
+    "4322": {
+      "url": "https://support.avito.ru/articles/4322",
+      "title": "Получение документов",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 16,
+      "section": "Компания на Авито"
+    },
+    "1730": {
+      "url": "https://support.avito.ru/articles/1730",
+      "title": "Имя или название компании",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 21,
+      "section": "Настроить профиль"
+    },
+    "4336": {
+      "url": "https://support.avito.ru/articles/4336",
+      "title": "Пароль или соцсеть",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 21,
+      "section": "Настроить профиль"
+    },
+    "4225": {
+      "url": "https://support.avito.ru/articles/4225",
+      "title": "Значок «Самурай продаж»",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 21,
+      "section": "Настроить профиль"
+    },
+    "4226": {
+      "url": "https://support.avito.ru/articles/4226",
+      "title": "Внешний вид",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 21,
+      "section": "Настроить профиль"
+    },
+    "4324": {
+      "url": "https://support.avito.ru/articles/4324",
+      "title": "Статус",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 21,
+      "section": "Настроить профиль"
+    },
+    "4274": {
+      "url": "https://support.avito.ru/articles/4274",
+      "title": "Телефон",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 21,
+      "section": "Настроить профиль"
+    },
+    "4300": {
+      "url": "https://support.avito.ru/articles/4300",
+      "title": "Почта",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 21,
+      "section": "Настроить профиль"
+    },
+    "4327": {
+      "url": "https://support.avito.ru/articles/4327",
+      "title": "Уведомления",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 21,
+      "section": "Настроить профиль"
+    },
+    "4326": {
+      "url": "https://support.avito.ru/articles/4326",
+      "title": "Проблемы с подтверждением номера",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 21,
+      "section": "Настроить профиль"
+    },
+    "4314": {
+      "url": "https://support.avito.ru/articles/4314",
+      "title": "Адрес",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 21,
+      "section": "Настроить профиль"
+    },
+    "4325": {
+      "url": "https://support.avito.ru/articles/4325",
+      "title": "Посмотреть данные моего профиля",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 21,
+      "section": "Настроить профиль"
+    },
+    "1746": {
+      "url": "https://support.avito.ru/articles/1746",
+      "title": "Понять, что профиль заблокирован",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 22,
+      "section": "Профиль заблокирован"
+    },
+    "3054": {
+      "url": "https://support.avito.ru/articles/3054",
+      "title": "Пройти проверку в заблокированном профиле онлайн",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 22,
+      "section": "Профиль заблокирован"
+    },
+    "4012": {
+      "url": "https://support.avito.ru/articles/4012",
+      "title": "Пройти проверку по паспорту в пункте выдачи",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 22,
+      "section": "Профиль заблокирован"
+    },
+    "3055": {
+      "url": "https://support.avito.ru/articles/3055",
+      "title": "Узнать, что с заказами в заблокированном профиле",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 22,
+      "section": "Профиль заблокирован"
+    },
+    "1747": {
+      "url": "https://support.avito.ru/articles/1747",
+      "title": "Не допустить блокировки профиля",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 22,
+      "section": "Профиль заблокирован"
+    },
+    "4294": {
+      "url": "https://support.avito.ru/articles/4294",
+      "title": "Узнать причину блокировки",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 22,
+      "section": "Профиль заблокирован"
+    },
+    "1774": {
+      "url": "https://support.avito.ru/articles/1774",
+      "title": "Оставить или удалить профиль",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 25,
+      "section": "Удалить профиль"
+    },
+    "1775": {
+      "url": "https://support.avito.ru/articles/1775",
+      "title": "Удалить профиль",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 25,
+      "section": "Удалить профиль"
+    },
+    "1776": {
+      "url": "https://support.avito.ru/articles/1776",
+      "title": "Когда не получится удалить профиль",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 25,
+      "section": "Удалить профиль"
+    },
+    "3474": {
+      "url": "https://support.avito.ru/articles/3474",
+      "title": "Отозвать согласие на обработку данных",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 25,
+      "section": "Удалить профиль"
+    },
+    "2668": {
+      "url": "https://support.avito.ru/articles/2668",
+      "title": "Доступ к профилю ограничен",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 34,
+      "section": "Не получается войти"
+    },
+    "2293": {
+      "url": "https://support.avito.ru/articles/2293",
+      "title": "Сработала защита профиля",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 34,
+      "section": "Не получается войти"
+    },
+    "4221": {
+      "url": "https://support.avito.ru/articles/4221",
+      "title": "Что-то с телефоном или смс",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 34,
+      "section": "Не получается войти"
+    },
+    "4295": {
+      "url": "https://support.avito.ru/articles/4295",
+      "title": "Что-то с логином или паролем",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 34,
+      "section": "Не получается войти"
+    },
+    "4283": {
+      "url": "https://support.avito.ru/articles/4283",
+      "title": "Ошибки сайта или приложения",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 34,
+      "section": "Не получается войти"
+    },
+    "1784": {
+      "url": "https://support.avito.ru/articles/1784",
+      "title": "Профиль удалён",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 34,
+      "section": "Не получается войти"
+    },
+    "4391": {
+      "url": "https://support.avito.ru/articles/4391",
+      "title": "Другие проблемы при входе",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 34,
+      "section": "Не получается войти"
+    },
+    "4280": {
+      "url": "https://support.avito.ru/articles/4280",
+      "title": "Как собрать информацию об ошибке",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 34,
+      "section": "Не получается войти"
+    },
+    "4281": {
+      "url": "https://support.avito.ru/articles/4281",
+      "title": "Как собрать информацию об ошибке (Safari)",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 34,
+      "section": "Не получается войти"
+    },
+    "4282": {
+      "url": "https://support.avito.ru/articles/4282",
+      "title": "Как собрать информацию об ошибке в приложении",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 34,
+      "section": "Не получается войти"
+    },
+    "3078": {
+      "url": "https://support.avito.ru/articles/3078",
+      "title": "Пополнился не тот баланс в кошельке Авито",
+      "category_id": 8,
+      "category": "Оплата",
+      "section_id": 41,
+      "section": "Проблемы с оплатой"
+    },
+    "1966": {
+      "url": "https://support.avito.ru/articles/1966",
+      "title": "Когда вернутся деньги после отмены доставки в пункт выдачи",
+      "category_id": 8,
+      "category": "Оплата",
+      "section_id": 41,
+      "section": "Проблемы с оплатой"
+    },
+    "2171": {
+      "url": "https://support.avito.ru/articles/2171",
+      "title": "Не могу купить пакет размещений",
+      "category_id": 8,
+      "category": "Оплата",
+      "section_id": 41,
+      "section": "Проблемы с оплатой"
+    },
+    "1809": {
+      "url": "https://support.avito.ru/articles/1809",
+      "title": "Квитанция отображается некорректно",
+      "category_id": 8,
+      "category": "Оплата",
+      "section_id": 41,
+      "section": "Проблемы с оплатой"
+    },
+    "4440": {
+      "url": "https://support.avito.ru/articles/4440",
+      "title": "Платёж прошёл, но есть проблема",
+      "category_id": 8,
+      "category": "Оплата",
+      "section_id": 41,
+      "section": "Проблемы с оплатой"
+    },
+    "4389": {
+      "url": "https://support.avito.ru/articles/4389",
+      "title": "Платёж не прошёл",
+      "category_id": 8,
+      "category": "Оплата",
+      "section_id": 41,
+      "section": "Проблемы с оплатой"
+    },
+    "4394": {
+      "url": "https://support.avito.ru/articles/4394",
+      "title": "Проблемы с СМС и пуш-уведомлениями",
+      "category_id": 8,
+      "category": "Оплата",
+      "section_id": 41,
+      "section": "Проблемы с оплатой"
+    },
+    "1824": {
+      "url": "https://support.avito.ru/articles/1824",
+      "title": "Позвонить продавцу",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 46,
+      "section": "Позвонить"
+    },
+    "1825": {
+      "url": "https://support.avito.ru/articles/1825",
+      "title": "Открыть контакты в резюме",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 46,
+      "section": "Позвонить"
+    },
+    "2469": {
+      "url": "https://support.avito.ru/articles/2469",
+      "title": "«Это временный номер»",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 46,
+      "section": "Позвонить"
+    },
+    "2551": {
+      "url": "https://support.avito.ru/articles/2551",
+      "title": "Сколько стоит звонок на временный номер",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 46,
+      "section": "Позвонить"
+    },
+    "1827": {
+      "url": "https://support.avito.ru/articles/1827",
+      "title": "Нет кнопки «Позвонить»‎",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 47,
+      "section": "Не могу позвонить"
+    },
+    "1828": {
+      "url": "https://support.avito.ru/articles/1828",
+      "title": "Нажимаю «Позвонить»‎, ничего не происходит",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 47,
+      "section": "Не могу позвонить"
+    },
+    "3053": {
+      "url": "https://support.avito.ru/articles/3053",
+      "title": "Звоню, но слышу короткие гудки",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 47,
+      "section": "Не могу позвонить"
+    },
+    "1829": {
+      "url": "https://support.avito.ru/articles/1829",
+      "title": "Чтобы позвонить, подтвердите свой номер",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 47,
+      "section": "Не могу позвонить"
+    },
+    "1830": {
+      "url": "https://support.avito.ru/articles/1830",
+      "title": "Ваш профиль ещё проверяется",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 47,
+      "section": "Не могу позвонить"
+    },
+    "1831": {
+      "url": "https://support.avito.ru/articles/1831",
+      "title": "Номер временно скрыт",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 47,
+      "section": "Не могу позвонить"
+    },
+    "1833": {
+      "url": "https://support.avito.ru/articles/1833",
+      "title": "Узнать номер продавца, если объявление удалено",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 47,
+      "section": "Не могу позвонить"
+    },
+    "1834": {
+      "url": "https://support.avito.ru/articles/1834",
+      "title": "Снять ограничение на звонки в Недвижимости",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 47,
+      "section": "Не могу позвонить"
+    },
+    "2941": {
+      "url": "https://support.avito.ru/articles/2941",
+      "title": "Увеличить лимит на просмотр контактов в Авто",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 47,
+      "section": "Не могу позвонить"
+    },
+    "2455": {
+      "url": "https://support.avito.ru/articles/2455",
+      "title": "Снять ограничение на звонки в Транспорте",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 47,
+      "section": "Не могу позвонить"
+    },
+    "3481": {
+      "url": "https://support.avito.ru/articles/3481",
+      "title": "Контакты арендодателя платные",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 47,
+      "section": "Не могу позвонить"
+    },
+    "1835": {
+      "url": "https://support.avito.ru/articles/1835",
+      "title": "Написать пользователю",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 48,
+      "section": "Написать сообщение"
+    },
+    "1836": {
+      "url": "https://support.avito.ru/articles/1836",
+      "title": "Узнать, что пришло сообщение",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 48,
+      "section": "Написать сообщение"
+    },
+    "1837": {
+      "url": "https://support.avito.ru/articles/1837",
+      "title": "Ответить на сообщение",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 48,
+      "section": "Написать сообщение"
+    },
+    "1838": {
+      "url": "https://support.avito.ru/articles/1838",
+      "title": "Посмотреть сообщения",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 48,
+      "section": "Написать сообщение"
+    },
+    "1842": {
+      "url": "https://support.avito.ru/articles/1842",
+      "title": "Пригласить на собеседование",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 48,
+      "section": "Написать сообщение"
+    },
+    "1843": {
+      "url": "https://support.avito.ru/articles/1843",
+      "title": "Удалить или восстановить сообщение",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 48,
+      "section": "Написать сообщение"
+    },
+    "1844": {
+      "url": "https://support.avito.ru/articles/1844",
+      "title": "Запретить писать сообщения",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 48,
+      "section": "Написать сообщение"
+    },
+    "4399": {
+      "url": "https://support.avito.ru/articles/4399",
+      "title": "Отправить фото, видео или файл",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 48,
+      "section": "Написать сообщение"
+    },
+    "3077": {
+      "url": "https://support.avito.ru/articles/3077",
+      "title": "Балансы в кошельке Авито: какой пополнить",
+      "category_id": 8,
+      "category": "Оплата",
+      "section_id": 49,
+      "section": "Кошелёк Авито и бонусы"
+    },
+    "4395": {
+      "url": "https://support.avito.ru/articles/4395",
+      "title": "Бонусы",
+      "category_id": 8,
+      "category": "Оплата",
+      "section_id": 49,
+      "section": "Кошелёк Авито и бонусы"
+    },
+    "4312": {
+      "url": "https://support.avito.ru/articles/4312",
+      "title": "Частые ошибки при пополнении банковским переводом",
+      "category_id": 8,
+      "category": "Оплата",
+      "section_id": 49,
+      "section": "Кошелёк Авито и бонусы"
+    },
+    "4384": {
+      "url": "https://support.avito.ru/articles/4384",
+      "title": "Баланс для покупок",
+      "category_id": 8,
+      "category": "Оплата",
+      "section_id": 49,
+      "section": "Кошелёк Авито и бонусы"
+    },
+    "4313": {
+      "url": "https://support.avito.ru/articles/4313",
+      "title": "Баланс для услуг Авито (объявления, продвижение)",
+      "category_id": 8,
+      "category": "Оплата",
+      "section_id": 49,
+      "section": "Кошелёк Авито и бонусы"
+    },
+    "1846": {
+      "url": "https://support.avito.ru/articles/1846",
+      "title": "Не открываются сообщения",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 51,
+      "section": "Не могу написать"
+    },
+    "1847": {
+      "url": "https://support.avito.ru/articles/1847",
+      "title": "Пропадают сообщения",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 51,
+      "section": "Не могу написать"
+    },
+    "4133": {
+      "url": "https://support.avito.ru/articles/4133",
+      "title": "Ограничены звонки и чаты с покупателями",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 51,
+      "section": "Не могу написать"
+    },
+    "3483": {
+      "url": "https://support.avito.ru/articles/3483",
+      "title": "Сообщения не отправляются",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 51,
+      "section": "Не могу написать"
+    },
+    "4046": {
+      "url": "https://support.avito.ru/articles/4046",
+      "title": "Ограничение доступа к звонкам и чатам с покупателями",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 51,
+      "section": "Не могу написать"
+    },
+    "3442": {
+      "url": "https://support.avito.ru/articles/3442",
+      "title": "Доступ к перепискам ограничен",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 51,
+      "section": "Не могу написать"
+    },
+    "3482": {
+      "url": "https://support.avito.ru/articles/3482",
+      "title": "Почему контакты арендодателя платные",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 51,
+      "section": "Не могу написать"
+    },
+    "1848": {
+      "url": "https://support.avito.ru/articles/1848",
+      "title": "Как Авито борется с мошенниками",
+      "category_id": 5,
+      "category": "Безопасность",
+      "section_id": 52,
+      "section": "Защита от мошенников"
+    },
+    "4332": {
+      "url": "https://support.avito.ru/articles/4332",
+      "title": "Меня обманули",
+      "category_id": 5,
+      "category": "Безопасность",
+      "section_id": 52,
+      "section": "Защита от мошенников"
+    },
+    "4329": {
+      "url": "https://support.avito.ru/articles/4329",
+      "title": "Сомневаюсь в сделке",
+      "category_id": 5,
+      "category": "Безопасность",
+      "section_id": 52,
+      "section": "Защита от мошенников"
+    },
+    "4334": {
+      "url": "https://support.avito.ru/articles/4334",
+      "title": "Правила безопасных сделок",
+      "category_id": 5,
+      "category": "Безопасность",
+      "section_id": 52,
+      "section": "Защита от мошенников"
+    },
+    "4333": {
+      "url": "https://support.avito.ru/articles/4333",
+      "title": "Можно ли открывать банковскую ссылку",
+      "category_id": 5,
+      "category": "Безопасность",
+      "section_id": 52,
+      "section": "Защита от мошенников"
+    },
+    "1865": {
+      "url": "https://support.avito.ru/articles/1865",
+      "title": "Что такое защита номера",
+      "category_id": 5,
+      "category": "Безопасность",
+      "section_id": 56,
+      "section": "Скрыть номер"
+    },
+    "1867": {
+      "url": "https://support.avito.ru/articles/1867",
+      "title": "Отключить защиту номера",
+      "category_id": 5,
+      "category": "Безопасность",
+      "section_id": 56,
+      "section": "Скрыть номер"
+    },
+    "1868": {
+      "url": "https://support.avito.ru/articles/1868",
+      "title": "Понять, что профиль взломали",
+      "category_id": 5,
+      "category": "Безопасность",
+      "section_id": 57,
+      "section": "Защитить профиль"
+    },
+    "1869": {
+      "url": "https://support.avito.ru/articles/1869",
+      "title": "Профиль взломали",
+      "category_id": 5,
+      "category": "Безопасность",
+      "section_id": 57,
+      "section": "Защитить профиль"
+    },
+    "1870": {
+      "url": "https://support.avito.ru/articles/1870",
+      "title": "Установить надёжный пароль",
+      "category_id": 5,
+      "category": "Безопасность",
+      "section_id": 57,
+      "section": "Защитить профиль"
+    },
+    "1872": {
+      "url": "https://support.avito.ru/articles/1872",
+      "title": "Защитить профиль от взлома",
+      "category_id": 5,
+      "category": "Безопасность",
+      "section_id": 57,
+      "section": "Защитить профиль"
+    },
+    "1873": {
+      "url": "https://support.avito.ru/articles/1873",
+      "title": "Установить вход по смс",
+      "category_id": 5,
+      "category": "Безопасность",
+      "section_id": 57,
+      "section": "Защитить профиль"
+    },
+    "1875": {
+      "url": "https://support.avito.ru/articles/1875",
+      "title": "Выйти из Авито на устройстве, к которому нет доступа",
+      "category_id": 5,
+      "category": "Безопасность",
+      "section_id": 57,
+      "section": "Защитить профиль"
+    },
+    "1877": {
+      "url": "https://support.avito.ru/articles/1877",
+      "title": "В профиле подозрительная авторизация",
+      "category_id": 5,
+      "category": "Безопасность",
+      "section_id": 57,
+      "section": "Защитить профиль"
+    },
+    "1879": {
+      "url": "https://support.avito.ru/articles/1879",
+      "title": "Пришло уведомление о новом входе в профиль",
+      "category_id": 5,
+      "category": "Безопасность",
+      "section_id": 57,
+      "section": "Защитить профиль"
+    },
+    "1881": {
+      "url": "https://support.avito.ru/articles/1881",
+      "title": "Как мошенники узнают личные данные",
+      "category_id": 5,
+      "category": "Безопасность",
+      "section_id": 57,
+      "section": "Защитить профиль"
+    },
+    "1882": {
+      "url": "https://support.avito.ru/articles/1882",
+      "title": "Спам на почте",
+      "category_id": 5,
+      "category": "Безопасность",
+      "section_id": 58,
+      "section": "Приходит спам"
+    },
+    "1884": {
+      "url": "https://support.avito.ru/articles/1884",
+      "title": "Спам в сообщениях",
+      "category_id": 5,
+      "category": "Безопасность",
+      "section_id": 58,
+      "section": "Приходит спам"
+    },
+    "1885": {
+      "url": "https://support.avito.ru/articles/1885",
+      "title": "Защититься от спама",
+      "category_id": 5,
+      "category": "Безопасность",
+      "section_id": 58,
+      "section": "Приходит спам"
+    },
+    "1886": {
+      "url": "https://support.avito.ru/articles/1886",
+      "title": "Заблокировать или разблокировать собеседника",
+      "category_id": 5,
+      "category": "Безопасность",
+      "section_id": 58,
+      "section": "Приходит спам"
+    },
+    "1887": {
+      "url": "https://support.avito.ru/articles/1887",
+      "title": "Что такое интеллектуальная собственность и бренд",
+      "category_id": 5,
+      "category": "Безопасность",
+      "section_id": 59,
+      "section": "Защитить бренд"
+    },
+    "1888": {
+      "url": "https://support.avito.ru/articles/1888",
+      "title": "Как Авито защищает бренды",
+      "category_id": 5,
+      "category": "Безопасность",
+      "section_id": 59,
+      "section": "Защитить бренд"
+    },
+    "1889": {
+      "url": "https://support.avito.ru/articles/1889",
+      "title": "Сообщить о нарушении интеллектуальных прав",
+      "category_id": 5,
+      "category": "Безопасность",
+      "section_id": 59,
+      "section": "Защитить бренд"
+    },
+    "4234": {
+      "url": "https://support.avito.ru/articles/4234",
+      "title": "Как продавать и покупать с доставкой",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 61,
+      "section": "Как работает доставка"
+    },
+    "4286": {
+      "url": "https://support.avito.ru/articles/4286",
+      "title": "Грузовая доставка",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 61,
+      "section": "Как работает доставка"
+    },
+    "4328": {
+      "url": "https://support.avito.ru/articles/4328",
+      "title": "Что можно заказать и отправить",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 61,
+      "section": "Как работает доставка"
+    },
+    "4362": {
+      "url": "https://support.avito.ru/articles/4362",
+      "title": "Включить или отключить доставку",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 61,
+      "section": "Как работает доставка"
+    },
+    "3467": {
+      "url": "https://support.avito.ru/articles/3467",
+      "title": "Как создать и настроить тарифы",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 61,
+      "section": "Как работает доставка"
+    },
+    "1901": {
+      "url": "https://support.avito.ru/articles/1901",
+      "title": "Не включается доставка",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 61,
+      "section": "Как работает доставка"
+    },
+    "1899": {
+      "url": "https://support.avito.ru/articles/1899",
+      "title": "В каких городах есть доставка",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 61,
+      "section": "Как работает доставка"
+    },
+    "4446": {
+      "url": "https://support.avito.ru/articles/4446",
+      "title": "Покупайте только с Авито Доставкой — так надёжнее",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 61,
+      "section": "Как работает доставка"
+    },
+    "3127": {
+      "url": "https://support.avito.ru/articles/3127",
+      "title": "Система быстрых платежей",
+      "category_id": 8,
+      "category": "Оплата",
+      "section_id": 63,
+      "section": "Другие способы оплаты"
+    },
+    "4233": {
+      "url": "https://support.avito.ru/articles/4233",
+      "title": "Банковская карта",
+      "category_id": 8,
+      "category": "Оплата",
+      "section_id": 63,
+      "section": "Другие способы оплаты"
+    },
+    "1948": {
+      "url": "https://support.avito.ru/articles/1948",
+      "title": "Настроить поиск",
+      "category_id": 12,
+      "category": "Поиск",
+      "section_id": 70,
+      "section": "Искать товар или услугу"
+    },
+    "1961": {
+      "url": "https://support.avito.ru/articles/1961",
+      "title": "Сортировать объявления",
+      "category_id": 12,
+      "category": "Поиск",
+      "section_id": 70,
+      "section": "Искать товар или услугу"
+    },
+    "1967": {
+      "url": "https://support.avito.ru/articles/1967",
+      "title": "Сравнить объявления",
+      "category_id": 12,
+      "category": "Поиск",
+      "section_id": 70,
+      "section": "Искать товар или услугу"
+    },
+    "1970": {
+      "url": "https://support.avito.ru/articles/1970",
+      "title": "Посмотреть все объявления продавца",
+      "category_id": 12,
+      "category": "Поиск",
+      "section_id": 70,
+      "section": "Искать товар или услугу"
+    },
+    "4302": {
+      "url": "https://support.avito.ru/articles/4302",
+      "title": "Запрос коммерческих предложений",
+      "category_id": 12,
+      "category": "Поиск",
+      "section_id": 70,
+      "section": "Искать товар или услугу"
+    },
+    "4197": {
+      "url": "https://support.avito.ru/articles/4197",
+      "title": "Найти просмотренные объявления",
+      "category_id": 12,
+      "category": "Поиск",
+      "section_id": 70,
+      "section": "Искать товар или услугу"
+    },
+    "4330": {
+      "url": "https://support.avito.ru/articles/4330",
+      "title": "Проблемы с поиском",
+      "category_id": 12,
+      "category": "Поиск",
+      "section_id": 70,
+      "section": "Искать товар или услугу"
+    },
+    "1980": {
+      "url": "https://support.avito.ru/articles/1980",
+      "title": "Искать по карте",
+      "category_id": 12,
+      "category": "Поиск",
+      "section_id": 81,
+      "section": "Поиск по локации"
+    },
+    "1985": {
+      "url": "https://support.avito.ru/articles/1985",
+      "title": "Искать в других регионах",
+      "category_id": 12,
+      "category": "Поиск",
+      "section_id": 81,
+      "section": "Поиск по локации"
+    },
+    "1986": {
+      "url": "https://support.avito.ru/articles/1986",
+      "title": "Искать только в своём регионе",
+      "category_id": 12,
+      "category": "Поиск",
+      "section_id": 81,
+      "section": "Поиск по локации"
+    },
+    "3090": {
+      "url": "https://support.avito.ru/articles/3090",
+      "title": "Не вижу адреса продавцов",
+      "category_id": 12,
+      "category": "Поиск",
+      "section_id": 81,
+      "section": "Поиск по локации"
+    },
+    "4515": {
+      "url": "https://support.avito.ru/articles/4515",
+      "title": "Лента постов от продавца",
+      "category_id": 12,
+      "category": "Поиск",
+      "section_id": 85,
+      "section": "Избранное и сохранённый поиск"
+    },
+    "4335": {
+      "url": "https://support.avito.ru/articles/4335",
+      "title": "Избранные объявления",
+      "category_id": 12,
+      "category": "Поиск",
+      "section_id": 85,
+      "section": "Избранное и сохранённый поиск"
+    },
+    "4346": {
+      "url": "https://support.avito.ru/articles/4346",
+      "title": "Сохранённый поиск",
+      "category_id": 12,
+      "category": "Поиск",
+      "section_id": 85,
+      "section": "Избранное и сохранённый поиск"
+    },
+    "2029": {
+      "url": "https://support.avito.ru/articles/2029",
+      "title": "«Онлайн-показ»",
+      "category_id": 12,
+      "category": "Поиск",
+      "section_id": 96,
+      "section": "Отметки на объявлениях"
+    },
+    "2032": {
+      "url": "https://support.avito.ru/articles/2032",
+      "title": "«Реквизиты проверены» и «Документы проверены»",
+      "category_id": 12,
+      "category": "Поиск",
+      "section_id": 96,
+      "section": "Отметки на объявлениях"
+    },
+    "4347": {
+      "url": "https://support.avito.ru/articles/4347",
+      "title": "Транспорт",
+      "category_id": 12,
+      "category": "Поиск",
+      "section_id": 96,
+      "section": "Отметки на объявлениях"
+    },
+    "3429": {
+      "url": "https://support.avito.ru/articles/3429",
+      "title": "Услуги",
+      "category_id": 12,
+      "category": "Поиск",
+      "section_id": 96,
+      "section": "Отметки на объявлениях"
+    },
+    "4365": {
+      "url": "https://support.avito.ru/articles/4365",
+      "title": "Жильё",
+      "category_id": 12,
+      "category": "Поиск",
+      "section_id": 96,
+      "section": "Отметки на объявлениях"
+    },
+    "4366": {
+      "url": "https://support.avito.ru/articles/4366",
+      "title": "Товары",
+      "category_id": 12,
+      "category": "Поиск",
+      "section_id": 96,
+      "section": "Отметки на объявлениях"
+    },
+    "4428": {
+      "url": "https://support.avito.ru/articles/4428",
+      "title": "Работа",
+      "category_id": 12,
+      "category": "Поиск",
+      "section_id": 96,
+      "section": "Отметки на объявлениях"
+    },
+    "4344": {
+      "url": "https://support.avito.ru/articles/4344",
+      "title": "Как пользоваться отчётами",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 103,
+      "section": "Автозагрузка и API"
+    },
+    "3236": {
+      "url": "https://support.avito.ru/articles/3236",
+      "title": "Спиcок профессий, по которым смогут откликаться только кандидаты с резюме",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 103,
+      "section": "Автозагрузка и API"
+    },
+    "4356": {
+      "url": "https://support.avito.ru/articles/4356",
+      "title": "Ошибки при автозагрузке",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 103,
+      "section": "Автозагрузка и API"
+    },
+    "3234": {
+      "url": "https://support.avito.ru/articles/3234",
+      "title": "Изменение в поле «Сфера деятельности»",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 103,
+      "section": "Автозагрузка и API"
+    },
+    "4337": {
+      "url": "https://support.avito.ru/articles/4337",
+      "title": "Работа с объявлениями",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 103,
+      "section": "Автозагрузка и API"
+    },
+    "4357": {
+      "url": "https://support.avito.ru/articles/4357",
+      "title": "Настроить автозагрузку",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 103,
+      "section": "Автозагрузка и API"
+    },
+    "4170": {
+      "url": "https://support.avito.ru/articles/4170",
+      "title": "Инструкции по ошибкам Автозагрузке",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 103,
+      "section": "Автозагрузка и API"
+    },
+    "4340": {
+      "url": "https://support.avito.ru/articles/4340",
+      "title": "Доступность Автозагрузки",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 103,
+      "section": "Автозагрузка и API"
+    },
+    "2973": {
+      "url": "https://support.avito.ru/articles/2973",
+      "title": "Видеоинструкция",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 103,
+      "section": "Автозагрузка и API"
+    },
+    "4173": {
+      "url": "https://support.avito.ru/articles/4173",
+      "title": "Инструкция по Автозагрузке",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 103,
+      "section": "Автозагрузка и API"
+    },
+    "4343": {
+      "url": "https://support.avito.ru/articles/4343",
+      "title": "API для бизнеса",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 103,
+      "section": "Автозагрузка и API"
+    },
+    "4341": {
+      "url": "https://support.avito.ru/articles/4341",
+      "title": "Подключить или отключить автозагрузку",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 103,
+      "section": "Автозагрузка и API"
+    },
+    "3436": {
+      "url": "https://support.avito.ru/articles/3436",
+      "title": "Габариты товара в Автозагрузке: вес, длина, ширина и высота",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 103,
+      "section": "Автозагрузка и API"
+    },
+    "2095": {
+      "url": "https://support.avito.ru/articles/2095",
+      "title": "Что такое тариф",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 114,
+      "section": "Тарифы"
+    },
+    "2699": {
+      "url": "https://support.avito.ru/articles/2699",
+      "title": "Персональный менеджер",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 114,
+      "section": "Тарифы"
+    },
+    "4342": {
+      "url": "https://support.avito.ru/articles/4342",
+      "title": "Что такое кабинет Авито Pro",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 122,
+      "section": "Кабинет Авито Pro"
+    },
+    "4262": {
+      "url": "https://support.avito.ru/articles/4262",
+      "title": "Раздел «Сотрудники»",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 122,
+      "section": "Кабинет Авито Pro"
+    },
+    "4345": {
+      "url": "https://support.avito.ru/articles/4345",
+      "title": "Звонки клиентов (Коллтрекинг)",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 122,
+      "section": "Кабинет Авито Pro"
+    },
+    "4348": {
+      "url": "https://support.avito.ru/articles/4348",
+      "title": "Автопубликация объявлений",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 122,
+      "section": "Кабинет Авито Pro"
+    },
+    "4349": {
+      "url": "https://support.avito.ru/articles/4349",
+      "title": "Автостратегия",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 122,
+      "section": "Кабинет Авито Pro"
+    },
+    "4350": {
+      "url": "https://support.avito.ru/articles/4350",
+      "title": "Запланировать услуги продвижения",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 122,
+      "section": "Кабинет Авито Pro"
+    },
+    "4402": {
+      "url": "https://support.avito.ru/articles/4402",
+      "title": "Автоответы",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 122,
+      "section": "Кабинет Авито Pro"
+    },
+    "4194": {
+      "url": "https://support.avito.ru/articles/4194",
+      "title": "Что такое услуги продвижения",
+      "category_id": 9,
+      "category": "Продвинуть объявление",
+      "section_id": 131,
+      "section": "Услуги продвижения"
+    },
+    "2331": {
+      "url": "https://support.avito.ru/articles/2331",
+      "title": "Категории услуг, где доступна скидка на продвижение",
+      "category_id": 9,
+      "category": "Продвинуть объявление",
+      "section_id": 131,
+      "section": "Услуги продвижения"
+    },
+    "2147": {
+      "url": "https://support.avito.ru/articles/2147",
+      "title": "Выделение цветом",
+      "category_id": 9,
+      "category": "Продвинуть объявление",
+      "section_id": 131,
+      "section": "Услуги продвижения"
+    },
+    "2148": {
+      "url": "https://support.avito.ru/articles/2148",
+      "title": "XL-объявление",
+      "category_id": 9,
+      "category": "Продвинуть объявление",
+      "section_id": 131,
+      "section": "Услуги продвижения"
+    },
+    "2450": {
+      "url": "https://support.avito.ru/articles/2450",
+      "title": "Значки в XL-объявлениях",
+      "category_id": 9,
+      "category": "Продвинуть объявление",
+      "section_id": 131,
+      "section": "Услуги продвижения"
+    },
+    "2278": {
+      "url": "https://support.avito.ru/articles/2278",
+      "title": "Пакеты продвижения",
+      "category_id": 9,
+      "category": "Продвинуть объявление",
+      "section_id": 131,
+      "section": "Услуги продвижения"
+    },
+    "3014": {
+      "url": "https://support.avito.ru/articles/3014",
+      "title": "Продвижение за комиссию в Авито Путешествиях",
+      "category_id": 9,
+      "category": "Продвинуть объявление",
+      "section_id": 131,
+      "section": "Услуги продвижения"
+    },
+    "3420": {
+      "url": "https://support.avito.ru/articles/3420",
+      "title": "Продвижение с помощью видео",
+      "category_id": 9,
+      "category": "Продвинуть объявление",
+      "section_id": 131,
+      "section": "Услуги продвижения"
+    },
+    "2150": {
+      "url": "https://support.avito.ru/articles/2150",
+      "title": "Как услуга влияет на срок публикации",
+      "category_id": 9,
+      "category": "Продвинуть объявление",
+      "section_id": 131,
+      "section": "Услуги продвижения"
+    },
+    "4355": {
+      "url": "https://support.avito.ru/articles/4355",
+      "title": "Больше просмотров",
+      "category_id": 9,
+      "category": "Продвинуть объявление",
+      "section_id": 131,
+      "section": "Услуги продвижения"
+    },
+    "4383": {
+      "url": "https://support.avito.ru/articles/4383",
+      "title": "Продвижение с прогнозом",
+      "category_id": 9,
+      "category": "Продвинуть объявление",
+      "section_id": 131,
+      "section": "Услуги продвижения"
+    },
+    "4382": {
+      "url": "https://support.avito.ru/articles/4382",
+      "title": "В каких категориях доступно «Продвижение с прогнозом»",
+      "category_id": 9,
+      "category": "Продвинуть объявление",
+      "section_id": 131,
+      "section": "Услуги продвижения"
+    },
+    "2151": {
+      "url": "https://support.avito.ru/articles/2151",
+      "title": "Проверить, что услуга подключилась",
+      "category_id": 9,
+      "category": "Продвинуть объявление",
+      "section_id": 133,
+      "section": "Управлять услугами"
+    },
+    "2152": {
+      "url": "https://support.avito.ru/articles/2152",
+      "title": "Как работают несколько услуг одновременно",
+      "category_id": 9,
+      "category": "Продвинуть объявление",
+      "section_id": 133,
+      "section": "Управлять услугами"
+    },
+    "2681": {
+      "url": "https://support.avito.ru/articles/2681",
+      "title": "Запланировать услуги",
+      "category_id": 9,
+      "category": "Продвинуть объявление",
+      "section_id": 133,
+      "section": "Управлять услугами"
+    },
+    "2153": {
+      "url": "https://support.avito.ru/articles/2153",
+      "title": "Автопродление услуг",
+      "category_id": 9,
+      "category": "Продвинуть объявление",
+      "section_id": 134,
+      "section": "Автопродление услуг"
+    },
+    "2154": {
+      "url": "https://support.avito.ru/articles/2154",
+      "title": "Включить и отключить автопродление",
+      "category_id": 9,
+      "category": "Продвинуть объявление",
+      "section_id": 134,
+      "section": "Автопродление услуг"
+    },
+    "3536": {
+      "url": "https://support.avito.ru/articles/3536",
+      "title": "Почему мне нужно платить за объявление о продаже авто с пробегом",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 135,
+      "section": "Разместить бесплатно"
+    },
+    "2942": {
+      "url": "https://support.avito.ru/articles/2942",
+      "title": "Не получается разместить бесплатно",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 135,
+      "section": "Разместить бесплатно"
+    },
+    "2155": {
+      "url": "https://support.avito.ru/articles/2155",
+      "title": "Сколько объявлений можно разместить бесплатно",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 135,
+      "section": "Разместить бесплатно"
+    },
+    "2156": {
+      "url": "https://support.avito.ru/articles/2156",
+      "title": "Когда можно снова разместить объявление бесплатно",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 135,
+      "section": "Разместить бесплатно"
+    },
+    "2172": {
+      "url": "https://support.avito.ru/articles/2172",
+      "title": "Активный продавец",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 135,
+      "section": "Разместить бесплатно"
+    },
+    "4165": {
+      "url": "https://support.avito.ru/articles/4165",
+      "title": "Лимит контактов при бесплатном размещении",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 135,
+      "section": "Разместить бесплатно"
+    },
+    "4239": {
+      "url": "https://support.avito.ru/articles/4239",
+      "title": "Бесплатные размещения для проверенных приютов",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 135,
+      "section": "Разместить бесплатно"
+    },
+    "4307": {
+      "url": "https://support.avito.ru/articles/4307",
+      "title": "Лимит бесплатных размещений",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 135,
+      "section": "Разместить бесплатно"
+    },
+    "4451": {
+      "url": "https://support.avito.ru/articles/4451",
+      "title": "Просто скидка",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 138,
+      "section": "Опубликовать и продлить"
+    },
+    "2670": {
+      "url": "https://support.avito.ru/articles/2670",
+      "title": "Разместить вакансию",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 138,
+      "section": "Опубликовать и продлить"
+    },
+    "2678": {
+      "url": "https://support.avito.ru/articles/2678",
+      "title": "Управление остатками товаров",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 138,
+      "section": "Опубликовать и продлить"
+    },
+    "2924": {
+      "url": "https://support.avito.ru/articles/2924",
+      "title": "Какими товарами интересуются покупатели",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 138,
+      "section": "Опубликовать и продлить"
+    },
+    "4186": {
+      "url": "https://support.avito.ru/articles/4186",
+      "title": "Добавить новостройку в каталог",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 138,
+      "section": "Опубликовать и продлить"
+    },
+    "2157": {
+      "url": "https://support.avito.ru/articles/2157",
+      "title": "Сколько действует объявление",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 138,
+      "section": "Опубликовать и продлить"
+    },
+    "2195": {
+      "url": "https://support.avito.ru/articles/2195",
+      "title": "Составить резюме",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 138,
+      "section": "Опубликовать и продлить"
+    },
+    "4220": {
+      "url": "https://support.avito.ru/articles/4220",
+      "title": "Объявление о транспорте",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 138,
+      "section": "Опубликовать и продлить"
+    },
+    "4291": {
+      "url": "https://support.avito.ru/articles/4291",
+      "title": "Гибкие сроки публикации для объявлений",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 138,
+      "section": "Опубликовать и продлить"
+    },
+    "4269": {
+      "url": "https://support.avito.ru/articles/4269",
+      "title": "Объявление о недвижимости",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 138,
+      "section": "Опубликовать и продлить"
+    },
+    "4224": {
+      "url": "https://support.avito.ru/articles/4224",
+      "title": "Предложить услугу",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 138,
+      "section": "Опубликовать и продлить"
+    },
+    "4354": {
+      "url": "https://support.avito.ru/articles/4354",
+      "title": "Пройти модерацию",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 138,
+      "section": "Опубликовать и продлить"
+    },
+    "4351": {
+      "url": "https://support.avito.ru/articles/4351",
+      "title": "Добавить фото и видео",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 138,
+      "section": "Опубликовать и продлить"
+    },
+    "4268": {
+      "url": "https://support.avito.ru/articles/4268",
+      "title": "Классификация новостроек в каталоге Авито",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 138,
+      "section": "Опубликовать и продлить"
+    },
+    "4267": {
+      "url": "https://support.avito.ru/articles/4267",
+      "title": "Добавить новостройку в каталог",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 138,
+      "section": "Опубликовать и продлить"
+    },
+    "4068": {
+      "url": "https://support.avito.ru/articles/4068",
+      "title": "Раздел «Можно продать»",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 138,
+      "section": "Опубликовать и продлить"
+    },
+    "2196": {
+      "url": "https://support.avito.ru/articles/2196",
+      "title": "Отредактировать объявление",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 143,
+      "section": "Редактировать"
+    },
+    "2197": {
+      "url": "https://support.avito.ru/articles/2197",
+      "title": "Изменить категорию",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 143,
+      "section": "Редактировать"
+    },
+    "2199": {
+      "url": "https://support.avito.ru/articles/2199",
+      "title": "Поменять порядок фото",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 143,
+      "section": "Редактировать"
+    },
+    "2200": {
+      "url": "https://support.avito.ru/articles/2200",
+      "title": "Скрыть номер телефона",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 143,
+      "section": "Редактировать"
+    },
+    "2201": {
+      "url": "https://support.avito.ru/articles/2201",
+      "title": "Убрать надпись «Компания»",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 143,
+      "section": "Редактировать"
+    },
+    "2202": {
+      "url": "https://support.avito.ru/articles/2202",
+      "title": "Не сохраняются изменения",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 143,
+      "section": "Редактировать"
+    },
+    "4184": {
+      "url": "https://support.avito.ru/articles/4184",
+      "title": "Перенести объявления на другой профиль",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 143,
+      "section": "Редактировать"
+    },
+    "2198": {
+      "url": "https://support.avito.ru/articles/2198",
+      "title": "Изменить город",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 143,
+      "section": "Редактировать"
+    },
+    "2928": {
+      "url": "https://support.avito.ru/articles/2928",
+      "title": "Изменить вид товара или услуги",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 143,
+      "section": "Редактировать"
+    },
+    "2863": {
+      "url": "https://support.avito.ru/articles/2863",
+      "title": "Поставить бронь на товар",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 143,
+      "section": "Редактировать"
+    },
+    "2203": {
+      "url": "https://support.avito.ru/articles/2203",
+      "title": "Временно снять объявление",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 144,
+      "section": "Удалить и восстановить"
+    },
+    "2204": {
+      "url": "https://support.avito.ru/articles/2204",
+      "title": "Удалить объявление",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 144,
+      "section": "Удалить и восстановить"
+    },
+    "2205": {
+      "url": "https://support.avito.ru/articles/2205",
+      "title": "Скрыть объявление в профиле",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 144,
+      "section": "Удалить и восстановить"
+    },
+    "2206": {
+      "url": "https://support.avito.ru/articles/2206",
+      "title": "Восстановить удалённое",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 144,
+      "section": "Удалить и восстановить"
+    },
+    "2207": {
+      "url": "https://support.avito.ru/articles/2207",
+      "title": "Активировать завершённое",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 144,
+      "section": "Удалить и восстановить"
+    },
+    "2208": {
+      "url": "https://support.avito.ru/articles/2208",
+      "title": "Автоматическая активация объявлений",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 144,
+      "section": "Удалить и восстановить"
+    },
+    "4510": {
+      "url": "https://support.avito.ru/articles/4510",
+      "title": "Сколько хранятся архивные объявления в Товарах",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 144,
+      "section": "Удалить и восстановить"
+    },
+    "2209": {
+      "url": "https://support.avito.ru/articles/2209",
+      "title": "Узнать номер объявления",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 145,
+      "section": "Как выглядит моё объявление"
+    },
+    "2212": {
+      "url": "https://support.avito.ru/articles/2212",
+      "title": "На фото появился логотип Авито",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 145,
+      "section": "Как выглядит моё объявление"
+    },
+    "2213": {
+      "url": "https://support.avito.ru/articles/2213",
+      "title": "Красная стрелка «Цена снижена»",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 145,
+      "section": "Как выглядит моё объявление"
+    },
+    "2214": {
+      "url": "https://support.avito.ru/articles/2214",
+      "title": "Получить значок «Реквизиты проверены»",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 145,
+      "section": "Как выглядит моё объявление"
+    },
+    "2215": {
+      "url": "https://support.avito.ru/articles/2215",
+      "title": "Получить значок «Документы проверены»",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 145,
+      "section": "Как выглядит моё объявление"
+    },
+    "2813": {
+      "url": "https://support.avito.ru/articles/2813",
+      "title": "Получить значок «Самозанятый»",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 145,
+      "section": "Как выглядит моё объявление"
+    },
+    "4297": {
+      "url": "https://support.avito.ru/articles/4297",
+      "title": "Отметки в Услугах",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 145,
+      "section": "Как выглядит моё объявление"
+    },
+    "4367": {
+      "url": "https://support.avito.ru/articles/4367",
+      "title": "Отметки в Товарах",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 145,
+      "section": "Как выглядит моё объявление"
+    },
+    "3573": {
+      "url": "https://support.avito.ru/articles/3573",
+      "title": "Получить значок «яПомогаю»",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 145,
+      "section": "Как выглядит моё объявление"
+    },
+    "3494": {
+      "url": "https://support.avito.ru/articles/3494",
+      "title": "Получить значок «Собственное производство»",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 145,
+      "section": "Как выглядит моё объявление"
+    },
+    "4418": {
+      "url": "https://support.avito.ru/articles/4418",
+      "title": "Отметки в Работе",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 145,
+      "section": "Как выглядит моё объявление"
+    },
+    "4364": {
+      "url": "https://support.avito.ru/articles/4364",
+      "title": "Отметки в Авто",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 145,
+      "section": "Как выглядит моё объявление"
+    },
+    "4353": {
+      "url": "https://support.avito.ru/articles/4353",
+      "title": "Просмотры",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 145,
+      "section": "Как выглядит моё объявление"
+    },
+    "4363": {
+      "url": "https://support.avito.ru/articles/4363",
+      "title": "Отметки в Недвижимости",
+      "category_id": 1,
+      "category": "Мои объявления",
+      "section_id": 145,
+      "section": "Как выглядит моё объявление"
+    },
+    "3504": {
+      "url": "https://support.avito.ru/articles/3504",
+      "title": "Когда проверка достоверности объявления обязательна",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 147,
+      "section": "Не удаётся разместить"
+    },
+    "4045": {
+      "url": "https://support.avito.ru/articles/4045",
+      "title": "Новые условия продажи в категории «Личные вещи»",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 147,
+      "section": "Не удаётся разместить"
+    },
+    "2217": {
+      "url": "https://support.avito.ru/articles/2217",
+      "title": "Не получается опубликовать бесплатно",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 147,
+      "section": "Не удаётся разместить"
+    },
+    "2218": {
+      "url": "https://support.avito.ru/articles/2218",
+      "title": "Не могу указать телефон",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 147,
+      "section": "Не удаётся разместить"
+    },
+    "2219": {
+      "url": "https://support.avito.ru/articles/2219",
+      "title": "Не могу указать почту",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 147,
+      "section": "Не удаётся разместить"
+    },
+    "2220": {
+      "url": "https://support.avito.ru/articles/2220",
+      "title": "Ожидает оплаты",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 147,
+      "section": "Не удаётся разместить"
+    },
+    "2221": {
+      "url": "https://support.avito.ru/articles/2221",
+      "title": "«Не удалось выполнить операцию»",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 147,
+      "section": "Не удаётся разместить"
+    },
+    "2222": {
+      "url": "https://support.avito.ru/articles/2222",
+      "title": "Ошибка при подаче объявления через приложение",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 147,
+      "section": "Не удаётся разместить"
+    },
+    "2223": {
+      "url": "https://support.avito.ru/articles/2223",
+      "title": "Не загружаются фото",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 147,
+      "section": "Не удаётся разместить"
+    },
+    "2224": {
+      "url": "https://support.avito.ru/articles/2224",
+      "title": "При вводе VIN поле подсвечивается красным",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 147,
+      "section": "Не удаётся разместить"
+    },
+    "4287": {
+      "url": "https://support.avito.ru/articles/4287",
+      "title": "Не получается опубликовать объявление о недвижимости",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 147,
+      "section": "Не удаётся разместить"
+    },
+    "2243": {
+      "url": "https://support.avito.ru/articles/2243",
+      "title": "Можно ли восстановить моё объявление",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 150,
+      "section": "Заблокировали"
+    },
+    "2288": {
+      "url": "https://support.avito.ru/articles/2288",
+      "title": "Заблокировали оплаченное объявление",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 150,
+      "section": "Заблокировали"
+    },
+    "2245": {
+      "url": "https://support.avito.ru/articles/2245",
+      "title": "Товар запрещён на Авито или Услуга запрещена на Авито",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 150,
+      "section": "Заблокировали"
+    },
+    "2244": {
+      "url": "https://support.avito.ru/articles/2244",
+      "title": "Товар уже продаётся, Услуга или Объект уже предлагается или Вакансия уже размещена",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 150,
+      "section": "Заблокировали"
+    },
+    "2247": {
+      "url": "https://support.avito.ru/articles/2247",
+      "title": "Товар не продаётся",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 150,
+      "section": "Заблокировали"
+    },
+    "2248": {
+      "url": "https://support.avito.ru/articles/2248",
+      "title": "Неправильный город",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 150,
+      "section": "Заблокировали"
+    },
+    "2249": {
+      "url": "https://support.avito.ru/articles/2249",
+      "title": "Товар нельзя купить",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 150,
+      "section": "Заблокировали"
+    },
+    "2250": {
+      "url": "https://support.avito.ru/articles/2250",
+      "title": "Признаки взлома профиля",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 150,
+      "section": "Заблокировали"
+    },
+    "2251": {
+      "url": "https://support.avito.ru/articles/2251",
+      "title": "Продажа аккаунта",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 150,
+      "section": "Заблокировали"
+    },
+    "2252": {
+      "url": "https://support.avito.ru/articles/2252",
+      "title": "Жалоба правообладателя",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 150,
+      "section": "Заблокировали"
+    },
+    "2706": {
+      "url": "https://support.avito.ru/articles/2706",
+      "title": "Фото другого пользователя",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 150,
+      "section": "Заблокировали"
+    },
+    "2960": {
+      "url": "https://support.avito.ru/articles/2960",
+      "title": "Нужно подтвердить, что номер не используется для спама",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 150,
+      "section": "Заблокировали"
+    },
+    "2253": {
+      "url": "https://support.avito.ru/articles/2253",
+      "title": "Объявление исчезло из поиска",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 151,
+      "section": "Объявления нет в поиске"
+    },
+    "2254": {
+      "url": "https://support.avito.ru/articles/2254",
+      "title": "Объявление снова на проверке",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 151,
+      "section": "Объявления нет в поиске"
+    },
+    "3552": {
+      "url": "https://support.avito.ru/articles/3552",
+      "title": "Объявление скрыто из поисковой выдачи",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 151,
+      "section": "Объявления нет в поиске"
+    },
+    "2415": {
+      "url": "https://support.avito.ru/articles/2415",
+      "title": "Объявление с новостройкой скрыто",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 151,
+      "section": "Объявления нет в поиске"
+    },
+    "2663": {
+      "url": "https://support.avito.ru/articles/2663",
+      "title": "Не вижу объявление в поиске",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 151,
+      "section": "Объявления нет в поиске"
+    },
+    "2661": {
+      "url": "https://support.avito.ru/articles/2661",
+      "title": "Не вижу объявление в профиле",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 151,
+      "section": "Объявления нет в поиске"
+    },
+    "2324": {
+      "url": "https://support.avito.ru/articles/2324",
+      "title": "Как подтвердить данные в профиле",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 161,
+      "section": "Подтвердить данные"
+    },
+    "2323": {
+      "url": "https://support.avito.ru/articles/2323",
+      "title": "Зачем подтверждать данные в профиле",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 161,
+      "section": "Подтвердить данные"
+    },
+    "2937": {
+      "url": "https://support.avito.ru/articles/2937",
+      "title": "Проверка по документам",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 161,
+      "section": "Подтвердить данные"
+    },
+    "4414": {
+      "url": "https://support.avito.ru/articles/4414",
+      "title": "Не получается подтвердить данные",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 161,
+      "section": "Подтвердить данные"
+    },
+    "4496": {
+      "url": "https://support.avito.ru/articles/4496",
+      "title": "Обновить данные проверки",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 161,
+      "section": "Подтвердить данные"
+    },
+    "2646": {
+      "url": "https://support.avito.ru/articles/2646",
+      "title": "Оплата заказов с доставкой",
+      "category_id": 8,
+      "category": "Оплата",
+      "section_id": 293,
+      "section": "Доставка"
+    },
+    "2865": {
+      "url": "https://support.avito.ru/articles/2865",
+      "title": "Когда вернутся деньги за доставку",
+      "category_id": 8,
+      "category": "Оплата",
+      "section_id": 293,
+      "section": "Доставка"
+    },
+    "2866": {
+      "url": "https://support.avito.ru/articles/2866",
+      "title": "Как проверить, вернулись ли деньги за доставку",
+      "category_id": 8,
+      "category": "Оплата",
+      "section_id": 293,
+      "section": "Доставка"
+    },
+    "2943": {
+      "url": "https://support.avito.ru/articles/2943",
+      "title": "Не могу вывести деньги за доставку",
+      "category_id": 8,
+      "category": "Оплата",
+      "section_id": 293,
+      "section": "Доставка"
+    },
+    "3561": {
+      "url": "https://support.avito.ru/articles/3561",
+      "title": "Как пользоваться Авито на iOS?",
+      "category_id": 300,
+      "category": "Частые вопросы",
+      "section_id": null,
+      "section": null
+    },
+    "2944": {
+      "url": "https://support.avito.ru/articles/2944",
+      "title": "Мой заказ потерялся",
+      "category_id": 300,
+      "category": "Частые вопросы",
+      "section_id": null,
+      "section": null
+    },
+    "3056": {
+      "url": "https://support.avito.ru/articles/3056",
+      "title": "Меня заблокировали. Что делать?",
+      "category_id": 300,
+      "category": "Частые вопросы",
+      "section_id": null,
+      "section": null
+    },
+    "3470": {
+      "url": "https://support.avito.ru/articles/3470",
+      "title": "Вернуть деньги из кошелька Авито",
+      "category_id": 300,
+      "category": "Частые вопросы",
+      "section_id": null,
+      "section": null
+    },
+    "2968": {
+      "url": "https://support.avito.ru/articles/2968",
+      "title": "Не вижу своё объявление в поиске",
+      "category_id": 300,
+      "category": "Частые вопросы",
+      "section_id": null,
+      "section": null
+    },
+    "2696": {
+      "url": "https://support.avito.ru/articles/2696",
+      "title": "Как вернуть деньги за объявление",
+      "category_id": 300,
+      "category": "Частые вопросы",
+      "section_id": null,
+      "section": null
+    },
+    "3128": {
+      "url": "https://support.avito.ru/articles/3128",
+      "title": "Почему моё объявление платное?",
+      "category_id": 300,
+      "category": "Частые вопросы",
+      "section_id": null,
+      "section": null
+    },
+    "3400": {
+      "url": "https://support.avito.ru/articles/3400",
+      "title": "Хочу отменить бронь квартиры, дома или отеля",
+      "category_id": 300,
+      "category": "Частые вопросы",
+      "section_id": null,
+      "section": null
+    },
+    "4379": {
+      "url": "https://support.avito.ru/articles/4379",
+      "title": "Работа",
+      "category_id": 302,
+      "category": "Тарифы",
+      "section_id": null,
+      "section": null
+    },
+    "4385": {
+      "url": "https://support.avito.ru/articles/4385",
+      "title": "Лимиты в тарифе",
+      "category_id": 302,
+      "category": "Тарифы",
+      "section_id": null,
+      "section": null
+    },
+    "4159": {
+      "url": "https://support.avito.ru/articles/4159",
+      "title": "Как работает защита от нецелевых просмотров",
+      "category_id": 302,
+      "category": "Тарифы",
+      "section_id": null,
+      "section": null
+    },
+    "4276": {
+      "url": "https://support.avito.ru/articles/4276",
+      "title": "Тариф с оплатой размещений для Недвижимости",
+      "category_id": 302,
+      "category": "Тарифы",
+      "section_id": 303,
+      "section": "Недвижимость"
+    },
+    "4359": {
+      "url": "https://support.avito.ru/articles/4359",
+      "title": "Тариф с оплатой звонков и чатов для Недвижимости",
+      "category_id": 302,
+      "category": "Тарифы",
+      "section_id": 303,
+      "section": "Недвижимость"
+    },
+    "4311": {
+      "url": "https://support.avito.ru/articles/4311",
+      "title": "Тариф для посуточной аренды",
+      "category_id": 302,
+      "category": "Тарифы",
+      "section_id": 303,
+      "section": "Недвижимость"
+    },
+    "4278": {
+      "url": "https://support.avito.ru/articles/4278",
+      "title": "Подписка на инструменты «Мастер услуг»",
+      "category_id": 302,
+      "category": "Тарифы",
+      "section_id": 306,
+      "section": "Услуги"
+    },
+    "4381": {
+      "url": "https://support.avito.ru/articles/4381",
+      "title": "Тариф с оплатой звонков и чатов для Услуг",
+      "category_id": 302,
+      "category": "Тарифы",
+      "section_id": 306,
+      "section": "Услуги"
+    },
+    "4310": {
+      "url": "https://support.avito.ru/articles/4310",
+      "title": "Тариф с оплатой за просмотры для Услуг",
+      "category_id": 302,
+      "category": "Тарифы",
+      "section_id": 306,
+      "section": "Услуги"
+    },
+    "4373": {
+      "url": "https://support.avito.ru/articles/4373",
+      "title": "Тариф с оплатой размещений для Услуг",
+      "category_id": 302,
+      "category": "Тарифы",
+      "section_id": 306,
+      "section": "Услуги"
+    },
+    "2097": {
+      "url": "https://support.avito.ru/articles/2097",
+      "title": "Как выбрать тариф в Авто",
+      "category_id": 302,
+      "category": "Тарифы",
+      "section_id": 311,
+      "section": "Авто"
+    },
+    "2105": {
+      "url": "https://support.avito.ru/articles/2105",
+      "title": "Тариф+ для Авто",
+      "category_id": 302,
+      "category": "Тарифы",
+      "section_id": 311,
+      "section": "Авто"
+    },
+    "4339": {
+      "url": "https://support.avito.ru/articles/4339",
+      "title": "Тариф с оплатой звонков и чатов для Авто",
+      "category_id": 302,
+      "category": "Тарифы",
+      "section_id": 311,
+      "section": "Авто"
+    },
+    "4255": {
+      "url": "https://support.avito.ru/articles/4255",
+      "title": "Подписка «Авито × Хараба» для профессиональных продавцов авто",
+      "category_id": 302,
+      "category": "Тарифы",
+      "section_id": 311,
+      "section": "Авто"
+    },
+    "4207": {
+      "url": "https://support.avito.ru/articles/4207",
+      "title": "Тариф с оплатой размещений для Авто",
+      "category_id": 302,
+      "category": "Тарифы",
+      "section_id": 311,
+      "section": "Авто"
+    },
+    "4185": {
+      "url": "https://support.avito.ru/articles/4185",
+      "title": "Путешествия",
+      "category_id": 315,
+      "category": "Как опубликовать объявление: самые важные советы",
+      "section_id": null,
+      "section": null
+    },
+    "4374": {
+      "url": "https://support.avito.ru/articles/4374",
+      "title": "Как подать объявление в категории «Плановое ТО»",
+      "category_id": 315,
+      "category": "Как опубликовать объявление: самые важные советы",
+      "section_id": null,
+      "section": null
+    },
+    "4242": {
+      "url": "https://support.avito.ru/articles/4242",
+      "title": "Как указать параметры, чтобы объявления соединились",
+      "category_id": 315,
+      "category": "Как опубликовать объявление: самые важные советы",
+      "section_id": null,
+      "section": null
+    },
+    "4202": {
+      "url": "https://support.avito.ru/articles/4202",
+      "title": "Вакансии",
+      "category_id": 315,
+      "category": "Как опубликовать объявление: самые важные советы",
+      "section_id": null,
+      "section": null
+    },
+    "4266": {
+      "url": "https://support.avito.ru/articles/4266",
+      "title": "Недвижимость",
+      "category_id": 315,
+      "category": "Как опубликовать объявление: самые важные советы",
+      "section_id": null,
+      "section": null
+    },
+    "4375": {
+      "url": "https://support.avito.ru/articles/4375",
+      "title": "Услуги",
+      "category_id": 315,
+      "category": "Как опубликовать объявление: самые важные советы",
+      "section_id": null,
+      "section": null
+    },
+    "4292": {
+      "url": "https://support.avito.ru/articles/4292",
+      "title": "Резюме",
+      "category_id": 315,
+      "category": "Как опубликовать объявление: самые важные советы",
+      "section_id": null,
+      "section": null
+    },
+    "4243": {
+      "url": "https://support.avito.ru/articles/4243",
+      "title": "Вещи, техника и другие товары",
+      "category_id": 315,
+      "category": "Как опубликовать объявление: самые важные советы",
+      "section_id": null,
+      "section": null
+    },
+    "4370": {
+      "url": "https://support.avito.ru/articles/4370",
+      "title": "Обязательные параметры в спецтехнике",
+      "category_id": 315,
+      "category": "Как опубликовать объявление: самые важные советы",
+      "section_id": 321,
+      "section": "Авто и транспорт"
+    },
+    "4371": {
+      "url": "https://support.avito.ru/articles/4371",
+      "title": "Размещаю новое объявление",
+      "category_id": 315,
+      "category": "Как опубликовать объявление: самые важные советы",
+      "section_id": 321,
+      "section": "Авто и транспорт"
+    },
+    "4369": {
+      "url": "https://support.avito.ru/articles/4369",
+      "title": "Добавить адрес стоянки или филиала",
+      "category_id": 315,
+      "category": "Как опубликовать объявление: самые важные советы",
+      "section_id": 321,
+      "section": "Авто и транспорт"
+    },
+    "4368": {
+      "url": "https://support.avito.ru/articles/4368",
+      "title": "Бренды спецтехники для подачи объявлений через страницу «Подтверждённые новые»",
+      "category_id": 315,
+      "category": "Как опубликовать объявление: самые важные советы",
+      "section_id": 321,
+      "section": "Авто и транспорт"
+    },
+    "2794": {
+      "url": "https://support.avito.ru/articles/2794",
+      "title": "Не вижу своё объявление",
+      "category_id": 315,
+      "category": "Как опубликовать объявление: самые важные советы",
+      "section_id": 321,
+      "section": "Авто и транспорт"
+    },
+    "4372": {
+      "url": "https://support.avito.ru/articles/4372",
+      "title": "Моё объявление отклонили",
+      "category_id": 315,
+      "category": "Как опубликовать объявление: самые важные советы",
+      "section_id": 321,
+      "section": "Авто и транспорт"
+    },
+    "2831": {
+      "url": "https://support.avito.ru/articles/2831",
+      "title": "Приехал повреждённый товар",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 344,
+      "section": "Отмена, возврат, повреждение"
+    },
+    "3088": {
+      "url": "https://support.avito.ru/articles/3088",
+      "title": "Профиль заблокирован: что с доставкой",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 344,
+      "section": "Отмена, возврат, повреждение"
+    },
+    "4403": {
+      "url": "https://support.avito.ru/articles/4403",
+      "title": "Продавцу — товар не забирают или вернули",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 344,
+      "section": "Отмена, возврат, повреждение"
+    },
+    "4400": {
+      "url": "https://support.avito.ru/articles/4400",
+      "title": "Покупателю — отказаться от товара или вернуть его",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 344,
+      "section": "Отмена, возврат, повреждение"
+    },
+    "4387": {
+      "url": "https://support.avito.ru/articles/4387",
+      "title": "Всё про отмену заказа",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 344,
+      "section": "Отмена, возврат, повреждение"
+    },
+    "4518": {
+      "url": "https://support.avito.ru/articles/4518",
+      "title": "Тариф с оплатой за просмотры в категориях «Электроника», «Хобби и отдых», «Личные вещи» и «Запчасти и аксессуары»",
+      "category_id": 302,
+      "category": "Тарифы",
+      "section_id": 353,
+      "section": "Товары"
+    },
+    "4204": {
+      "url": "https://support.avito.ru/articles/4204",
+      "title": "Тариф с оплатой за успешную сделку в Товарах",
+      "category_id": 302,
+      "category": "Тарифы",
+      "section_id": 353,
+      "section": "Товары"
+    },
+    "4217": {
+      "url": "https://support.avito.ru/articles/4217",
+      "title": "Лимит трат на день в тарифе с оплатой за просмотры",
+      "category_id": 302,
+      "category": "Тарифы",
+      "section_id": 353,
+      "section": "Товары"
+    },
+    "3043": {
+      "url": "https://support.avito.ru/articles/3043",
+      "title": "Тариф с оплатой за звонки и чаты в «Готовом бизнесе»",
+      "category_id": 302,
+      "category": "Тарифы",
+      "section_id": 353,
+      "section": "Товары"
+    },
+    "4218": {
+      "url": "https://support.avito.ru/articles/4218",
+      "title": "Тариф с оплатой за просмотры в Товарах",
+      "category_id": 302,
+      "category": "Тарифы",
+      "section_id": 353,
+      "section": "Товары"
+    },
+    "4304": {
+      "url": "https://support.avito.ru/articles/4304",
+      "title": "Тариф с оплатой звонков и чатов в Готовом бизнесе",
+      "category_id": 302,
+      "category": "Тарифы",
+      "section_id": 353,
+      "section": "Товары"
+    },
+    "4050": {
+      "url": "https://support.avito.ru/articles/4050",
+      "title": "Изменение условий продажи в категориях «Для дома и дачи», «Личные вещи», «Хобби и отдых», «Электроника» и «Запчасти и аксессуары»",
+      "category_id": 302,
+      "category": "Тарифы",
+      "section_id": 353,
+      "section": "Товары"
+    },
+    "4162": {
+      "url": "https://support.avito.ru/articles/4162",
+      "title": "В каких категориях действуют изменённые условия продажи",
+      "category_id": 302,
+      "category": "Тарифы",
+      "section_id": 353,
+      "section": "Товары"
+    },
+    "2239": {
+      "url": "https://support.avito.ru/articles/2239",
+      "title": "Признаки дискриминации",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 360,
+      "section": "Работа"
+    },
+    "3016": {
+      "url": "https://support.avito.ru/articles/3016",
+      "title": "Нужно подтвердить реквизиты компании",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 360,
+      "section": "Работа"
+    },
+    "3257": {
+      "url": "https://support.avito.ru/articles/3257",
+      "title": "Вакансия для несовершеннолетних",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 360,
+      "section": "Работа"
+    },
+    "2884": {
+      "url": "https://support.avito.ru/articles/2884",
+      "title": "Вакансия не от работодателя",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 360,
+      "section": "Работа"
+    },
+    "2886": {
+      "url": "https://support.avito.ru/articles/2886",
+      "title": "Отклонили оплаченное объявление с вакансией",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 360,
+      "section": "Работа"
+    },
+    "2885": {
+      "url": "https://support.avito.ru/articles/2885",
+      "title": "Несколько вакансий",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 360,
+      "section": "Работа"
+    },
+    "3256": {
+      "url": "https://support.avito.ru/articles/3256",
+      "title": "Некорректное фото",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 360,
+      "section": "Работа"
+    },
+    "3255": {
+      "url": "https://support.avito.ru/articles/3255",
+      "title": "Контакты в названии, описании, фото",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 360,
+      "section": "Работа"
+    },
+    "4459": {
+      "url": "https://support.avito.ru/articles/4459",
+      "title": "Неверный параметр «График работы»",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 360,
+      "section": "Работа"
+    },
+    "3464": {
+      "url": "https://support.avito.ru/articles/3464",
+      "title": "Неверная зарплата",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 360,
+      "section": "Работа"
+    },
+    "3254": {
+      "url": "https://support.avito.ru/articles/3254",
+      "title": "Неправильная категория",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 360,
+      "section": "Работа"
+    },
+    "2889": {
+      "url": "https://support.avito.ru/articles/2889",
+      "title": "Упоминание запрещённых услуг",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 361,
+      "section": "Услуги"
+    },
+    "2891": {
+      "url": "https://support.avito.ru/articles/2891",
+      "title": "Название выделено",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 361,
+      "section": "Услуги"
+    },
+    "3572": {
+      "url": "https://support.avito.ru/articles/3572",
+      "title": "Нарушение правил для размещения медицинских услуг",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 361,
+      "section": "Услуги"
+    },
+    "2887": {
+      "url": "https://support.avito.ru/articles/2887",
+      "title": "Нужно поменять категорию",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 361,
+      "section": "Услуги"
+    },
+    "2894": {
+      "url": "https://support.avito.ru/articles/2894",
+      "title": "Отклонили оплаченное объявление с услугой",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 361,
+      "section": "Услуги"
+    },
+    "2953": {
+      "url": "https://support.avito.ru/articles/2953",
+      "title": "Несколько услуг",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 361,
+      "section": "Услуги"
+    },
+    "2890": {
+      "url": "https://support.avito.ru/articles/2890",
+      "title": "Контакты на фото или в описании",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 361,
+      "section": "Услуги"
+    },
+    "2892": {
+      "url": "https://support.avito.ru/articles/2892",
+      "title": "Проблемы с номером телефона",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 361,
+      "section": "Услуги"
+    },
+    "2888": {
+      "url": "https://support.avito.ru/articles/2888",
+      "title": "Недостаточно информации",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 361,
+      "section": "Услуги"
+    },
+    "2898": {
+      "url": "https://support.avito.ru/articles/2898",
+      "title": "Не получилось подтвердить, что объявление достоверно",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 362,
+      "section": "Недвижимость"
+    },
+    "4203": {
+      "url": "https://support.avito.ru/articles/4203",
+      "title": "Как подтвердить достоверность объявления с помощью выписки из ЕГРН или видео",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 362,
+      "section": "Недвижимость"
+    },
+    "3525": {
+      "url": "https://support.avito.ru/articles/3525",
+      "title": "Некорректный ДДУ: как восстановить объявление",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 362,
+      "section": "Недвижимость"
+    },
+    "3157": {
+      "url": "https://support.avito.ru/articles/3157",
+      "title": "Как заархивировать и приложить ДДУ",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 362,
+      "section": "Недвижимость"
+    },
+    "4163": {
+      "url": "https://support.avito.ru/articles/4163",
+      "title": "Подтвердить, что квартира уже в собственности",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 362,
+      "section": "Недвижимость"
+    },
+    "2902": {
+      "url": "https://support.avito.ru/articles/2902",
+      "title": "Неверно указана цена",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 362,
+      "section": "Недвижимость"
+    },
+    "2893": {
+      "url": "https://support.avito.ru/articles/2893",
+      "title": "Контакты в описании или на фото",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 362,
+      "section": "Недвижимость"
+    },
+    "2895": {
+      "url": "https://support.avito.ru/articles/2895",
+      "title": "Нужно поменять категорию недвижимости",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 362,
+      "section": "Недвижимость"
+    },
+    "2899": {
+      "url": "https://support.avito.ru/articles/2899",
+      "title": "Несколько объектов",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 362,
+      "section": "Недвижимость"
+    },
+    "2903": {
+      "url": "https://support.avito.ru/articles/2903",
+      "title": "Водяные знаки и логотипы на фото",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 362,
+      "section": "Недвижимость"
+    },
+    "2904": {
+      "url": "https://support.avito.ru/articles/2904",
+      "title": "Нет фото объекта",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 362,
+      "section": "Недвижимость"
+    },
+    "2905": {
+      "url": "https://support.avito.ru/articles/2905",
+      "title": "Недостаточно фото",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 362,
+      "section": "Недвижимость"
+    },
+    "2906": {
+      "url": "https://support.avito.ru/articles/2906",
+      "title": "Фото выделено",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 362,
+      "section": "Недвижимость"
+    },
+    "2901": {
+      "url": "https://support.avito.ru/articles/2901",
+      "title": "Телефон используется в другом профиле",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 362,
+      "section": "Недвижимость"
+    },
+    "2896": {
+      "url": "https://support.avito.ru/articles/2896",
+      "title": "Право собственности указано неправильно",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 362,
+      "section": "Недвижимость"
+    },
+    "2900": {
+      "url": "https://support.avito.ru/articles/2900",
+      "title": "Неверная ссылка на проектную документацию",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 362,
+      "section": "Недвижимость"
+    },
+    "2908": {
+      "url": "https://support.avito.ru/articles/2908",
+      "title": "Нужно подтвердить, что вы собственник",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 363,
+      "section": "Авто и транспорт"
+    },
+    "2909": {
+      "url": "https://support.avito.ru/articles/2909",
+      "title": "Неверный VIN или номер кузова",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 363,
+      "section": "Авто и транспорт"
+    },
+    "2910": {
+      "url": "https://support.avito.ru/articles/2910",
+      "title": "Нужно подтвердить, что машина существует",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 363,
+      "section": "Авто и транспорт"
+    },
+    "2911": {
+      "url": "https://support.avito.ru/articles/2911",
+      "title": "Неверно указана цена",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 363,
+      "section": "Авто и транспорт"
+    },
+    "2912": {
+      "url": "https://support.avito.ru/articles/2912",
+      "title": "Несоответствие VIN госномеру",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 363,
+      "section": "Авто и транспорт"
+    },
+    "2913": {
+      "url": "https://support.avito.ru/articles/2913",
+      "title": "Контакты в описании или на фото",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 363,
+      "section": "Авто и транспорт"
+    },
+    "2914": {
+      "url": "https://support.avito.ru/articles/2914",
+      "title": "Нужно указать госномер",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 363,
+      "section": "Авто и транспорт"
+    },
+    "2915": {
+      "url": "https://support.avito.ru/articles/2915",
+      "title": "Нужно поменять категорию",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 363,
+      "section": "Авто и транспорт"
+    },
+    "2916": {
+      "url": "https://support.avito.ru/articles/2916",
+      "title": "Несколько товаров",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 363,
+      "section": "Авто и транспорт"
+    },
+    "2917": {
+      "url": "https://support.avito.ru/articles/2917",
+      "title": "Неверный параметр",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 363,
+      "section": "Авто и транспорт"
+    },
+    "3028": {
+      "url": "https://support.avito.ru/articles/3028",
+      "title": "Как сфотографировать документы на авто",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 363,
+      "section": "Авто и транспорт"
+    },
+    "4047": {
+      "url": "https://support.avito.ru/articles/4047",
+      "title": "Неверно указано состояние техники — б/у",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 363,
+      "section": "Авто и транспорт"
+    },
+    "2923": {
+      "url": "https://support.avito.ru/articles/2923",
+      "title": "Нужно поменять категорию",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 364,
+      "section": "Вещи, техника и другие товары"
+    },
+    "3129": {
+      "url": "https://support.avito.ru/articles/3129",
+      "title": "Телефон уже используется в другом профиле",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 364,
+      "section": "Вещи, техника и другие товары"
+    },
+    "2918": {
+      "url": "https://support.avito.ru/articles/2918",
+      "title": "Несколько товаров",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 364,
+      "section": "Вещи, техника и другие товары"
+    },
+    "3130": {
+      "url": "https://support.avito.ru/articles/3130",
+      "title": "Подтвердить, что номер телефона не используется для спама",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 364,
+      "section": "Вещи, техника и другие товары"
+    },
+    "2922": {
+      "url": "https://support.avito.ru/articles/2922",
+      "title": "Неверный вид объявления",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 364,
+      "section": "Вещи, техника и другие товары"
+    },
+    "2919": {
+      "url": "https://support.avito.ru/articles/2919",
+      "title": "Ключевые слова в описании",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 364,
+      "section": "Вещи, техника и другие товары"
+    },
+    "2921": {
+      "url": "https://support.avito.ru/articles/2921",
+      "title": "Упоминание запрещённого товара",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 364,
+      "section": "Вещи, техника и другие товары"
+    },
+    "2242": {
+      "url": "https://support.avito.ru/articles/2242",
+      "title": "Несколько телефонов",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 364,
+      "section": "Вещи, техника и другие товары"
+    },
+    "2939": {
+      "url": "https://support.avito.ru/articles/2939",
+      "title": "Контакты в объявлении: за что отклонили",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 364,
+      "section": "Вещи, техника и другие товары"
+    },
+    "2232": {
+      "url": "https://support.avito.ru/articles/2232",
+      "title": "Неверная цена",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 364,
+      "section": "Вещи, техника и другие товары"
+    },
+    "2238": {
+      "url": "https://support.avito.ru/articles/2238",
+      "title": "Замена товара",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 364,
+      "section": "Вещи, техника и другие товары"
+    },
+    "2920": {
+      "url": "https://support.avito.ru/articles/2920",
+      "title": "Нет фото товара",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 364,
+      "section": "Вещи, техника и другие товары"
+    },
+    "4057": {
+      "url": "https://support.avito.ru/articles/4057",
+      "title": "Сомнительные способы заработка",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 364,
+      "section": "Вещи, техника и другие товары"
+    },
+    "4167": {
+      "url": "https://support.avito.ru/articles/4167",
+      "title": "Неверный параметр «Цель сделки» в «Готовом бизнесе»",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 364,
+      "section": "Вещи, техника и другие товары"
+    },
+    "3793": {
+      "url": "https://support.avito.ru/articles/3793",
+      "title": "Нужна регистрация в реестре ГИИС ДМДК",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 364,
+      "section": "Вещи, техника и другие товары"
+    },
+    "3993": {
+      "url": "https://support.avito.ru/articles/3993",
+      "title": "Нужно перенести объявление в Недвижимость",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 364,
+      "section": "Вещи, техника и другие товары"
+    },
+    "3265": {
+      "url": "https://support.avito.ru/articles/3265",
+      "title": "Указано, что для товара нет Авито Доставки",
+      "category_id": 359,
+      "category": "Отклонили объявление: что делать",
+      "section_id": 364,
+      "section": "Вещи, техника и другие товары"
+    },
+    "2948": {
+      "url": "https://support.avito.ru/articles/2948",
+      "title": "Почему мало просмотров",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 373,
+      "section": "У объявления мало просмотров"
+    },
+    "2949": {
+      "url": "https://support.avito.ru/articles/2949",
+      "title": "Просмотров много, а откликов нет",
+      "category_id": 2,
+      "category": "Проблемы с объявлением",
+      "section_id": 373,
+      "section": "У объявления мало просмотров"
+    },
+    "4209": {
+      "url": "https://support.avito.ru/articles/4209",
+      "title": "Акция со скидками «Киберпонедельник»",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 476,
+      "section": "Всё про деньги"
+    },
+    "4214": {
+      "url": "https://support.avito.ru/articles/4214",
+      "title": "Скидки, бонусы и промокоды",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 476,
+      "section": "Всё про деньги"
+    },
+    "4219": {
+      "url": "https://support.avito.ru/articles/4219",
+      "title": "Покупателю",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 476,
+      "section": "Всё про деньги"
+    },
+    "4361": {
+      "url": "https://support.avito.ru/articles/4361",
+      "title": "Продавцу",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 476,
+      "section": "Всё про деньги"
+    },
+    "2962": {
+      "url": "https://support.avito.ru/articles/2962",
+      "title": "Заказ в рассрочку",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 476,
+      "section": "Всё про деньги"
+    },
+    "1951": {
+      "url": "https://support.avito.ru/articles/1951",
+      "title": "Кто оплачивает доставку и сколько она стоит",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 476,
+      "section": "Всё про деньги"
+    },
+    "4445": {
+      "url": "https://support.avito.ru/articles/4445",
+      "title": "Распродажа «Хватамба»",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 476,
+      "section": "Всё про деньги"
+    },
+    "2511": {
+      "url": "https://support.avito.ru/articles/2511",
+      "title": "Не пришёл код получения",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 481,
+      "section": "Заказать, проверить, получить"
+    },
+    "1960": {
+      "url": "https://support.avito.ru/articles/1960",
+      "title": "Не дают проверить товар",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 481,
+      "section": "Заказать, проверить, получить"
+    },
+    "1958": {
+      "url": "https://support.avito.ru/articles/1958",
+      "title": "Продавец не отправляет заказ",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 481,
+      "section": "Заказать, проверить, получить"
+    },
+    "4308": {
+      "url": "https://support.avito.ru/articles/4308",
+      "title": "Заказать товар с доставкой",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 481,
+      "section": "Заказать, проверить, получить"
+    },
+    "4408": {
+      "url": "https://support.avito.ru/articles/4408",
+      "title": "Проверить и получить",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 481,
+      "section": "Заказать, проверить, получить"
+    },
+    "1923": {
+      "url": "https://support.avito.ru/articles/1923",
+      "title": "Где заказ",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 482,
+      "section": "Где заказ"
+    },
+    "2521": {
+      "url": "https://support.avito.ru/articles/2521",
+      "title": "Заказ потерялся",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 482,
+      "section": "Где заказ"
+    },
+    "2802": {
+      "url": "https://support.avito.ru/articles/2802",
+      "title": "Заказ не движется",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 482,
+      "section": "Где заказ"
+    },
+    "3168": {
+      "url": "https://support.avito.ru/articles/3168",
+      "title": "Срок доставки переносится",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 482,
+      "section": "Где заказ"
+    },
+    "2462": {
+      "url": "https://support.avito.ru/articles/2462",
+      "title": "Где курьер",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 482,
+      "section": "Где заказ"
+    },
+    "2408": {
+      "url": "https://support.avito.ru/articles/2408",
+      "title": "Не успеваю забрать заказ",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 483,
+      "section": "Продлить и изменить"
+    },
+    "1954": {
+      "url": "https://support.avito.ru/articles/1954",
+      "title": "Изменить ФИО, телефон, адрес",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 483,
+      "section": "Продлить и изменить"
+    },
+    "3209": {
+      "url": "https://support.avito.ru/articles/3209",
+      "title": "Возвратный заказ уехал на склад хранения",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 483,
+      "section": "Продлить и изменить"
+    },
+    "1918": {
+      "url": "https://support.avito.ru/articles/1918",
+      "title": "Не успеваю отправить товар",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 483,
+      "section": "Продлить и изменить"
+    },
+    "1909": {
+      "url": "https://support.avito.ru/articles/1909",
+      "title": "Отправить заказ",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 484,
+      "section": "Отправить"
+    },
+    "3419": {
+      "url": "https://support.avito.ru/articles/3419",
+      "title": "Быстро отправить много заказов",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 484,
+      "section": "Отправить"
+    },
+    "1907": {
+      "url": "https://support.avito.ru/articles/1907",
+      "title": "Упаковать товар",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 484,
+      "section": "Отправить"
+    },
+    "1910": {
+      "url": "https://support.avito.ru/articles/1910",
+      "title": "Проверить, что товар заказали через Авито",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 484,
+      "section": "Отправить"
+    },
+    "4396": {
+      "url": "https://support.avito.ru/articles/4396",
+      "title": "Не могу отправить заказ",
+      "category_id": 6,
+      "category": "Заказы с доставкой",
+      "section_id": 484,
+      "section": "Отправить"
+    },
+    "2070": {
+      "url": "https://support.avito.ru/articles/2070",
+      "title": "Что такое рейтинг",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 535,
+      "section": "Рейтинг"
+    },
+    "2071": {
+      "url": "https://support.avito.ru/articles/2071",
+      "title": "Расчёт рейтинга",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 535,
+      "section": "Рейтинг"
+    },
+    "2072": {
+      "url": "https://support.avito.ru/articles/2072",
+      "title": "Посмотреть свой рейтинг",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 535,
+      "section": "Рейтинг"
+    },
+    "3437": {
+      "url": "https://support.avito.ru/articles/3437",
+      "title": "Посмотреть чужой рейтинг",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 535,
+      "section": "Рейтинг"
+    },
+    "2075": {
+      "url": "https://support.avito.ru/articles/2075",
+      "title": "Повысить рейтинг",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 535,
+      "section": "Рейтинг"
+    },
+    "3438": {
+      "url": "https://support.avito.ru/articles/3438",
+      "title": "Рейтинг и отзывы в Недвижимости",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 535,
+      "section": "Рейтинг"
+    },
+    "2959": {
+      "url": "https://support.avito.ru/articles/2959",
+      "title": "Рейтинг объявления в Услугах",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 535,
+      "section": "Рейтинг"
+    },
+    "4392": {
+      "url": "https://support.avito.ru/articles/4392",
+      "title": "Скрыть лишнюю информацию в документе",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 535,
+      "section": "Рейтинг"
+    },
+    "4393": {
+      "url": "https://support.avito.ru/articles/4393",
+      "title": "Рейтинг работодателя",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 535,
+      "section": "Рейтинг"
+    },
+    "2540": {
+      "url": "https://support.avito.ru/articles/2540",
+      "title": "Отзывы на модели товаров",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 539,
+      "section": "Оставить отзыв"
+    },
+    "3006": {
+      "url": "https://support.avito.ru/articles/3006",
+      "title": "Оценить покупателя",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 539,
+      "section": "Оставить отзыв"
+    },
+    "4405": {
+      "url": "https://support.avito.ru/articles/4405",
+      "title": "Авито Путешествия: оценить хозяина жилья или гостя",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 539,
+      "section": "Оставить отзыв"
+    },
+    "4412": {
+      "url": "https://support.avito.ru/articles/4412",
+      "title": "На жильё",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 539,
+      "section": "Оставить отзыв"
+    },
+    "4338": {
+      "url": "https://support.avito.ru/articles/4338",
+      "title": "Оценить продавца, исполнителя, работодателя",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 539,
+      "section": "Оставить отзыв"
+    },
+    "2062": {
+      "url": "https://support.avito.ru/articles/2062",
+      "title": "Мне оставили плохой отзыв, его нужно удалить",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 542,
+      "section": "Удалить отзыв"
+    },
+    "2064": {
+      "url": "https://support.avito.ru/articles/2064",
+      "title": "Мне оставили отзыв, но сделки не было",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 542,
+      "section": "Удалить отзыв"
+    },
+    "3260": {
+      "url": "https://support.avito.ru/articles/3260",
+      "title": "Удалить старые отзывы обо мне",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 542,
+      "section": "Удалить отзыв"
+    },
+    "3147": {
+      "url": "https://support.avito.ru/articles/3147",
+      "title": "Я автор отзыва, хочу его изменить или удалить",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 542,
+      "section": "Удалить отзыв"
+    },
+    "3431": {
+      "url": "https://support.avito.ru/articles/3431",
+      "title": "Отзыв удалили, но он появился опять",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 542,
+      "section": "Удалить отзыв"
+    },
+    "2060": {
+      "url": "https://support.avito.ru/articles/2060",
+      "title": "Пропал мой отзыв на продавца, исполнителя, хозяина жилья",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 543,
+      "section": "Отзыв пропал"
+    },
+    "2061": {
+      "url": "https://support.avito.ru/articles/2061",
+      "title": "Я продавец, пропал отзыв обо мне",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 543,
+      "section": "Отзыв пропал"
+    },
+    "3150": {
+      "url": "https://support.avito.ru/articles/3150",
+      "title": "Не вижу отзыв на покупателя или гостя у него в профиле",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 543,
+      "section": "Отзыв пропал"
+    },
+    "3151": {
+      "url": "https://support.avito.ru/articles/3151",
+      "title": "Отзыв обо мне не опубликовали",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 543,
+      "section": "Отзыв пропал"
+    },
+    "2065": {
+      "url": "https://support.avito.ru/articles/2065",
+      "title": "Запросить отзыв",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 544,
+      "section": "Запросить отзыв или ответить на отзыв"
+    },
+    "2068": {
+      "url": "https://support.avito.ru/articles/2068",
+      "title": "Ответить на отзыв",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 544,
+      "section": "Запросить отзыв или ответить на отзыв"
+    },
+    "2069": {
+      "url": "https://support.avito.ru/articles/2069",
+      "title": "Работа с отзывами в Транспорте",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 544,
+      "section": "Запросить отзыв или ответить на отзыв"
+    },
+    "2058": {
+      "url": "https://support.avito.ru/articles/2058",
+      "title": "Не могу оставить отзыв на продавца, исполнителя, работодателя, арендодателя или отель",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 545,
+      "section": "Не могу оставить отзыв"
+    },
+    "2059": {
+      "url": "https://support.avito.ru/articles/2059",
+      "title": "Признаки накрутки в отзывах",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 545,
+      "section": "Не могу оставить отзыв"
+    },
+    "3261": {
+      "url": "https://support.avito.ru/articles/3261",
+      "title": "Отзыв отклонили",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 545,
+      "section": "Не могу оставить отзыв"
+    },
+    "3149": {
+      "url": "https://support.avito.ru/articles/3149",
+      "title": "Не могу оставить отзыв на покупателя",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 545,
+      "section": "Не могу оставить отзыв"
+    },
+    "3009": {
+      "url": "https://support.avito.ru/articles/3009",
+      "title": "Почему ограничено время на отзыв",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 545,
+      "section": "Не могу оставить отзыв"
+    },
+    "2857": {
+      "url": "https://support.avito.ru/articles/2857",
+      "title": "Не могу оставить отзыв на гостя",
+      "category_id": 7,
+      "category": "Отзывы и рейтинг",
+      "section_id": 545,
+      "section": "Не могу оставить отзыв"
+    },
+    "4177": {
+      "url": "https://support.avito.ru/articles/4177",
+      "title": "Селект от Авито Авто: частые вопросы",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": 553,
+      "section": "Авито Авто"
+    },
+    "4178": {
+      "url": "https://support.avito.ru/articles/4178",
+      "title": "Аукцион",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": 553,
+      "section": "Авито Авто"
+    },
+    "4246": {
+      "url": "https://support.avito.ru/articles/4246",
+      "title": "Поддерживаемые браузеры",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": 553,
+      "section": "Авито Авто"
+    },
+    "4386": {
+      "url": "https://support.avito.ru/articles/4386",
+      "title": "Забронировать спецтехнику онлайн: информация для заказчиков",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": 553,
+      "section": "Авито Авто"
+    },
+    "4401": {
+      "url": "https://support.avito.ru/articles/4401",
+      "title": "Авто в кредит",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": 553,
+      "section": "Авито Авто"
+    },
+    "4231": {
+      "url": "https://support.avito.ru/articles/4231",
+      "title": "Как использовать промокод",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": 553,
+      "section": "Авито Авто"
+    },
+    "4232": {
+      "url": "https://support.avito.ru/articles/4232",
+      "title": "Автотека",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": 553,
+      "section": "Авито Авто"
+    },
+    "4303": {
+      "url": "https://support.avito.ru/articles/4303",
+      "title": "Онлайн-аренда спецтехники: информация для исполнителей",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": 553,
+      "section": "Авито Авто"
+    },
+    "4410": {
+      "url": "https://support.avito.ru/articles/4410",
+      "title": "Haraba",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": 553,
+      "section": "Авито Авто"
+    },
+    "4531": {
+      "url": "https://support.avito.ru/articles/4531",
+      "title": "Новые правила в аренде спецтехники",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": 553,
+      "section": "Авито Авто"
+    },
+    "4247": {
+      "url": "https://support.avito.ru/articles/4247",
+      "title": "Автохаб",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": 553,
+      "section": "Авито Авто"
+    },
+    "4206": {
+      "url": "https://support.avito.ru/articles/4206",
+      "title": "Зарегистрироваться",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 603,
+      "section": "Зарегистрироваться и войти"
+    },
+    "4323": {
+      "url": "https://support.avito.ru/articles/4323",
+      "title": "Войти в профиль",
+      "category_id": 3,
+      "category": "Профиль",
+      "section_id": 603,
+      "section": "Зарегистрироваться и войти"
+    },
+    "4289": {
+      "url": "https://support.avito.ru/articles/4289",
+      "title": "Профессиональный план в Товарах",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 624,
+      "section": "Профессиональный план"
+    },
+    "4244": {
+      "url": "https://support.avito.ru/articles/4244",
+      "title": "Профессиональный план в Работе",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 624,
+      "section": "Профессиональный план"
+    },
+    "4453": {
+      "url": "https://support.avito.ru/articles/4453",
+      "title": "Профессиональный план в Услугах",
+      "category_id": 10,
+      "category": "Авито для бизнеса",
+      "section_id": 624,
+      "section": "Профессиональный план"
+    },
+    "4018": {
+      "url": "https://support.avito.ru/articles/4018",
+      "title": "Защита сделки: о сервисе",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": 774,
+      "section": "Защита сделки в Услугах"
+    },
+    "4285": {
+      "url": "https://support.avito.ru/articles/4285",
+      "title": "Как работает Защита сделки: информация для заказчиков",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": 774,
+      "section": "Защита сделки в Услугах"
+    },
+    "4257": {
+      "url": "https://support.avito.ru/articles/4257",
+      "title": "Как работать с Защитой сделки: информация для исполнителей",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": 774,
+      "section": "Защита сделки в Услугах"
+    },
+    "3148": {
+      "url": "https://support.avito.ru/articles/3148",
+      "title": "Ассистент для продавцов и покупателей",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 808,
+      "section": "Ассистент в чате"
+    },
+    "4452": {
+      "url": "https://support.avito.ru/articles/4452",
+      "title": "Ассистент для исполнителей и заказчиков",
+      "category_id": 11,
+      "category": "Связаться с пользователем",
+      "section_id": 808,
+      "section": "Ассистент в чате"
+    },
+    "4457": {
+      "url": "https://support.avito.ru/articles/4457",
+      "title": "Отчёт об исполнителе в Услугах: исполнителю",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": 841,
+      "section": "Отчёт об исполнителе в Услугах"
+    },
+    "4498": {
+      "url": "https://support.avito.ru/articles/4498",
+      "title": "Отчёт об исполнителе в Услугах: заказчику",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": 841,
+      "section": "Отчёт об исполнителе в Услугах"
+    },
+    "4501": {
+      "url": "https://support.avito.ru/articles/4501",
+      "title": "Как работает Авито Гарантия",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": 842,
+      "section": "Авито Гарантия в Товарах"
+    },
+    "4502": {
+      "url": "https://support.avito.ru/articles/4502",
+      "title": "Авито Гарантия: информация для покупателей",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": 842,
+      "section": "Авито Гарантия в Товарах"
+    },
+    "4503": {
+      "url": "https://support.avito.ru/articles/4503",
+      "title": "Авито Гарантия: информация для продавцов",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": 842,
+      "section": "Авито Гарантия в Товарах"
+    },
+    "4512": {
+      "url": "https://support.avito.ru/articles/4512",
+      "title": "Как работает биржа грузоперевозок: информация для заказчиков",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": 843,
+      "section": "Биржа грузоперевозок"
+    },
+    "4513": {
+      "url": "https://support.avito.ru/articles/4513",
+      "title": "Как работает биржа грузоперевозок: информация для исполнителей",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": 843,
+      "section": "Биржа грузоперевозок"
+    },
+    "4443": {
+      "url": "https://support.avito.ru/articles/4443",
+      "title": "Что такое цифровые продукты",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": 845,
+      "section": "Цифровые продукты"
+    },
+    "4504": {
+      "url": "https://support.avito.ru/articles/4504",
+      "title": "Цифровые продукты: информация для покупателей",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": 845,
+      "section": "Цифровые продукты"
+    },
+    "4516": {
+      "url": "https://support.avito.ru/articles/4516",
+      "title": "Цифровые продукты: информация для продавцов",
+      "category_id": 13,
+      "category": "Сервисы",
+      "section_id": 845,
+      "section": "Цифровые продукты"
+    }
+  }
+}
