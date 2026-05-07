@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+import os
+from datetime import datetime
 
 app = FastAPI(title="A-Help API")
 
@@ -20,6 +22,9 @@ class SearchRequest(BaseModel):
 
 class AnswerRequest(BaseModel):
     query: str
+
+
+VOLUME_PATH = "/data"
 
 
 @app.get("/health")
@@ -54,3 +59,24 @@ def answer(req: AnswerRequest):
             }
         ],
     }
+
+
+# === ВРЕМЕННЫЕ РУЧКИ ДЛЯ ПРОВЕРКИ VOLUME — удалить после Спринта 0 ===
+
+@app.post("/admin/test-volume-write")
+def test_volume_write():
+    if not os.path.exists(VOLUME_PATH):
+        return {"error": f"{VOLUME_PATH} does not exist"}
+    path = os.path.join(VOLUME_PATH, "test.txt")
+    with open(path, "w") as f:
+        f.write(f"written at {datetime.utcnow().isoformat()}")
+    return {"path": path, "ok": True}
+
+
+@app.get("/admin/test-volume-read")
+def test_volume_read():
+    path = os.path.join(VOLUME_PATH, "test.txt")
+    if not os.path.exists(path):
+        return {"error": "file not found"}
+    with open(path) as f:
+        return {"content": f.read()}
