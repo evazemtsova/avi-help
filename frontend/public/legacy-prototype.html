@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>А-Помощь</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: #fff;
+    color: #000;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: 40px;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* ===== Шапка ===== */
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+  .header.scrolled { border-bottom-color: #e5e5ea; }
+  .header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    white-space: nowrap;
+  }
+  .logo-dots { display: flex; gap: 3px; }
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+  .dot-green { background: #00d747; }
+  .dot-red { background: #ff6163; }
+  .dot-blue { background: #4da6ff; }
+  .dot-purple { background: #a855f7; }
+
+  /* Поиск в шапке — анимация появления */
+  .header-search {
+    flex: 1;
+    display: flex;
+    height: 40px;
+    border: 2px solid #00aaff;
+    border-radius: 8px;
+    overflow: hidden;
+    max-width: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: max-width 0.35s ease, opacity 0.25s ease, visibility 0.25s, margin 0.35s ease;
+    margin: 0;
+  }
+  .header-search.visible {
+    max-width: 480px;
+    opacity: 1;
+    visibility: visible;
+    margin: 0 24px;
+  }
+  .header-search input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 0 14px;
+    font-size: 14px;
+    color: #000;
+    background: #fff;
+    min-width: 0;
+    font-family: inherit;
+  }
+  .header-search input::placeholder { color: #8e8e93; }
+  .header-search button {
+    width: 90px;
+    background: #00aaff;
+    color: white;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    flex-shrink: 0;
+    font-family: inherit;
+  }
+  .header-search button:hover { background: #0099e6; }
+
+  .header-login {
+    color: #8e8e93;
+    font-size: 15px;
+    font-weight: 400;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .header-login:hover { color: #000; }
+
+  /* ===== Табы ===== */
+  .tabs-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+    margin-bottom: 36px;
+  }
+  .tabs {
+    display: flex;
+    background: #f2f2f7;
+    border-radius: 10px;
+    padding: 4px;
+    gap: 4px;
+  }
+  .tab {
+    padding: 10px 48px;
+    font-size: 15px;
+    font-weight: 400;
+    color: #000;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s;
+    white-space: nowrap;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+  }
+  .tab.active {
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    font-weight: 500;
+  }
+
+  /* ===== Заголовок и поиск ===== */
+  .title {
+    text-align: center;
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 36px;
+    letter-spacing: -0.6px;
+    line-height: 1.2;
+    padding: 0 20px;
+  }
+  .hero-search-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 56px;
+  }
+  .hero-search {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 0 20px;
+  }
+  .hero-search-box {
+    display: flex;
+    width: 100%;
+    max-width: 640px;
+    height: 52px;
+    border: 2px solid #00aaff;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+  }
+  .hero-search-box input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 0 20px;
+    font-size: 16px;
+    color: #000;
+    background: #fff;
+    font-family: inherit;
+  }
+  .hero-search-box input::placeholder { color: #8e8e93; }
+  .hero-search-box button {
+    width: 110px;
+    background: #00aaff;
+    color: white;
+    border: none;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+  }
+  .hero-search-box button:hover { background: #0099e6; }
+  .hero-search-box button:disabled { background: #c0c8d2; cursor: not-allowed; }
+
+  /* ===== ИИ-ответ ===== */
+  .ai-overview {
+    width: 100%;
+    max-width: 644px; /* совпадает с шириной поиска: 640 + 2px*2 рамка */
+    margin: 24px auto 0;
+    padding: 0 20px;
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    max-height: 0;
+    overflow: hidden;
+  }
+  .ai-overview.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    max-height: 3000px;
+    margin-bottom: 40px;
+  }
+  .ai-card {
+    padding: 0;
+    background: transparent;
+    position: relative;
+  }
+  .ai-card-close {
+    position: absolute;
+    top: -4px;
+    right: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+  }
+  .ai-card-close:hover { background: #f2f2f7; }
+  .ai-card-close svg {
+    width: 14px;
+    height: 14px;
+    stroke: #8e8e93;
+    stroke-width: 2.5;
+    fill: none;
+    stroke-linecap: round;
+  }
+  .ai-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .ai-spark {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+  .ai-card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #00aaff;
+    letter-spacing: 0.2px;
+  }
+  .ai-card-body {
+    font-size: 16px;
+    line-height: 1.65;
+    color: #000;
+    min-height: 60px;
+  }
+  .ai-card-body p { margin-bottom: 14px; }
+  .ai-card-body p:last-of-type { margin-bottom: 0; }
+  .ai-card-body strong { font-weight: 700; color: #000; }
+  .ai-card-body .hl {
+    background: #d9ebff;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  .ai-card-body h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 18px 0 10px;
+    color: #000;
+  }
+  .ai-card-body ul {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0;
+  }
+  .ai-card-body ul li {
+    position: relative;
+    padding-left: 22px;
+    margin-bottom: 12px;
+    line-height: 1.55;
+  }
+  .ai-card-body ul li::before {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 10px;
+    width: 6px;
+    height: 6px;
+    background: #000;
+    border-radius: 50%;
+  }
+  .ai-source-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #f2f2f7;
+    border-radius: 12px;
+    padding: 2px 10px 2px 6px;
+    font-size: 13px;
+    color: #5f6368;
+    margin-left: 4px;
+    vertical-align: 2px;
+    cursor: pointer;
+  }
+  .ai-source-pill:hover { background: #e8e9ec; }
+  .ai-source-pill .src-letter {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    background: #00aaff;
+  }
+  .ai-fade {
+    position: relative;
+    max-height: 320px;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+  .ai-fade.expanded { max-height: 2000px; }
+  .ai-fade::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: linear-gradient(to bottom, transparent, #fff);
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .ai-fade.expanded::after { opacity: 0; }
+  .ai-expand-btn {
+    width: 100%;
+    margin-top: 16px;
+    padding: 12px;
+    background: #fff;
+    border: 1px solid #00aaff;
+    border-radius: 999px;
+    color: #00aaff;
+    font-size: 15px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background 0.15s;
+  }
+  .ai-expand-btn:hover { background: #f0faff; }
+  .ai-expand-btn svg {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.3s;
+  }
+  .ai-expand-btn.expanded svg { transform: rotate(180deg); }
+
+  /* Кнопки обратной связи под ответом */
+  .ai-feedback {
+    display: flex;
+    gap: 4px;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #f0f1f3;
+  }
+  .ai-fb-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #5f6368;
+    transition: background 0.15s, color 0.15s;
+  }
+  .ai-fb-btn:hover { background: #f2f2f7; color: #000; }
+  .ai-fb-btn.active { color: #00aaff; background: #e6f6ff; }
+  .ai-fb-btn svg { width: 18px; height: 18px; }
+  .ai-fb-toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(60px);
+    background: #1a1a1a;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 24px;
+    font-size: 14px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s;
+    z-index: 200;
+  }
+  .ai-fb-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .typing-dots {
+    display: inline-flex;
+    gap: 5px;
+    align-items: center;
+    color: #5f6368;
+    font-size: 15px;
+  }
+  .typing-dots span {
+    width: 7px;
+    height: 7px;
+    background: #00aaff;
+    border-radius: 50%;
+    animation: bounce 1.2s infinite;
+  }
+  .typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+    30% { transform: translateY(-4px); opacity: 1; }
+  }
+
+  /* ===== Сетка карточек ===== */
+  .cards-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  .card {
+    border: 1px solid #e5e5ea;
+    border-radius: 16px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .card:hover {
+    border-color: #d0d4da;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+  .card-title {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 16px;
+    letter-spacing: -0.3px;
+  }
+  .card-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .card-list li {
+    font-size: 15px;
+    line-height: 1.4;
+    color: #000;
+    cursor: pointer;
+  }
+  .card-list li:hover { color: #00aaff; }
+
+  /* ===== Блок поддержки ===== */
+  .support-section {
+    max-width: 1200px;
+    margin: 48px auto 0;
+    padding: 0 40px;
+  }
+  .support-box {
+    background: #f2f2f7;
+    border-radius: 16px;
+    padding: 28px;
+  }
+  .support-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: -0.2px;
+  }
+  .support-text {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #000;
+    margin-bottom: 16px;
+    max-width: 600px;
+  }
+  .support-btn {
+    background: #000;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .support-btn:hover { background: #1a1a1a; }
+
+  /* ===== Подвал ===== */
+  .footer {
+    max-width: 1200px;
+    margin: 32px auto 0;
+    padding: 0 40px;
+    text-align: center;
+  }
+  .footer-text {
+    font-size: 12px;
+    line-height: 1.5;
+    color: #8e8e93;
+  }
+  .footer-text a {
+    color: #8e8e93;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .footer-text a:hover { color: #000; }
+
+  /* ===== Кнопка вверх ===== */
+  .scroll-top {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid #e5e5ea;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 50;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .scroll-top.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .scroll-top svg {
+    width: 20px;
+    height: 20px;
+    stroke: #000;
+    stroke-width: 2;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* ===== Адаптив ===== */
+  @media (max-width: 1024px) {
+    .cards-grid { grid-template-columns: repeat(2, 1fr); }
+    .header-inner { padding: 16px 20px; }
+    .cards-wrapper, .support-section, .footer { padding: 0 20px; }
+  }
+  @media (max-width: 640px) {
+    .cards-grid { grid-template-columns: 1fr; }
+    .title { font-size: 28px; }
+    .tab { padding: 10px 24px; font-size: 14px; }
+    .header-search.visible { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header" id="header">
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="logo">
+        <div class="logo-dots">
+          <div class="dot dot-green"></div>
+          <div class="dot dot-red"></div>
+          <div class="dot dot-blue"></div>
+          <div class="dot dot-purple"></div>
+        </div>
+        <span>А-Помощь</span>
+      </div>
+    </div>
+
+    <div class="header-search" id="headerSearch">
+      <input type="text" id="headerSearchInput" placeholder="Напишите тему, например: деньги за заказ">
+      <button onclick="askFromHeader()">Поиск</button>
+    </div>
+
+    <div class="header-login">Вход и регистрация</div>
+  </div>
+</header>
+
+<div class="tabs-container">
+  <div class="tabs">
+    <button class="tab active" onclick="setTab(this)">Пользователям</button>
+    <button class="tab" onclick="setTab(this)">Для бизнеса</button>
+    <button class="tab" onclick="setTab(this)">Путешествия</button>
+  </div>
+</div>
+
+<h1 class="title">Ответы на популярные вопросы по работе А-Помощи</h1>
+
+<div class="hero-search-wrap">
+  <div class="hero-search" id="heroSearch">
+    <div class="hero-search-box">
+      <input type="text" id="searchInput" placeholder="Напишите тему, например: деньги за заказ" autocomplete="off">
+      <button id="searchBtn" onclick="askAI()">Поиск</button>
+    </div>
+  </div>
+
+  <!-- ИИ-ответ -->
+  <div class="ai-overview" id="aiOverview">
+    <div class="ai-card">
+      <button class="ai-card-close" onclick="closeAI()" aria-label="Закрыть">
+        <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+      <div class="ai-card-header">
+        <svg class="ai-spark" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2L13.5 8.5L20 10L13.5 11.5L12 18L10.5 11.5L4 10L10.5 8.5L12 2Z" fill="#00aaff"/>
+          <path d="M19 16L19.7 18.3L22 19L19.7 19.7L19 22L18.3 19.7L16 19L18.3 18.3L19 16Z" fill="#00aaff"/>
+        </svg>
+        <span class="ai-card-title">Обзор от ИИ</span>
+      </div>
+      <div class="ai-card-body" id="aiBody"></div>
+    </div>
+  </div>
+</div>
+
+<div class="cards-wrapper">
+  <div class="cards-grid">
+
+    <div class="card">
+      <div class="card-title">Частые вопросы</div>
+      <ul class="card-list">
+        <li onclick="setAndAsk('Как пользоваться А-Помощью на iOS?')">Как пользоваться А-Помощью на iOS?</li>
+        <li onclick="setAndAsk('Мой заказ потерялся')">Мой заказ потерялся</li>
+        <li onclick="setAndAsk('Меня заблокировали. Что делать?')">Меня заблокировали. Что делать?</li>
+        <li onclick="setAndAsk('Вернуть деньги из кошелька')">Вернуть деньги из кошелька</li>
+        <li onclick="setAndAsk('Не вижу своё объявление в поиске')">Не вижу своё объявление в поиске</li>
+        <li onclick="setAndAsk('Как вернуть деньги за объявление')">Как вернуть деньги за объявление</li>
+        <li onclick="setAndAsk('Почему моё объявление платное?')">Почему моё объявление платное?</li>
+        <li onclick="setAndAsk('Хочу отменить бронь квартиры, дома или отеля')">Хочу отменить бронь квартиры, дома или отеля</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Как опубликовать объявление: самые важные советы</div>
+      <ul class="card-list">
+        <li onclick="setAndAsk('Как опубликовать объявление в категории Авто и транспорт')">Авто и транспорт</li>
+        <li onclick="setAndAsk('Как опубликовать объявление в категории Путешествия')">Путешествия</li>
+        <li onclick="setAndAsk('Как опубликовать объявление в категории Услуги')">Услуги</li>
+        <li onclick="setAndAsk('Как опубликовать резюме')">Резюме</li>
+        <li onclick="setAndAsk('Как опубликовать вакансию')">Вакансии</li>
+        <li onclick="setAndAsk('Как опубликовать объявление в категории Вещи и техника')">Вещи, техника и другие товары</li>
+        <li onclick="setAndAsk('Как опубликовать объявление в категории Недвижимость')">Недвижимость</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Отклонили объявление: что делать</div>
+      <ul class="card-list">
+        <li onclick="setAndAsk('Отклонили объявление: вещи, техника и другие товары')">Вещи, техника и другие товары</li>
+        <li onclick="setAndAsk('Отклонили объявление: авто и транспорт')">Авто и транспорт</li>
+        <li onclick="setAndAsk('Отклонили объявление: недвижимость')">Недвижимость</li>
+        <li onclick="setAndAsk('Отклонили объявление: услуги')">Услуги</li>
+        <li onclick="setAndAsk('Отклонили объявление: работа')">Работа</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Мои объявления</div>
+      <ul class="card-list">
+        <li onclick="setAndAsk('Сколько проверяют объявление')">Сколько проверяют объявление</li>
+        <li onclick="setAndAsk('Разместить бесплатно')">Разместить бесплатно</li>
+        <li onclick="setAndAsk('Опубликовать и продлить')">Опубликовать и продлить</li>
+        <li onclick="setAndAsk('Редактировать объявление')">Редактировать</li>
+        <li onclick="setAndAsk('Удалить и восстановить')">Удалить и восстановить</li>
+        <li onclick="setAndAsk('Как выглядит моё объявление')">Как выглядит моё объявление</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Проблемы с объявлением</div>
+      <ul class="card-list">
+        <li onclick="setAndAsk('Не удаётся разместить объявление')">Не удаётся разместить</li>
+        <li onclick="setAndAsk('Объявление заблокировали')">Заблокировали</li>
+        <li onclick="setAndAsk('Объявления нет в поиске')">Объявления нет в поиске</li>
+        <li onclick="setAndAsk('В объявлении не мой телефон')">В объявлении не мой телефон</li>
+        <li onclick="setAndAsk('Моё объявление не на первом месте')">Моё объявление не на первом месте</li>
+        <li onclick="setAndAsk('У объявления мало просмотров')">У объявления мало просмотров</li>
+        <li onclick="setAndAsk('Объявления сняты с публикации')">Объявления сняты с публикации</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Профиль</div>
+      <ul class="card-list">
+        <li onclick="setAndAsk('Зарегистрироваться и войти')">Зарегистрироваться и войти</li>
+        <li onclick="setAndAsk('Не получается войти')">Не получается войти</li>
+        <li onclick="setAndAsk('Профиль заблокирован')">Профиль заблокирован</li>
+        <li onclick="setAndAsk('Подтвердить данные')">Подтвердить данные</li>
+        <li onclick="setAndAsk('Настроить профиль')">Настроить профиль</li>
+        <li onclick="setAndAsk('Удалить профиль')">Удалить профиль</li>
+        <li onclick="setAndAsk('Связанные профили')">Связанные профили</li>
+        <li onclick="setAndAsk('Профессиональный профиль')">Профессиональный профиль</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Безопасность</div>
+      <ul class="card-list">
+        <li onclick="setAndAsk('Защита от мошенников')">Защита от мошенников</li>
+        <li onclick="setAndAsk('Скрыть номер телефона')">Скрыть номер</li>
+        <li onclick="setAndAsk('Защитить профиль')">Защитить профиль</li>
+        <li onclick="setAndAsk('Приходит спам')">Приходит спам</li>
+        <li onclick="setAndAsk('Защитить бренд')">Защитить бренд</li>
+        <li onclick="setAndAsk('Направить официальный запрос')">Направить официальный запрос</li>
+        <li onclick="setAndAsk('Доставка: как не попасться мошенникам')">Доставка: как не попасться мошенникам</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Заказы с доставкой</div>
+      <ul class="card-list">
+        <li onclick="setAndAsk('Заказать, проверить, получить')">Заказать, проверить, получить</li>
+        <li onclick="setAndAsk('Как работает доставка')">Как работает доставка</li>
+        <li onclick="setAndAsk('Отмена, возврат, повреждение')">Отмена, возврат, повреждение</li>
+        <li onclick="setAndAsk('Всё про деньги в заказах')">Всё про деньги</li>
+        <li onclick="setAndAsk('Отправить посылку')">Отправить</li>
+        <li onclick="setAndAsk('Где заказ')">Где заказ</li>
+        <li onclick="setAndAsk('Продлить и изменить заказ')">Продлить и изменить</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Отзывы и рейтинг</div>
+      <ul class="card-list">
+        <li onclick="setAndAsk('Рейтинг продавца')">Рейтинг</li>
+        <li onclick="setAndAsk('Оставить отзыв')">Оставить отзыв</li>
+        <li onclick="setAndAsk('Удалить отзыв')">Удалить отзыв</li>
+        <li onclick="setAndAsk('Отзыв пропал')">Отзыв пропал</li>
+        <li onclick="setAndAsk('Запросить отзыв или ответить')">Запросить отзыв или ответить</li>
+        <li onclick="setAndAsk('Не могу оставить отзыв')">Не могу оставить отзыв</li>
+        <li onclick="setAndAsk('Правила для отзывов')">Правила для отзывов</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Оплата</div>
+      <ul class="card-list">
+        <li onclick="setAndAsk('Проблемы с оплатой')">Проблемы с оплатой</li>
+        <li onclick="setAndAsk('Кошелёк и бонусы')">Кошелёк и бонусы</li>
+        <li onclick="setAndAsk('Другие способы оплаты')">Другие способы оплаты</li>
+        <li onclick="setAndAsk('Оплата доставки')">Доставка</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Продвинуть объявление</div>
+      <ul class="card-list">
+        <li onclick="setAndAsk('Продвинуть без услуг')">Продвинуть без услуг</li>
+        <li onclick="setAndAsk('Услуги продвижения')">Услуги продвижения</li>
+        <li onclick="setAndAsk('Управлять услугами')">Управлять услугами</li>
+        <li onclick="setAndAsk('Автопродление услуг')">Автопродление услуг</li>
+        <li onclick="setAndAsk('Настройка цены целевого действия')">Настройка цены целевого действия</li>
+        <li onclick="setAndAsk('Разослать спецпредложения')">Разослать спецпредложения</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Тарифы</div>
+      <ul class="card-list">
+        <li onclick="setAndAsk('Тарифы в категории Товары')">Товары</li>
+        <li onclick="setAndAsk('Тарифы в категории Недвижимость')">Недвижимость</li>
+        <li onclick="setAndAsk('Тарифы в категории Авто')">Авто</li>
+        <li onclick="setAndAsk('Тарифы в категории Услуги')">Услуги</li>
+        <li onclick="setAndAsk('Тарифы в категории Работа')">Работа</li>
+        <li onclick="setAndAsk('Лимиты в тарифе')">Лимиты в тарифе</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Для бизнеса</div>
+      <ul class="card-list">
+        <li onclick="setAndAsk('Профессиональный план')">Профессиональный план</li>
+        <li onclick="setAndAsk('Компания на платформе')">Компания на платформе</li>
+        <li onclick="setAndAsk('Автозагрузка и API')">Автозагрузка и API</li>
+        <li onclick="setAndAsk('Тарифы для бизнеса')">Тарифы</li>
+        <li onclick="setAndAsk('Кабинет Pro')">Кабинет Pro</li>
+        <li onclick="setAndAsk('Адреса для объявлений')">Адреса для объявлений</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Связаться с пользователем</div>
+      <ul class="card-list">
+        <li onclick="setAndAsk('Позвонить через сервис')">Позвонить</li>
+        <li onclick="setAndAsk('Не могу позвонить')">Не могу позвонить</li>
+        <li onclick="setAndAsk('Написать сообщение')">Написать сообщение</li>
+        <li onclick="setAndAsk('Не могу написать сообщение')">Не могу написать</li>
+        <li onclick="setAndAsk('Ассистент в чате')">Ассистент в чате</li>
+        <li onclick="setAndAsk('Настроить звонки через сервис')">Настроить звонки через сервис</li>
+        <li onclick="setAndAsk('Не приходят звонки через приложение')">Не приходят звонки через приложение</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Поиск</div>
+      <ul class="card-list">
+        <li onclick="setAndAsk('Искать товар или услугу')">Искать товар или услугу</li>
+        <li onclick="setAndAsk('Поиск по локации')">Поиск по локации</li>
+        <li onclick="setAndAsk('Избранное и сохранённый поиск')">Избранное и сохранённый поиск</li>
+        <li onclick="setAndAsk('Отметки на объявлениях')">Отметки на объявлениях</li>
+        <li onclick="setAndAsk('Как найти своё объявление в поиске')">Как найти своё объявление в поиске</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Сервисы</div>
+      <ul class="card-list">
+        <li onclick="setAndAsk('Цифровые продукты')">Цифровые продукты</li>
+        <li onclick="setAndAsk('Путешествия')">Путешествия</li>
+        <li onclick="setAndAsk('Гарантия в Товарах')">Гарантия в Товарах</li>
+        <li onclick="setAndAsk('Онлайн-запись в Услугах')">Онлайн-запись в Услугах</li>
+        <li onclick="setAndAsk('Бизнес 360')">Бизнес 360</li>
+        <li onclick="setAndAsk('Биржа грузоперевозок')">Биржа грузоперевозок</li>
+        <li onclick="setAndAsk('Защита сделки в Услугах')">Защита сделки</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<section class="support-section">
+  <div class="support-box">
+    <div class="support-title">Служба поддержки</div>
+    <div class="support-text">Если вы не нашли решение, напишите в службу поддержки — мы ответим в течение суток (постараемся быстрее).</div>
+    <button class="support-btn">Задать вопрос</button>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-text">
+    А-Помощь — демонстрационный проект. © 2026. <a href="#">Условия использования</a>. <a href="#">Политика обработки данных</a>. Сделано с использованием Claude.
+  </div>
+</footer>
+
+<div class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <svg viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>
+</div>
+
+<div class="ai-fb-toast" id="aiToast"></div>
+
+<script>
+  // Скролл-эффекты
+  const header = document.getElementById('header');
+  const scrollTopBtn = document.getElementById('scrollTop');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 10) header.classList.add('scrolled');
+    else header.classList.remove('scrolled');
+    if (window.scrollY > 400) scrollTopBtn.classList.add('visible');
+    else scrollTopBtn.classList.remove('visible');
+  });
+
+  // Анимация шапочного поиска
+  const heroSearch = document.getElementById('heroSearch');
+  const headerSearch = document.getElementById('headerSearch');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) headerSearch.classList.remove('visible');
+      else headerSearch.classList.add('visible');
+    });
+  }, { threshold: 0, rootMargin: '-80px 0px 0px 0px' });
+  if (heroSearch) observer.observe(heroSearch);
+
+  // Табы
+  function setTab(el) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // База ИИ-ответов
+  const mockAnswers = {
+    'возврат': {
+      lead: `Возврат денег за заказ возможен в нескольких ситуациях: товар <span class="hl">не соответствует описанию</span>, не пришёл в срок или повреждён. При оплате через Безопасную сделку деньги <strong>возвращаются автоматически</strong>, если не подтвердить получение в течение <span class="hl">3 дней</span>.`,
+      source: { letter: 'В', name: 'Возвраты', plus: 3 },
+      sections: [
+        { h: 'Как оформить возврат', items: [
+          '<strong>Откройте чат</strong> с продавцом и нажмите «Оформить возврат»',
+          '<strong>Опишите причину</strong> и приложите фото или видео товара',
+          '<strong>Дождитесь решения</strong> продавца — обычно в течение 24 часов'
+        ]},
+        { h: 'Если продавец не отвечает', items: [
+          'Через 3 дня молчания деньги возвращаются автоматически',
+          'Можно открыть спор и подключить поддержку — рассмотрят за 48 часов'
+        ]}
+      ]
+    },
+    'безопасн': {
+      lead: `<strong>Безопасная сделка</strong> — сервис, который защищает обе стороны при покупке с доставкой. Деньги покупателя <span class="hl">замораживаются</span> на счёте сервиса до получения товара.`,
+      source: { letter: 'Б', name: 'Безопасная сделка', plus: 2 },
+      sections: [
+        { h: 'Как это работает', items: [
+          '<strong>Покупатель платит</strong> картой через сервис',
+          '<strong>Деньги замораживаются</strong> до подтверждения получения',
+          '<strong>Продавец получает оплату</strong> после доставки и проверки',
+          'Если товар не пришёл — деньги возвращаются автоматически'
+        ]}
+      ]
+    },
+    'заблокир': {
+      lead: `Если <strong>заблокировали аккаунт или объявление</strong>, точную причину можно посмотреть в разделе <span class="hl">«Мои объявления»</span> рядом с заблокированным пунктом. Чаще всего блокировка связана с нарушением правил сайта или жалобами других пользователей.`,
+      source: { letter: 'М', name: 'Модерация', plus: 1 },
+      sections: [
+        { h: 'Возможные причины', items: [
+          '<strong>Нарушение правил</strong> — запрещённый товар или категория',
+          '<strong>Дубль</strong> — такое же объявление уже опубликовано',
+          '<strong>Жалобы пользователей</strong> — модерация рассмотрела и согласилась',
+          '<strong>Подозрение на мошенничество</strong> — автоматическая система'
+        ]},
+        { h: 'Что делать', items: [
+          'Нажмите «Оспорить» рядом с заблокированным объявлением',
+          'Опишите ситуацию — поддержка ответит в течение 24 часов'
+        ]}
+      ]
+    },
+    'кошельк': {
+      lead: `Чтобы <strong>вывести деньги из кошелька</strong>, откройте раздел «Кошелёк» в личном кабинете. Минимальная сумма вывода — <span class="hl">100 рублей</span>, комиссия не взимается. Деньги поступают на карту в течение <span class="hl">1–3 рабочих дней</span>.`,
+      source: { letter: 'К', name: 'Кошелёк', plus: 0 },
+      sections: [
+        { h: 'Шаги для вывода', items: [
+          'Откройте «Кошелёк» в личном кабинете',
+          'Нажмите «Вывести» и выберите карту получателя',
+          'Подтвердите операцию кодом из SMS'
+        ]}
+      ]
+    },
+    'iOS': {
+      lead: `Приложение <strong>для iOS</strong> доступно в App Store. Поддерживаются <span class="hl">iOS 14 и новее</span>, есть биометрический вход через Face ID и Touch ID.`,
+      source: { letter: 'П', name: 'Приложение', plus: 1 },
+      sections: [
+        { h: 'Возможности', items: [
+          '<strong>Размещение объявлений</strong> с камеры — фото добавляются прямо со съёмки',
+          '<strong>Push-уведомления</strong> о сообщениях и просмотрах',
+          '<strong>Биометрический вход</strong> через Face ID или Touch ID',
+          '<strong>Офлайн-черновики</strong> — можно подготовить объявление без интернета'
+        ]}
+      ]
+    },
+    'потерял': {
+      lead: `Если <strong>заказ потерялся</strong>, в первую очередь проверьте трек-номер в разделе «Заказы». Если посылка не двигается <span class="hl">более 7 дней</span> — нажмите «Открыть спор», и поддержка свяжется со службой доставки.`,
+      source: { letter: 'Д', name: 'Доставка', plus: 2 },
+      sections: [
+        { h: 'Что делать пошагово', items: [
+          '<strong>Откройте раздел «Заказы»</strong> и проверьте статус трекинга',
+          '<strong>Подождите 7 дней</strong> с последнего обновления статуса',
+          '<strong>Откройте спор</strong> — поддержка возьмёт ситуацию под контроль',
+          '<strong>Деньги вернутся автоматически</strong>, если оплата шла через Безопасную сделку'
+        ]}
+      ]
+    },
+    'не вижу': {
+      lead: `Если <strong>объявление не видно в поиске</strong>, проверьте его статус в «Мои объявления» — должно быть <span class="hl">«Активно»</span>. Новые объявления попадают в выдачу через <span class="hl">5–30 минут</span> после модерации.`,
+      source: { letter: 'П', name: 'Поиск', plus: 2 },
+      sections: [
+        { h: 'Возможные причины', items: [
+          '<strong>Объявление на модерации</strong> — подождите 5–30 минут',
+          '<strong>Низкий рейтинг</strong> — объявление на 2-3 странице выдачи',
+          '<strong>Заблокировано</strong> — в статусе будет указана причина',
+          '<strong>Большая конкуренция</strong> в категории — поможет продвижение'
+        ]}
+      ]
+    },
+    'платн': {
+      lead: `<strong>Объявление становится платным</strong> при превышении лимита бесплатных размещений в категории, при повторной публикации того же товара или в категориях, где платное размещение — единственный вариант.`,
+      source: { letter: 'Т', name: 'Тарифы', plus: 1 },
+      sections: [
+        { h: 'Когда нужно платить', items: [
+          '<strong>Закончился лимит</strong> бесплатных размещений (1–3 в месяц)',
+          '<strong>Повторная публикация</strong> того же товара в той же категории',
+          '<strong>Категория только платная</strong> — например, новые товары в коммерческих количествах'
+        ]}
+      ]
+    },
+    'бронь': {
+      lead: `Чтобы <strong>отменить бронь</strong> жилья, откройте раздел «Поездки» и выберите бронь. При отмене <span class="hl">за 48 часов до заезда</span> возвращается полная сумма, позже — по правилам конкретного объекта.`,
+      source: { letter: 'П', name: 'Путешествия', plus: 0 },
+      sections: [
+        { h: 'Условия возврата', items: [
+          '<strong>Более 48 часов до заезда</strong> — возврат 100%',
+          '<strong>24-48 часов до заезда</strong> — обычно 50% (зависит от объекта)',
+          '<strong>Менее 24 часов</strong> — без возврата',
+          'Точные условия видны при оформлении брони'
+        ]}
+      ]
+    },
+    'опубликов': {
+      lead: `Чтобы <strong>опубликовать объявление</strong>, нажмите «Разместить» в верхнем меню, выберите категорию и заполните карточку. Модерация занимает <span class="hl">5–30 минут</span>.`,
+      source: { letter: 'Р', name: 'Размещение', plus: 1 },
+      sections: [
+        { h: 'Что заполнить', items: [
+          '<strong>Название и описание</strong> — конкретно и без воды',
+          '<strong>Цена</strong> и состояние товара',
+          '<strong>Фото до 10 штук</strong> — реальные, при хорошем свете',
+          '<strong>Способ связи</strong> и местоположение'
+        ]}
+      ]
+    },
+    'отклонил': {
+      lead: `Если <strong>объявление отклонили</strong>, в разделе «Мои объявления» рядом с ним указана <span class="hl">точная причина</span>. Чаще всего это неверная категория, запрещённый товар или фото не по правилам.`,
+      source: { letter: 'М', name: 'Модерация', plus: 2 },
+      sections: [
+        { h: 'Что делать', items: [
+          '<strong>Прочитайте причину</strong> отклонения в карточке объявления',
+          '<strong>Исправьте</strong> указанные пункты',
+          '<strong>Отправьте на повторную модерацию</strong> — кнопка появится автоматически',
+          'Если считаете отклонение ошибочным — напишите в поддержку с номером объявления'
+        ]}
+      ]
+    },
+    'мошенн': {
+      lead: `<strong>Признаки мошенничества</strong>: просьба перевести предоплату на карту вне сервиса, ссылки на «оплату» в чате, просьба назвать <span class="hl">код из SMS</span>. Реальный сервис никогда не присылает ссылок и не запрашивает коды.`,
+      source: { letter: 'Б', name: 'Безопасность', plus: 3 },
+      sections: [
+        { h: 'Главные правила', items: [
+          '<strong>Не сообщайте код из SMS</strong> — никому, никогда',
+          '<strong>Не переходите по ссылкам</strong> из чата',
+          '<strong>Не переводите деньги</strong> по реквизитам из переписки',
+          '<strong>Используйте Безопасную сделку</strong> — она защищает от 90% схем'
+        ]},
+        { h: 'Если уже попались', items: [
+          'Сразу заблокируйте карту через банк',
+          'Подайте жалобу через раздел «Безопасность»',
+          'Сохраните переписку — её приложат к расследованию'
+        ]}
+      ]
+    },
+    'удалить': {
+      lead: `Чтобы <strong>удалить объявление</strong>, откройте «Мои объявления» и нажмите «···» у нужного. Есть два варианта: <span class="hl">«Снять с публикации»</span> (с возможностью восстановить) и <span class="hl">«Удалить»</span> (без восстановления).`,
+      source: { letter: 'О', name: 'Объявления', plus: 0 },
+      sections: [
+        { h: 'Разница между вариантами', items: [
+          '<strong>Снять с публикации</strong> — объявление в архиве 90 дней, можно вернуть',
+          '<strong>Удалить</strong> — полное удаление без возможности восстановления',
+          'История просмотров и сообщений сохраняется в обоих случаях'
+        ]}
+      ]
+    },
+    'отзыв': {
+      lead: `<strong>Оставить отзыв</strong> можно после завершения сделки — кнопка появляется в разделе «Заказы» или в чате. Изменить или удалить отзыв можно в течение <span class="hl">7 дней</span> после публикации.`,
+      source: { letter: 'О', name: 'Отзывы', plus: 1 },
+      sections: [
+        { h: 'Правила отзывов', items: [
+          '<strong>Только реальный опыт</strong> — оплаченная сделка или живая встреча',
+          '<strong>Без оскорблений</strong> и нецензурной лексики',
+          '<strong>Без упоминания личных данных</strong> другого человека',
+          'Спорные отзывы рассматривает модерация'
+        ]}
+      ]
+    },
+    'звон': {
+      lead: `Звонки <strong>через сервис</strong> скрывают ваш реальный номер от собеседника и бесплатны для обеих сторон. Запись разговора используется <span class="hl">только при разборе споров</span>.`,
+      source: { letter: 'З', name: 'Звонки', plus: 1 },
+      sections: [
+        { h: 'Если звонки не приходят', items: [
+          '<strong>Проверьте разрешения</strong> для приложения в настройках телефона',
+          '<strong>Стабильный интернет</strong> — Wi-Fi или 4G',
+          '<strong>Не включён режим «Не беспокоить»</strong>',
+          'В настройках профиля включён приём звонков через сервис'
+        ]}
+      ]
+    }
+  };
+
+  function getAnswer(query) {
+    const q = query.toLowerCase();
+    for (const key in mockAnswers) {
+      if (q.includes(key.toLowerCase())) return mockAnswers[key];
+    }
+    return {
+      lead: `По запросу «<strong>${query}</strong>» в справочном центре нашлось несколько подходящих статей. Если краткого ответа недостаточно — напишите в поддержку, среднее время ответа — <span class="hl">15 минут</span> с 8:00 до 24:00 МСК.`,
+      source: { letter: 'П', name: 'Помощь', plus: 1 },
+      sections: []
+    };
+  }
+
+  function renderAnswer(a) {
+    const src = a.source || { letter: 'П', name: 'Помощь', plus: 0 };
+    const plusText = src.plus > 0 ? ` +${src.plus}` : '';
+    const sourcePill = `<span class="ai-source-pill"><span class="src-letter">${src.letter}</span>${src.name}${plusText}</span>`;
+
+    let html = `<p>${a.lead} ${sourcePill}</p>`;
+
+    // оценка количества строк: ~80 символов на строку при ширине 640px
+    const charsPerLine = 80;
+    let estimatedLines = Math.ceil(a.lead.length / charsPerLine) + 1;
+
+    if (a.sections && a.sections.length) {
+      a.sections.forEach(s => {
+        estimatedLines += 2; // заголовок секции + отступ
+        s.items.forEach(it => {
+          // убираем html-теги для подсчёта
+          const plain = it.replace(/<[^>]+>/g, '');
+          estimatedLines += Math.ceil(plain.length / charsPerLine);
+        });
+      });
+    }
+
+    const needsExpand = estimatedLines > 10;
+
+    if (a.sections && a.sections.length) {
+      let inner = '';
+      a.sections.forEach(s => {
+        inner += `<h3>${s.h}</h3><ul>`;
+        s.items.forEach(it => { inner += `<li>${it}</li>`; });
+        inner += '</ul>';
+      });
+
+      if (needsExpand) {
+        html += `<div class="ai-fade" id="aiFade">${inner}</div>
+          <button class="ai-expand-btn" id="aiExpandBtn" onclick="toggleExpand()">
+            <span id="aiExpandText">Развернуть</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>`;
+      } else {
+        html += inner;
+      }
+    }
+
+    // Кнопки обратной связи — всегда показываются
+    html += `
+      <div class="ai-feedback">
+        <button class="ai-fb-btn" onclick="rateAnswer(this, 'up')" aria-label="Полезно">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 10v12"/>
+            <path d="M15 5.88L14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H7V10l4-9a2.5 2.5 0 0 1 2.5 2.5z"/>
+          </svg>
+        </button>
+        <button class="ai-fb-btn" onclick="rateAnswer(this, 'down')" aria-label="Не помогло">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 14V2"/>
+            <path d="M9 18.12L10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H17v12l-4 9a2.5 2.5 0 0 1-2.5-2.5z"/>
+          </svg>
+        </button>
+        <button class="ai-fb-btn" onclick="shareAnswer()" aria-label="Поделиться">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+            <polyline points="16 6 12 2 8 6"/>
+            <line x1="12" y1="2" x2="12" y2="15"/>
+          </svg>
+        </button>
+      </div>`;
+
+    return html;
+  }
+
+  function toggleExpand() {
+    const fade = document.getElementById('aiFade');
+    const btn = document.getElementById('aiExpandBtn');
+    const txt = document.getElementById('aiExpandText');
+    fade.classList.toggle('expanded');
+    btn.classList.toggle('expanded');
+    txt.textContent = fade.classList.contains('expanded') ? 'Свернуть' : 'Развернуть';
+  }
+
+  function rateAnswer(btn, type) {
+    // Снимаем активное состояние с обеих кнопок (палец вверх/вниз)
+    const feedback = btn.parentElement;
+    const fbButtons = feedback.querySelectorAll('.ai-fb-btn');
+    // первые две — это лайк/дизлайк, третья — шаринг (её не трогаем)
+    fbButtons[0].classList.remove('active');
+    fbButtons[1].classList.remove('active');
+    btn.classList.add('active');
+
+    showToast(type === 'up' ? 'Спасибо за оценку!' : 'Спасибо, мы учтём это');
+
+    // Здесь можно слать аналитику:
+    // fetch('/api/feedback', { method: 'POST', body: JSON.stringify({ type, query: ... }) })
+    console.log('Feedback:', type);
+  }
+
+  function shareAnswer() {
+    const text = document.getElementById('aiBody').innerText;
+    const query = document.getElementById('searchInput').value;
+    if (navigator.share) {
+      navigator.share({ title: 'А-Помощь: ' + query, text }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(text).then(() => showToast('Ответ скопирован'));
+    }
+  }
+
+  function showToast(msg) {
+    const toast = document.getElementById('aiToast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+
+  function setAndAsk(query) {
+    document.getElementById('searchInput').value = query;
+    askAI();
+  }
+
+  function askFromHeader() {
+    const headerInput = document.getElementById('headerSearchInput');
+    document.getElementById('searchInput').value = headerInput.value;
+    askAI();
+  }
+
+  function closeAI() {
+    document.getElementById('aiOverview').classList.remove('active');
+  }
+
+  let isAsking = false;
+
+  function askAI() {
+    if (isAsking) return;
+    const query = document.getElementById('searchInput').value.trim();
+    if (!query) return;
+
+    isAsking = true;
+    const overview = document.getElementById('aiOverview');
+    const body = document.getElementById('aiBody');
+    const btn = document.getElementById('searchBtn');
+
+    btn.disabled = true;
+    overview.classList.add('active');
+    body.innerHTML = '<div class="typing-dots">Обзор от ИИ генерируется<span></span><span></span><span></span></div>';
+
+    setTimeout(() => {
+      const answer = getAnswer(query);
+      body.innerHTML = renderAnswer(answer);
+      overview.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      isAsking = false;
+      btn.disabled = false;
+    }, 1400);
+  }
+
+  document.getElementById('searchInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') askAI();
+  });
+  document.getElementById('headerSearchInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') askFromHeader();
+  });
+</script>
+
+</body>
+</html>
