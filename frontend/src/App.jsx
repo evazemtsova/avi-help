@@ -12,7 +12,7 @@ import Footer from "./components/Footer";
 import ScrollTopButton from "./components/ScrollTopButton";
 import Toast from "./components/Toast";
 import SourcePopover from "./components/SourcePopover";
-import { getAnswer, streamAnswer, ApiError } from "./api";
+import { getAnswer, streamAnswer, submitFeedback, ApiError } from "./api";
 import styles from "./App.module.css";
 
 /**
@@ -200,6 +200,26 @@ export default function App() {
     pickAndShow(lastQueryRef.current || query);
   }
 
+  /**
+   * Колбэк FeedbackButtons. Собирает payload из текущего answer state,
+   * шлёт в /feedback. Не ждёт результат — UI уже переключился в
+   * «отправлено». Бэк-stub печатает в stderr; в Спринте 4 будет JSONL.
+   */
+  function handleRate(rating) {
+    if (view.kind !== "answer" || !view.data) return;
+    const a = view.data;
+    const sectionsText = (a.sections || [])
+      .map((s) => `${s.title}\n${s.body || ""}`)
+      .join("\n\n");
+    const answer_text = `${a.lead || ""}\n\n${sectionsText}`.trim();
+    submitFeedback({
+      query: view.query,
+      answer_text,
+      sources_used: a.sources_used || [],
+      rating,
+    });
+  }
+
   const isLoading =
     view.kind === "streaming" && (view.lead === "" || view.stage === "thinking");
 
@@ -242,6 +262,7 @@ export default function App() {
             }
             leadChunks={view.kind === "streaming" ? view.leadChunks : null}
             streaming={view.kind === "streaming"}
+            onRate={handleRate}
             onClose={handleClose}
           />
         )}

@@ -358,3 +358,34 @@ function findSseBoundary(s) {
   if (crlf === -1) return lf;
   return Math.min(lf, crlf);
 }
+
+/* ============================================================
+ * POST /feedback (👍/👎)
+ *
+ * UI шлёт оценку и не зависит от ответа: при любой ошибке (404 если
+ * бэк ещё без ручки, network, timeout) — promise зарезолвится в false,
+ * UI сохранит «отправлено» состояние, чтобы не портить UX.
+ * Спринт 4 на бэке начнёт писать payload в JSONL.
+ * ============================================================ */
+export async function submitFeedback({
+  query,
+  answer_text = "",
+  sources_used = [],
+  rating,
+}) {
+  const ctrl = new AbortController();
+  const timeoutId = setTimeout(() => ctrl.abort(), 6000);
+  try {
+    const res = await fetch(`${API_BASE}/feedback`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query, answer_text, sources_used, rating }),
+      signal: ctrl.signal,
+    });
+    return res.ok;
+  } catch {
+    return false;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}

@@ -91,6 +91,13 @@ class AnswerRequest(BaseModel):
     top_k: int = Field(5, ge=1, le=20)
 
 
+class FeedbackRequest(BaseModel):
+    query: str = Field(..., min_length=1, max_length=500)
+    answer_text: str = Field("", max_length=20000)
+    sources_used: list[str] = Field(default_factory=list, max_length=20)
+    rating: str = Field(..., pattern="^(up|down)$")
+
+
 class AnswerResponse(BaseModel):
     query: str
     answer: GenerationResult
@@ -164,3 +171,16 @@ async def answer(req: AnswerRequest):
             "X-Accel-Buffering": "no",
         },
     )
+
+
+@app.post("/feedback", status_code=204)
+def feedback_endpoint(req: FeedbackRequest):
+    """Stub-ручка обратной связи 👍/👎. Сейчас только пишет в stderr для
+    дебага. Спринт 4 заменит на запись в JSONL вместе с retrieval-метаданными
+    и хешем IP. UI шлёт вызов и не зависит от ответа — на ошибку ловит silent."""
+    print(
+        f"[feedback] rating={req.rating} sources={req.sources_used} "
+        f"query={req.query[:80]!r}",
+        file=sys.stderr,
+    )
+    return None

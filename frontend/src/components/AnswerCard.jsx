@@ -80,6 +80,7 @@ export default function AnswerCard({
   answer,
   leadChunks = null,
   streaming = false,
+  onRate,
   onClose,
 }) {
   const [expanded, setExpanded] = useState(false);
@@ -185,6 +186,7 @@ export default function AnswerCard({
           <FeedbackButtons
             query={query}
             bodyText={bodyTextForShare}
+            onRate={onRate}
             onToast={showToast}
           />
         )}
