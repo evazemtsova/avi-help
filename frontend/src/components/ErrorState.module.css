@@ -1,10 +1,12 @@
 .wrap {
-  width: 100%;
+  /* На любом viewport блок отступает от краёв на --pad-x с каждой стороны.
+     На мобиле 390px и pad-x=20: width=350, margin-auto делит 40px поровну
+     → 20px справа/слева. На десктопе блок упирается в max-width 640px и
+     центрируется автомаргином в оставшемся пространстве. */
+  width: calc(100% - 2 * var(--pad-x));
   max-width: var(--content-max);
   margin: var(--space-6) auto 0;
   padding: var(--space-4);
-  margin-left: auto;
-  margin-right: auto;
   display: flex;
   align-items: flex-start;
   gap: var(--space-3);
