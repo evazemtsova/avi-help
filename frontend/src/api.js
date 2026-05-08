@@ -62,6 +62,7 @@ function normalizeAnswer(data) {
     usage: a.usage || null,
     model: a.model || null,
     latency_ms: data?.latency_ms || null,
+    request_id: data?.request_id || null,
   };
 }
 
@@ -195,6 +196,7 @@ function dispatchEvent({ event, data }, cb) {
           ? data.sources.map(normalizeSource)
           : [],
         is_fallback: Boolean(data?.is_fallback),
+        request_id: data?.request_id || null,
       });
       break;
     case "lead_delta":
@@ -368,6 +370,7 @@ function findSseBoundary(s) {
  * Спринт 4 на бэке начнёт писать payload в JSONL.
  * ============================================================ */
 export async function submitFeedback({
+  request_id = null,
   query,
   answer_text = "",
   sources_used = [],
@@ -379,7 +382,13 @@ export async function submitFeedback({
     const res = await fetch(`${API_BASE}/feedback`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query, answer_text, sources_used, rating }),
+      body: JSON.stringify({
+        request_id,
+        query,
+        answer_text,
+        sources_used,
+        rating,
+      }),
       signal: ctrl.signal,
     });
     return res.ok;

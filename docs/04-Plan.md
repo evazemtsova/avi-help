@@ -272,23 +272,23 @@ _Сюда выносим то, что касается всего проекта
 
 #### Eval
 
-- [ ] Golden-set: 30–50 вопросов руками, для каждого эталонные `article_url`
-- [ ] 10 out-of-domain вопросов для refusal rate
-- [ ] Кэш LLM-вызовов в `data/llm_cache.jsonl` по хешу `(model, prompt_hash)`
-- [ ] Скрипт `scripts/eval.py --config <name>`
-- [ ] Метрики retrieval: Recall@5, MRR@10
-- [ ] Метрики generation: faithfulness и relevance через Sonnet-judge с tool use
-- [ ] Refusal rate на out-of-domain
-- [ ] Конфиги: `mvp` (Haiku), `baseline` (без промпт-усиления)
+- [x] Golden-set: **100** вопросов руками, для каждого эталонные `article_url` (расширили с 30–50 после прикидки покрытия 16 категорий)
+- [x] **20** out-of-domain вопросов для refusal rate (расширили с 10 — по 2 на жанр)
+- [x] Кэш LLM-вызовов в `data/llm_cache.jsonl` по хешу `(model, messages, tools, temperature, system)` + параллельно embedding-кэш `data/embedding_cache.jsonl` (для скорости повторных прогонов)
+- [x] Скрипт `scripts/eval.py --config <name>` (флаги: `--limit`, `--ood`, `--no-cache`, `--outdir`)
+- [x] Метрики retrieval: Recall@5, MRR@10 (с разбивкой по категории и difficulty; content-gap исключены из расчёта)
+- [x] Метрики generation: faithfulness и relevance через Sonnet-judge с tool use (`claude-sonnet-4-6`, `--no-judge` для отключения)
+- [x] Refusal rate на out-of-domain (через `is_fallback` от модели)
+- [x] Конфиги: `mvp` (Haiku + safety-priming), `baseline` (без safety-priming, для ablation в Спринте 5)
 - [ ] `scripts/compare.py` → `docs/eval_results.md` с финальной таблицей
 
 #### Логи
 
-- [ ] Структурированное логирование в JSONL (timestamp, query, retrieval со скорами, ответ, latency по шагам, токены, стоимость, хеш IP, фидбек)
-- [ ] `GET /admin/logs` за `X-Admin-Token`
-- [ ] `GET /admin/logs.jsonl` за `X-Admin-Token`
-- [ ] `POST /feedback` пишет в лог-систему
-- [ ] Хеширование IP с солью
+- [x] Структурированное логирование в JSONL (`backend/logging_jsonl.py`: ts, request_id, query, retrieval со скорами, is_fallback, model, usage, cost_usd, latency, ip_hash; при ошибке — error_type/error_msg; запись через FastAPI BackgroundTasks)
+- [x] `GET /admin/logs?date=&limit=&kind=requests|feedback` за `X-Admin-Token`
+- [x] `GET /admin/logs.jsonl?date=&kind=` за `X-Admin-Token` (FileResponse, скачивание)
+- [x] `POST /feedback` пишет в `feedback_{date}.jsonl`, фолбэк-id из хеша query+ts если без request_id
+- [x] Хеширование IP с солью (`LOG_IP_SALT`, SHA-256 первые 16 hex; без соли — не логируем)
 
 ### Цели по метрикам (из PRD)
 
@@ -303,7 +303,25 @@ _Сюда выносим то, что касается всего проекта
 
 ### Заметки
 
-- _пока пусто_
+**Блок 1 — Golden-set (100 + 20):**
+- Сделал: `data/eval/golden_set.jsonl` 100 in-domain + `data/eval/ood_set.jsonl` 20 OOD; источники — `legacy-prototype.html` CategoryGrid, `catalog_map.json`, `articles.jsonl`; все expected_article_urls резолвятся в `articles.jsonl`, спец-маркер `notes: резюме-работа` для 5 запросов о работе/резюме без отдельной catalog-категории.
+- Получил: 100/20 строк, all валидации passed; распределение по bucket'ам ровное (Реклама −1, Связь +1 из-за content-gap g069 «телефон поддержки»→«Связаться с пользователем»); difficulty 60/30/10; safety 6, content-gap 4 (g046, g069, g093, g100), опечаток 10, длинных >100 симв 16; OOD по 2 на 10 жанров.
+- Важно: стиль строчный без точки в конце, slang-лексика в каждом 5-м (бабки, обяв, обяву, лк, слила, не пускает, молчит); опечатки настоящие (плучения, сколко, верниите, выделние, пороль) — будем мерить retrieval на user-style формулировках, а не на учебных.
+
+**Блок 2 — Кэш + eval + retrieval-метрики:**
+- Сделал: `backend/llm_cache.py` (Anthropic `CachedAnthropic` drop-in + embedding-кэш в `data/embedding_cache.jsonl`), `scripts/eval.py` (--config mvp/baseline, --limit, --ood, --no-cache); фикс `generation.py._normalize_sections` — Haiku иногда возвращает `sections` как JSON-string или ломаный JSON, теперь graceful fallback в []; кэш-стат `cost_paid` vs `cost_rate` различает реально потраченное от рейт-эквивалента.
+- Получил: первый прогон 120 запросов = $0.6755 (внутри $0.40-0.80 цели), повторный = $0.0000 / 0.9с (≪60с цели); **Recall@5=0.8125** (n=96, цель ≥0.85 — недобор 0.04), **MRR@10=0.7007** (цель ≥0.6 ✓); OOD refusal **20/20=1.0** (✓); content-gap 2 из 4 ушли в is_fallback (g069, g100), 2 (g046, g093) дали best-effort ответ.
+- Важно: 18 worst-Recall-cases — почти все «семантически близкие, но не та статья» (g020 «телефон со сколом» → «Меня обманули» вместо «Приехал повреждённый товар» / g034 «слила доступ → сменить пароль» → «Профиль взломали» вместо «Установить надёжный пароль»); это типичный кандидат для reranker'а в Спринте 5 — baseline без него по дизайну, дельту меряем там.
+
+**Блок 3 — LLM-judge (faithfulness, relevance) + refusal rate:**
+- Сделал: `claude-sonnet-4-6`-judge внутри `scripts/eval.py` — два tool-use вызова (faithfulness `is_faithful`+`unsupported_claims`, relevance `score 1-5`+`reasoning`); judge идёт через `CachedAnthropic` (повторный прогон бесплатный), флаг `--no-judge` для прогонов без него; refusal rate считается из `is_fallback` на OOD; стоимость judge выводится отдельной строкой.
+- Получил: judge на 100 in-domain × 2 вызова = $1.62 paid / 200 misses, ~10 минут; **faithfulness 0.45** (full) / 0.44 (non-fallback, n=97) — цель ≥0.9 МАССОВЫЙ НЕДОБОР; **relevance avg 4.63** (full) / 4.67 (non-fallback) — цель ≥4 ✓; **refusal rate 1.0** (20/20) ✓; 55/100 unfaithful из них 53 с конкретными unsupported_claims.
+- Важно: faithfulness низкая по 3 причинам: (1) reranker отсутствует → retrieval тащит «семантически близкие» статьи, модель отвечает по ним и обобщает → Sonnet ловит «overgeneralization» (например, g003 «15 дней возврата» применено и к ПВЗ хотя только для домашней доставки); (2) `SAFETY_PRIMING` дописывает в lead boilerplate про «не сообщайте код из SMS» — Sonnet корректно флагит как unsupported (g007); (3) Sonnet строгий — нит-пикает мягкие переформулировки. Все 3 причины — вход в Спринт 5 (reranker должен поправить retrieval, safety-priming можно сузить, judge можно ослабить через явные правила).
+
+**Блок 4 — JSONL-логирование + admin-ручки + фидбек:**
+- Сделал: `backend/logging_jsonl.py` (Pydantic схемы `RequestLogEntry`/`FeedbackLogEntry`, `hash_ip` через `LOG_IP_SALT`, atomic-ish append с фолбэком в stderr); `main.py` — `request_id=uuid4` на `/answer`+`/answer/sync` (в SSE прокинут через первое `meta`-событие, в sync — поле `request_id` в `AnswerResponse`), запись в `requests_{date}.jsonl` через `BackgroundTasks` (sync) и inline после стрима (SSE), error-путь логируется отдельно; `/feedback` пишет в `feedback_{date}.jsonl`, fallback-id `fb-{sha256(query+ts)[:16]}` если фронт не прислал request_id; admin-ручки `GET /admin/logs?date=&limit=&kind=` (JSON) и `GET /admin/logs.jsonl?date=&kind=` (FileResponse) за `X-Admin-Token`; фронт (api.js + App reducer) ловит `request_id` из meta/sync и шлёт обратно.
+- Получил: локальный sanity 5 запросов через curl → ровно 5 строк в `requests_{date}.jsonl`, IP захеширован (16 hex), все поля валидны; SSE-curl полного стрима (21 событие) → 6-я строка в логе с `endpoint=/answer`; `/feedback` с `request_id` → строка в `feedback_{date}.jsonl`; без токена `/admin/logs` → 401, с токеном → JSON со счётчиком и items, `.jsonl`-вариант отдаёт raw-файл; fallback `fb-…`-id работает когда `request_id` не пришёл.
+- Важно: `LOG_PATH` дефолтит на `<repo>/data/logs` локально, на Railway нужно явно `LOG_PATH=/data/logs` чтобы логи лежали на persistent volume; без `LOG_IP_SALT` `ip_hash=null` (по дизайну — без соли хеш реверсится перебором IPv4); прод-деплой ждёт OK от пользователя — git push не делаю автоматически; SSE-лог пишется ИНЛАЙНОМ в генераторе (BackgroundTasks в SSE стартует только после закрытия стрима = после генератора, что эквивалентно).
 
 ### Блокеры
 

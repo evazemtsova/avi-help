@@ -44,6 +44,7 @@ function reducer(state, action) {
         sections: [],
         sources: [],
         is_fallback: false,
+        request_id: null,
         query: action.query,
       };
     case "META":
@@ -53,6 +54,9 @@ function reducer(state, action) {
         stage: "writing",
         sources: action.sources,
         is_fallback: action.is_fallback,
+        // request_id приходит в первом meta-событии — кладём в state, чтобы
+        // FeedbackButtons мог пробросить его в /feedback.
+        request_id: action.request_id ?? state.request_id,
       };
     case "LEAD_DELTA":
       if (state.kind !== "streaming") return state;
@@ -81,6 +85,7 @@ function reducer(state, action) {
         is_fallback: action.is_fallback,
         usage: action.usage,
         model: action.model,
+        request_id: state.request_id,
       };
       if (action.is_fallback && (!finalSources || finalSources.length === 0)) {
         return { kind: "fallback", data, query: state.query };
@@ -213,6 +218,7 @@ export default function App() {
       .join("\n\n");
     const answer_text = `${a.lead || ""}\n\n${sectionsText}`.trim();
     submitFeedback({
+      request_id: a.request_id || null,
       query: view.query,
       answer_text,
       sources_used: a.sources_used || [],
