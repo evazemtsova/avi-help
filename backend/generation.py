@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import os
 import sys
 from typing import AsyncGenerator, Optional
@@ -349,6 +350,12 @@ async def generate_stream(
                 increment = current_lead[len(streamed_lead):]
                 streamed_lead = current_lead
                 yield {"event": "lead_delta", "data": {"text": increment}}
+                # Anthropic SDK выдаёт content_block_delta пачками по ~5-10
+                # событий per HTTP-chunk; uvicorn в одной итерации event-loop'а
+                # бандлит socket-writes в один TCP-segment → пользователь видит
+                # «бух весь параграф» вместо печати. 20мс между дельтами
+                # разрывает batch и даёт визуальную скорость печати ~50 cps.
+                await asyncio.sleep(0.02)
 
         final_message = await stream.get_final_message()
 
@@ -410,6 +417,10 @@ async def generate_stream(
                     "body": s.get("body", ""),
                 },
             }
+            # Разносим секции во времени, чтобы они появлялись по одной,
+            # а не «бух всё разом» одним TCP-чанком вслед за последней
+            # дельтой лида.
+            await asyncio.sleep(0.08)
 
     sources = _resolve_sources(sources_used, hits)
     yield {
