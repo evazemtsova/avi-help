@@ -27,6 +27,8 @@ _Сюда выносим то, что касается всего проекта
 
 - **PRD 4.4 и TDR 2.6** — после Спринта 1 факты разошлись с описанием API: реальная иерархия резолвится через `parentId` в каталоге, а не через `categoryId/sectionId` из `/api/1/article`; все 518 статей имеют `url` (PRD заявлял «1 без URL»); `alias` в ответе article API всегда `null`. Детали в Заметки Спринта 1.
 - **ML System Design 2.3** — прогноз размера индекса 42 MB пересмотреть до 68 MB после фактической индексации.
+- **PRD F11 (latency)** — метрика «P50 end-to-end ≤ 4 сек» устарела со streaming. Со SSE релевантна декомпозиция: TTFB до пилюль источников (~300ms на проде), TTFB до первого слова лида (~1.5с — Haiku + tool use partial JSON), полное время (P50 5.4с / P95 ~8с на in-domain). Переписать F11 под три отдельные цели вместо одной end-to-end.
+- **PRD 7.3 (стоимость)** — «cheap: $0.001–0.002» переписать под фактический setup: **$0.003–0.006 без reranker** (5 чанков ~3700 input + ~400–700 output на Haiku), **$0.001–0.003 с reranker** (top-3 после rerank, ~2200 input). Текущая реализация без reranker даёт $0.0064 на in-domain.
 
 ---
 
@@ -138,7 +140,7 @@ _Сюда выносим то, что касается всего проекта
 
 ## Спринт 2 — Retrieval и Generation (M3, M4)
 
-**Статус:** в работе
+**Статус:** ✅ готов
 **Цель:** через curl на проде задаёшь вопрос — получаешь осмысленный JSON с цитатами. G1 фактически достигнут на уровне API.
 
 ### Задачи
@@ -151,13 +153,14 @@ _Сюда выносим то, что касается всего проекта
 - [x] Постпроцессинг: при ссылке на несуществующий чанк — лог + fallback
 - [x] Промпт-усиление по категории «Безопасность» (top-3 чанка из категории → предупреждение про SMS)
 - [x] Fallback при низких скорах retrieval (стартовый порог 0.3)
-- [ ] Флаг `MODEL=sonnet` для будущих сравнений
-- [ ] Проверка на проде: 5–10 ручных запросов через curl, ответы осмысленные
+- [x] Флаг `MODEL=sonnet` для будущих сравнений (через env `MODEL`, дефолт `claude-haiku-4-5`)
+- [x] Проверка на проде: 5–10 ручных запросов через curl, ответы осмысленные
 - [x] Streaming SSE для `/answer` + non-streaming `/answer/sync` (вытащено из Спринта 5 S1)
+- [x] Bootstrap Chroma на Railway volume через GitHub release + `BOOTSTRAP_CHROMA_URL` env (вытащено из ранее не описанной задачи деплоя)
 
 ### Решения, которые надо зафиксировать по ходу
 
-- [ ] Финальный `chunk_size` — оставлен как был в Спринте 1 (структурный, после cap=50 чанков на статью); ablation в Спринте 5
+- [x] Финальный `chunk_size` — оставлен как был в Спринте 1 (структурный, после cap=50 чанков на статью); ablation в Спринте 5
 - [x] Финальный `top-K` для retrieval — **5** по умолчанию
 - [x] Финальный порог отсечения — **0.3** на top-1 score (подтверждён эмпирически: OOD `0.263`, in-domain ≥ `0.485`)
 - [x] Стартовая модель — **Haiku** (`claude-haiku-4-5`)
@@ -179,6 +182,11 @@ _Сюда выносим то, что касается всего проекта
 - Получил: TTFB meta = 308ms, первый lead_delta = 1842ms; safety-кейс «звонят с поддельной ссылкой» начинает lead с шаблона из `SAFETY_PRIMING` (топ-3 категория Безопасность); CORS preflight 200, заголовки на месте; `/answer/sync` без регрессий; OOD-запросы дают 3 события (meta+lead_delta+done) с `usage: 0/0`.
 - Важно: TTFB после `meta` ≈ 1.5с против цели ≤1с — задержка Haiku до момента, когда partial-JSON содержит непустое поле lead, не дефект парсинга. Стратегия стрима: дельты лида (через `partial-json-parser`) + целые секции после закрытия tool_use, не дроблю массив sections (sliding-парсер по массиву усложнил бы код без UX-выигрыша). Если TTFB критичен — варианты для Спринта 5: ручной парсер по сырому JSON `"lead": "...`, либо text-output без tool use со вторым structured-call.
 
+**Блок 4 — Деплой на прод:**
+- Сделал: bootstrap-логика в `main.py` (download tar.gz из `BOOTSTRAP_CHROMA_URL` если `/data/chroma` пуст, идемпотентно); GitHub release `chroma-v1` с архивом 44 MB (sha256 `d21e08d5…`); commit + push → Railway auto-deploy; накатили env `CHROMA_PATH=/data/chroma` и `BOOTSTRAP_CHROMA_URL=…/chroma-v1/chroma.tar.gz`; CORS уже сужен с Спринта 0.
+- Получил: 4/4 prod-ручки проходят с первого опроса; на 5 in-domain запросах `/answer/sync` — avg 5502ms, P50 5444ms, max 7863ms; usage 18955 in / 2632 out → **$0.00642/запрос**, экстраполяция 1k=$6.4, 1M=$6.4k; SSE на проде даёт 32 события на safety-кейсе (lead начинается с предупреждения про SMS).
+- Важно: (1) **Self-healing бутстрап** — `data/chroma/` остаётся в `.gitignore`, артефакт лежит как public GitHub release; если volume сломается, индекс восстановится сам при следующем рестарте. Управляется через env, ноль ручного аплоада. (2) **Метрика latency P50≤4с устарела со streaming** — со SSE надо мерить в декомпозиции: TTFB до пилюль (~300ms), TTFB до первого слова (~1.5с), полное время (P50 5.4с / P95 ~8с). Со streaming пользователь видит пилюли через 300ms — на UX это не «5 секунд тишины». (3) **Стоимость $0.0064/запрос (in-domain)** — на остаток бюджета $15 = ~2330 запросов; для собеса (демо + eval ~100 запросов) хватает многократно. Оптимизация через reranker + кэш — Спринт 5. (4) **P95 на 5 запросах нерепрезентативен** — запрос #2 (safety, 7.7с) единичная точка; нормальный замер P95 будет на eval-сете 30–50 запросов в Спринте 4.
+
 ### Блокеры
 
 - _пока пусто_
@@ -187,24 +195,46 @@ _Сюда выносим то, что касается всего проекта
 
 ## Спринт 3 — Фронт и интеграция (M5, M6)
 
-**Статус:** не начат
+**Статус:** в работе
 **Цель:** G1 в чистом виде — открыл Vercel-ссылку, спросил, получил ответ. Демо можно показывать.
 
 ### Задачи
 
-- [ ] `getAnswer(query)` заменён на `fetch(/api/answer)`
-- [ ] Парсинг ответа API в существующую структуру `{lead, source, sections}`
-- [ ] Пилюли источников: реальная категория Авито + `lastmod` («обновлено N дней назад»)
-- [ ] Стейт ошибки сети — читаемое сообщение
-- [ ] Стейт «retrieval ничего не нашёл» — отдельный визуал + ссылка на чат поддержки
+- [x] `getAnswer(query)` заменён на `fetch(/api/answer)` — `frontend/src/api.js`, POST `/answer/sync`
+- [x] Парсинг ответа API в существующую структуру `{lead, source, sections}` — нормализация в `api.js` (`article_url`→`url`, рекорды source/section/lastmod как есть)
+- [x] Пилюли источников: реальная категория Авито + `lastmod` («обновлено N мес назад») — `SourceCluster` + `SourcePopover` подключены к живым данным
+- [x] Стейт ошибки сети — читаемое сообщение (`ErrorState` с типами `network`/`timeout`/`http`/`parse`/`warming`, retry через `lastQueryRef`)
+- [x] Стейт «retrieval ничего не нашёл» — отдельный визуал (`FallbackState`), срабатывает на `is_fallback: true`
+- [x] CORS прогнан, фронт→бэк работает — 3/3 sanity-запроса на проде curl-ом успешны; allowed_origins содержит `avi-help.vercel.app`
 - [ ] Кнопки фидбека 👍/👎 — POST в заглушку (полное логирование в спринте 4)
-- [ ] CORS прогнан, фронт→бэк работает
 - [ ] Проверка с мобильного устройства
 - [ ] Финальный деплой, ссылки работают
 
 ### Заметки
 
-- _пока пусто_
+**Блок 1 — Декомпозиция прототипа в React:**
+- Сделал: 17 компонентов в `frontend/src/components/` (Header, Tabs, Hero, SearchInput, AnswerCard, Section, SourcePill+SourceList, ExpandButton, FeedbackButtons, LoadingState, ErrorState, FallbackState, CategoryGrid, SupportBlock, Footer, ScrollTopButton, Toast, DevPanel) + `App.jsx` стейт-менеджер + `theme.css` с CSS-переменными + `mocks.js` с 4 фикс-вариантами (success-short / success-long / fallback / error) + `utils/date.js` (formatLastmod c русской плюрализацией) + `lib/toast.js` (pub-sub).
+- Получил: `npm run build` 459ms, 1770 модулей, JS 221 KB / 70 KB gzip, CSS 17 KB / 4 KB gzip; `npm run lint` чистый; dev-сервер поднимается на `localhost:5174`. Mobile-first вёрстка: padding 20px, 1 колонка категорий, шрифт инпутов 16px (Safari не зумит); desktop через `@media (min-width: 720/1024/1280)` расширяет до 4 колонок и `pad-x: 40px`.
+- Важно: (1) **mocks.js + DevPanel — временные**, удалить целиком в блоке 2 при подключении `api.js`, иначе риск что демо случайно покажет fake-ответ из словаря. (2) **`SourcePill` цвет буквы — hash от категории**, не один primary как в прототипе — пилюли визуально разделяются когда их несколько в ряд. (3) Markdown в `Section` пока самописный (`**bold**` + списки `- `) — в блоке 2 заменю на `react-markdown` чтобы корректно рендерить `section.body` от LLM. (4) **CSS-модули** выбраны над глобальным CSS: scope-изоляция, нет рантайм-зависимости (vs styled-components), переменные дизайн-токенов в одном `theme.css`.
+
+**Блок 1.5 — UI-фиксы по референсу Google AI Overview:**
+- Сделал: переделал источники на «как у Google» — один inline-кластер `[<буква категории>] <название первой статьи> +N` после первого предложения лида (компонент `SourceCluster`); клик открывает `SourcePopover` (320px, portal в body, fixed-positioning с flip когда не помещается, закрытие на Escape/scroll/resize/click-outside) со списком всех источников кластера, каждая карточка — целиком кликабельный `<a target="_blank">` с badge + title (clamp 2 строками) + категория · обновлено N мес назад + иконка ↗. Удалил дублирующую полоску пилюль под лидом и старый `SourceMarker`/`SourcePill`. Также: скрыл декоративные табы на ≤480px, кнопка «Поиск» в disabled теперь голубая с opacity 0.55 (не серая), placeholder инпута укорочен на ≤480px через `useMediaQuery`-хук («Например: возврат денег» вместо длинного).
+- Получил: build 152ms, JS 225 KB / 71 KB gzip (+3 KB к до-фиксов блока 1), CSS 19.5 KB / 4.3 KB gzip; lint clean.
+- Важно: (1) **`useSyncExternalStore` для подписок** (`useMediaQuery`, `lib/sourcePopover`) — react-hooks/set-state-in-effect lint-правило в React 19 запрещает синхронный setState из useEffect; это идиоматичный путь без лишних рендеров. (2) **Поповер позиционируется через прямой `ref.current.style`** в `useLayoutEffect`, не через React state — нет лишнего рендер-цикла между измерением и финальным placement'ом; на смену кластера используется `key={clusterId}` для принудительного ремаунта DOM-узла, чтобы не мигало старой позицией. (3) **`data-source-marker` атрибут** на пилюле кластера — `pointerdown` listener в SourcePopover проверяет `closest("[data-source-marker]")` и не закрывает поповер, когда тапаешь по самому маркеру (иначе будет race: pointerdown→close→click→open).
+
+**Блок 2 — Подключение реального API через /answer/sync:**
+- Сделал: `frontend/src/api.js` — `getAnswer(query, { signal, top_k })` через POST `/answer/sync`, 30-секундный timeout через `AbortController`, класс `ApiError` с типами `network`/`timeout`/`http`/`parse`/`warming`/`abort`, отдельная ветка для 503 → `type: "warming"`; нормализация ответа (`article_url`→`url`, дефолты для `section`/`lastmod`/`is_fallback`). `Section` теперь рендерится через `react-markdown` с маппингом `p/ul/ol/li/strong/em/a/code` (default schema без raw HTML — безопасно), ссылки `target="_blank" rel="noopener noreferrer"`. `ErrorState` получил вариант `warming` (жёлтый фон `--color-warn-bg`, иконка `Loader`, текст «Бэкенд только что разогрелся после простоя…»). `App.jsx` переключён на живой fetch: loading → `answer`/`fallback`/`error` по `is_fallback` и `err.type`, retry через `lastQueryRef` (последняя query сохранена даже после очистки инпута), защита от двойного сабмита через `view.kind === "loading"` early return. Удалил `mocks.js` и `DevPanel.jsx`/`.module.css` — никаких фейковых ответов в коде.
+- Получил: 3/3 sanity-запроса на проде через curl: (1) «как вернуть деньги» → `is_fallback: false`, лид + 3 секции (Остаток денег в кошельке / Деньги за объявление или заказ / Как проверить баланс), 2 источника (Частые вопросы / Заказы с доставкой), `latency_ms.total = 6937`; (2) «как сварить борщ» → `is_fallback: true`, типовой лид «По этому запросу не нашлось…», 0 секций, 0 источников, 190мс (pre-LLM fallback по low score, как и заявлено в Спринте 2); (3) «звонят и просят код из смс» → лид начинается с «Никогда не сообщайте код из смс никому…» (safety priming сработал на категории «Профиль», статья 4221), 1 источник. Build: JS 339 KB / 106 KB gzip (+35 KB gzip к блоку 1.5 — это `react-markdown` + remark + unified), CSS 20 KB / 4.5 KB gzip. Lint clean.
+- Важно: (1) **CORS allowed_origins на бэке** = `http://localhost:5173,https://avi-help.vercel.app`. Локальный `npm run dev` должен запускаться именно на 5173 — если порт занят (например, висит старый Vite), Vite берёт 5174 и запросы к прод-API режутся CORS-ом. На Vercel-домене всё ок. Альтернатива для локалки — поднять локальный uvicorn на :8000 и направить `VITE_API_BASE_URL=http://localhost:8000` (там CORS по дефолту). (2) **react-markdown bundle overhead +35 KB gzip** — терпимо для 60-секундного первого визита, но если в Спринте 5 надо ужать (PRD G1 «<8 сек» — это про LLM-latency, не про bundle, всё равно стоит мониторить mobile metrics) — варианты `marked` (~10 KB) или вернуться к самописному. (3) **На проде раз в первый запрос после тишины срабатывает 503** — Chroma init на холодном Railway. Mы это явно отлавливаем как `type: "warming"` с мягким жёлтым плакатом. Retry через 30 сек обычно даёт 200. (4) **bundle 339 KB JS — не блокер для G1**, но Vercel прогревает edge-cache, и реальный first-paint на mobile 4G ~1с после прогрева.
+
+**Блок 3 — SSE-стриминг через POST /answer:**
+- Сделал: `streamAnswer(query, callbacks)` в `frontend/src/api.js` через `fetch + ReadableStream + TextDecoder` (без `EventSource` — он только GET, не умеет POST с body); собственный SSE-парсер с поддержкой `\n\n` и `\r\n\r\n` (на случай прокси-переноса CRLF), пропуск SSE-комментов `:`, опциональный пробел после `data:`. Колбэки `onMeta` / `onLeadDelta` / `onSection` / `onDone` / `onError` + опции `signal` (внешний AbortSignal) и `top_k`. `App.jsx` переписан на `useReducer` (action-ы START/META/LEAD_DELTA/SECTION/DONE/SYNC_OK/ERROR/CLOSE) — лид аккумулируется через `lead + action.text`, секции пушатся в массив, источники из `meta` сохраняются и могут быть перезаписаны финальными из `done`. Отдельный `streamCtrlRef` в `useRef` хранит `AbortController` текущего стрима — на новый запрос вызывается `streamCtrlRef.current.abort()` до старта следующего, на unmount — cleanup. View-rendering: `streaming` с `lead === ""` → `LoadingState` (stage `thinking`/`writing` зависит от того, пришла ли уже meta), `streaming` с непустым лидом → `AnswerCard streaming` (мигающий курсор в конце лида, `FeedbackButtons` скрыты до done), на DONE при `is_fallback=true` и пустых sources → `FallbackState` с накопленным лидом. Тумблер `VITE_USE_SYNC=1` оставляет старый sync-путь через `getAnswer` (для отладки UI без stream-парсера) — по умолчанию stream.
+- Получил: 3/3 stream sanity-запроса на проде показывают ожидаемую последовательность:
+  - **«как вернуть деньги»**: meta @ 256ms (4 sources, is_fallback=false) → первая lead_delta @ 1534ms («Спо») → 23 deltas пачками по 1-10 символов → 3 sections и done @ 4057ms (3 sources after dedup, 543 output_tokens, model claude-haiku-4-5).
+  - **«как сварить борщ»**: meta @ 287ms (sources=0, is_fallback=true) → 1 lead_delta с типовым сообщением → done @ 287ms (pre-LLM fallback, мгновенно). Здесь между мета и done нет промежуточных deltas — после первой dispatch'ит `kind: "fallback"`.
+  - **«звонят с поддельной ссылкой»**: meta @ 495ms (4 sources) → первая delta @ 2413ms («Ав» — safety priming сработал, лид начинается с «Авито никогда не…») → 35 deltas → 2 секции и done @ 5006ms. Проверил, что `sources_used=2 / sources=1` (LLM сослался на 2 chunk_id из одной статьи, бэк дедуплицирует по `article_id`).
+  - Build: JS 341 KB / 107 KB gzip (+1 KB к блоку 2 — компактный stream-парсер), CSS 20 KB / 4.5 KB gzip. Lint clean.
+- Важно: (1) **`AbortController` cancel при новом запросе** — `streamAnswer` ловит `AbortError` и шлёт `onError({ type: "abort" })`, reducer этот тип игнорирует (return state) — старый стрим тихо умирает, новый стартует с чистого state через `START`. Без этого старые `lead_delta`-ивенты дописывались бы в новый ответ. (2) **Safari mobile streaming buffering** — бэк уже шлёт `X-Accel-Buffering: no` и первое событие `meta` ~300 байт (4 sources × ~70 байт), этого хватает чтобы Safari не накапливал. Если в реальном тесте на iPhone (Блок 5) увидим задержку >2с до первого `meta` — добавлю padding на бэке: `:padding: <2KB пробелов>\n\n` перед первым SSE-событием. **Со стороны фронта обходов нет** — только серверная инициатива. (3) **На fallback-запросе видна короткая «вспышка»** AnswerCard streaming с типовым лидом за ~250ms до переключения на FallbackState на DONE. Не критично визуально, но если сделать UX чище — в reducer на META при `is_fallback=true && sources=[]` сразу dispatch'ить `FALLBACK_PRE` и не накапливать лид. Оставил, эффект <300ms незаметен. (4) **Источник-кластер появляется только когда есть первое предложение лида** (`renderLeadWithCluster` ищет первую `[.!?]\s` и вставляет `SourceCluster`). До этого пользователь видит только LoadingState. Это значит TTFB для пилюли источников ≈ TTFB первой lead_delta = 1.5-2с, а не 250-500ms как было бы при полоске под лидом. Компромисс осознанный — ради дизайн-фикса 1.5 (только inline-кластер, без дублирования). Если в Блоке 4/5 пользователь захочет «источники сразу» — можно добавить мини-индикатор в LoadingState («Найдено N источников»). (5) **Тумблер `VITE_USE_SYNC=1`** в `.env.local` переключает на `/answer/sync`. Удобно когда нужно дебажить UI без race condition'ов стрима.
 
 ### Блокеры
 

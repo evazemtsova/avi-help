@@ -1,0 +1,112 @@
+.card {
+  width: 100%;
+  max-width: var(--content-max);
+  margin: var(--space-6) auto 0;
+  padding: 0 var(--pad-x);
+  position: relative;
+  animation: appear var(--dur-slow) var(--ease);
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.spark {
+  color: var(--color-accent);
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-accent);
+  letter-spacing: 0.2px;
+}
+
+.close {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-subtle);
+  transition: background var(--dur-fast) var(--ease);
+}
+
+.close:hover {
+  background: var(--color-bg-soft);
+}
+
+.body {
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--color-text);
+}
+
+.lead {
+  font-size: 16px;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.lead strong {
+  font-weight: 700;
+}
+
+.cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: var(--color-accent);
+  margin-left: 2px;
+  vertical-align: -2px;
+  animation: blink 1s steps(2, start) infinite;
+}
+
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
+}
+
+.sectionsWrap {
+  position: relative;
+  transition: max-height var(--dur-slow) var(--ease);
+}
+
+.fade {
+  max-height: 320px;
+  overflow: hidden;
+}
+
+.fade::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(to bottom, transparent, var(--color-bg));
+  pointer-events: none;
+}

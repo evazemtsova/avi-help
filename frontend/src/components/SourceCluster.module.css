@@ -1,0 +1,71 @@
+.cluster {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-bg-soft);
+  border-radius: var(--radius-pill);
+  padding: 3px 10px 3px 3px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  transition: background var(--dur-fast) var(--ease);
+  vertical-align: 1px;
+  margin: 0 4px;
+  /* >= 28px высоты — таргет под палец */
+  min-height: 28px;
+  max-width: 100%;
+}
+
+.cluster:hover,
+.cluster:focus-visible {
+  background: var(--color-bg-soft-hover);
+  color: var(--color-text);
+  outline: none;
+}
+
+.active {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.badge {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.title {
+  font-weight: 500;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+.active .title {
+  color: var(--color-accent);
+}
+
+.plus {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-subtle);
+  flex-shrink: 0;
+}
+
+.active .plus {
+  color: var(--color-accent);
+}
+
+@media (min-width: 720px) {
+  .title {
+    max-width: 240px;
+  }
+}

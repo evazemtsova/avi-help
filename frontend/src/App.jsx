@@ -1,81 +1,261 @@
-import { useState } from 'react'
+import { useEffect, useReducer, useRef, useState } from "react";
+import Header from "./components/Header";
+import Tabs from "./components/Tabs";
+import Hero from "./components/Hero";
+import AnswerCard from "./components/AnswerCard";
+import LoadingState from "./components/LoadingState";
+import ErrorState from "./components/ErrorState";
+import FallbackState from "./components/FallbackState";
+import CategoryGrid from "./components/CategoryGrid";
+import SupportBlock from "./components/SupportBlock";
+import Footer from "./components/Footer";
+import ScrollTopButton from "./components/ScrollTopButton";
+import Toast from "./components/Toast";
+import SourcePopover from "./components/SourcePopover";
+import { getAnswer, streamAnswer, ApiError } from "./api";
+import styles from "./App.module.css";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+/**
+ * Корневой стейт-менеджер.
+ *
+ * View-machine через useReducer (state накапливается из SSE-дельт):
+ *   idle      — нет ответа, показываем категории
+ *   streaming — стрим в процессе (stage: thinking | writing)
+ *   answer    — финальный ответ
+ *   fallback  — is_fallback=true с пустыми sources
+ *   error     — ошибка сети/HTTP/таймаут/503
+ *
+ * VITE_USE_SYNC=1 → отладочный режим через /answer/sync (без стрима).
+ * По умолчанию используется streaming.
+ */
 
-function App() {
-  const [query, setQuery] = useState('')
-  const [answer, setAnswer] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+const USE_SYNC = import.meta.env.VITE_USE_SYNC === "1";
 
-  async function handleSubmit(e) {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
-    setAnswer(null)
-    try {
-      const res = await fetch(`${API_BASE}/answer`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query }),
-      })
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const data = await res.json()
-      setAnswer(data)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
+const initialState = { kind: "idle" };
+
+function reducer(state, action) {
+  switch (action.type) {
+    case "START":
+      return {
+        kind: "streaming",
+        stage: "thinking",
+        lead: "",
+        sections: [],
+        sources: [],
+        is_fallback: false,
+        query: action.query,
+      };
+    case "META":
+      if (state.kind !== "streaming") return state;
+      return {
+        ...state,
+        stage: "writing",
+        sources: action.sources,
+        is_fallback: action.is_fallback,
+      };
+    case "LEAD_DELTA":
+      if (state.kind !== "streaming") return state;
+      return { ...state, lead: state.lead + action.text };
+    case "SECTION":
+      if (state.kind !== "streaming") return state;
+      return {
+        ...state,
+        sections: [...state.sections, { title: action.title, body: action.body }],
+      };
+    case "DONE": {
+      if (state.kind !== "streaming") return state;
+      // На done бэк присылает финальные sources (после валидации); если их
+      // нет, оставляем те, что пришли в meta.
+      const finalSources =
+        action.sources && action.sources.length ? action.sources : state.sources;
+      const data = {
+        lead: state.lead,
+        sections: state.sections,
+        sources: finalSources,
+        sources_used: action.sources_used || [],
+        is_fallback: action.is_fallback,
+        usage: action.usage,
+        model: action.model,
+      };
+      if (action.is_fallback && (!finalSources || finalSources.length === 0)) {
+        return { kind: "fallback", data, query: state.query };
+      }
+      return { kind: "answer", data, query: state.query };
     }
+    case "SYNC_OK": {
+      // Режим VITE_USE_SYNC: один результат вместо стрима.
+      const { data, query } = action;
+      if (data.is_fallback && (!data.sources || data.sources.length === 0)) {
+        return { kind: "fallback", data, query };
+      }
+      return { kind: "answer", data, query };
+    }
+    case "ERROR":
+      return {
+        kind: "error",
+        type: action.errType || "unknown",
+        message: action.message || "",
+        query: action.query,
+      };
+    case "CLOSE":
+      return { kind: "idle" };
+    default:
+      return state;
   }
-
-  return (
-    <div style={{ maxWidth: 720, margin: '40px auto', padding: 16, fontFamily: 'sans-serif' }}>
-      <h1>А-Помощь (skeleton)</h1>
-      <p style={{ color: '#666' }}>API: {API_BASE}</p>
-
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Задай вопрос…"
-          style={{ width: '100%', padding: 12, fontSize: 16 }}
-          maxLength={200}
-        />
-        <button type="submit" disabled={loading || !query} style={{ marginTop: 8, padding: '10px 16px' }}>
-          {loading ? 'Думаю…' : 'Спросить'}
-        </button>
-      </form>
-
-      {error && (
-        <div style={{ marginTop: 16, color: 'crimson' }}>
-          Ошибка: {error}
-        </div>
-      )}
-
-      {answer && (
-        <div style={{ marginTop: 16, padding: 16, border: '1px solid #ddd', borderRadius: 8 }}>
-          <p>{answer.lead}</p>
-          {answer.sources?.length > 0 && (
-            <div style={{ marginTop: 12 }}>
-              <strong>Источники:</strong>
-              <ul>
-                {answer.sources.map((s) => (
-                  <li key={s.article_id}>
-                    <a href={s.url} target="_blank" rel="noreferrer">
-                      {s.title}
-                    </a>{' '}
-                    <span style={{ color: '#999' }}>({s.category})</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  )
 }
 
-export default App
+export default function App() {
+  const [view, dispatch] = useReducer(reducer, initialState);
+  // query поля ввода контролится отдельно — не зависит от view, чтобы при
+  // отмене/ошибке инпут не очищался.
+  const [query, setQuery] = useState("");
+  const heroSentinelRef = useRef(null);
+  const lastQueryRef = useRef("");
+  // AbortController текущего стрима. При новом запросе — abort предыдущего.
+  const streamCtrlRef = useRef(null);
+
+  useEffect(() => {
+    // Cancel при unmount
+    return () => streamCtrlRef.current?.abort();
+  }, []);
+
+  async function pickAndShow(q) {
+    const trimmed = q?.trim();
+    if (!trimmed) return;
+    // Двойной сабмит: если уже стримится тот же запрос — ничего не делаем.
+    if (
+      view.kind === "streaming" &&
+      view.query === trimmed &&
+      streamCtrlRef.current
+    )
+      return;
+
+    // Cancel предыдущего стрима если был
+    if (streamCtrlRef.current) {
+      streamCtrlRef.current.abort();
+      streamCtrlRef.current = null;
+    }
+
+    setQuery(trimmed);
+    lastQueryRef.current = trimmed;
+    dispatch({ type: "START", query: trimmed });
+
+    if (USE_SYNC) {
+      try {
+        const data = await getAnswer(trimmed);
+        dispatch({ type: "SYNC_OK", data, query: trimmed });
+      } catch (err) {
+        if (err instanceof ApiError && err.type === "abort") return;
+        dispatch({
+          type: "ERROR",
+          errType: err?.type || "unknown",
+          message: err?.message || String(err),
+          query: trimmed,
+        });
+      }
+      return;
+    }
+
+    const ctrl = new AbortController();
+    streamCtrlRef.current = ctrl;
+
+    await streamAnswer(trimmed, {
+      signal: ctrl.signal,
+      onMeta: ({ sources, is_fallback }) =>
+        dispatch({ type: "META", sources, is_fallback }),
+      onLeadDelta: ({ text }) => dispatch({ type: "LEAD_DELTA", text }),
+      onSection: ({ title, body }) =>
+        dispatch({ type: "SECTION", title, body }),
+      onDone: (payload) => {
+        if (streamCtrlRef.current === ctrl) streamCtrlRef.current = null;
+        dispatch({ type: "DONE", ...payload });
+      },
+      onError: (err) => {
+        if (streamCtrlRef.current === ctrl) streamCtrlRef.current = null;
+        if (err?.type === "abort") return;
+        dispatch({
+          type: "ERROR",
+          errType: err?.type || "unknown",
+          message: err?.message || String(err),
+          query: trimmed,
+        });
+      },
+    });
+  }
+
+  function handleClose() {
+    if (streamCtrlRef.current) {
+      streamCtrlRef.current.abort();
+      streamCtrlRef.current = null;
+    }
+    dispatch({ type: "CLOSE" });
+  }
+
+  function handleRetry() {
+    pickAndShow(lastQueryRef.current || query);
+  }
+
+  const isLoading =
+    view.kind === "streaming" && (view.lead === "" || view.stage === "thinking");
+
+  return (
+    <>
+      <Header onSubmit={pickAndShow} heroSentinelRef={heroSentinelRef} />
+      <main className={styles.main}>
+        <Tabs />
+        <Hero
+          ref={heroSentinelRef}
+          query={query}
+          onQueryChange={setQuery}
+          onSubmit={pickAndShow}
+          disabled={view.kind === "streaming"}
+        />
+
+        {isLoading && <LoadingState stage={view.stage || "thinking"} />}
+
+        {view.kind === "streaming" && view.lead !== "" && (
+          <AnswerCard
+            query={view.query}
+            answer={{
+              lead: view.lead,
+              sections: view.sections,
+              sources: view.sources,
+              sources_used: [],
+              is_fallback: view.is_fallback,
+            }}
+            streaming
+            onClose={handleClose}
+          />
+        )}
+
+        {view.kind === "answer" && (
+          <AnswerCard
+            query={view.query}
+            answer={view.data}
+            onClose={handleClose}
+          />
+        )}
+
+        {view.kind === "fallback" && (
+          <FallbackState query={view.query} lead={view.data?.lead} />
+        )}
+
+        {view.kind === "error" && (
+          <ErrorState
+            type={view.type}
+            message={view.message}
+            onRetry={handleRetry}
+          />
+        )}
+
+        <CategoryGrid onPick={pickAndShow} />
+        <SupportBlock />
+        <Footer />
+      </main>
+
+      <ScrollTopButton />
+      <Toast />
+      <SourcePopover />
+    </>
+  );
+}

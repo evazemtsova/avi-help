@@ -1,0 +1,61 @@
+.box {
+  display: flex;
+  width: 100%;
+  max-width: var(--hero-search-max);
+  height: 48px;
+  border: 2px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-bg);
+}
+
+.input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 0 var(--space-4);
+  /* >= 16px чтобы Safari не зумил viewport на focus */
+  font-size: 16px;
+  color: var(--color-text);
+  background: var(--color-bg);
+  min-width: 0;
+}
+
+.input::placeholder {
+  color: var(--color-text-subtle);
+}
+
+.button {
+  width: 96px;
+  background: var(--color-accent);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  flex-shrink: 0;
+  transition: background var(--dur-fast) var(--ease);
+}
+
+.button:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+}
+
+.button:disabled {
+  /* Голубой остаётся (как в прототипе), но визуально притушен.
+     Серый цвет вводил пользователя в заблуждение «кнопка нерабочая». */
+  background: var(--color-accent);
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@media (min-width: 720px) {
+  .box {
+    height: 52px;
+  }
+  .input {
+    padding: 0 var(--space-5);
+  }
+  .button {
+    width: 110px;
+    font-size: 16px;
+  }
+}

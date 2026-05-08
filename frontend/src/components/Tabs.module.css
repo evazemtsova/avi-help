@@ -1,0 +1,54 @@
+.container {
+  /* На узких экранах табы декоративные → не показываем, экономим вертикаль. */
+  display: none;
+  justify-content: center;
+  margin: var(--space-6) var(--pad-x) var(--space-8);
+}
+
+@media (min-width: 481px) {
+  .container {
+    display: flex;
+  }
+}
+
+.tabs {
+  display: flex;
+  background: var(--color-bg-soft);
+  border-radius: var(--radius-lg);
+  padding: var(--space-1);
+  gap: var(--space-1);
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tab {
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-text);
+  border-radius: var(--radius-md);
+  white-space: nowrap;
+  transition: all var(--dur) var(--ease);
+}
+
+.tab.active {
+  background: var(--color-bg);
+  box-shadow: var(--shadow-card);
+  font-weight: 500;
+}
+
+@media (min-width: 720px) {
+  .container {
+    margin-top: var(--space-6);
+    margin-bottom: var(--space-8);
+  }
+  .tab {
+    padding: 10px 48px;
+    font-size: 15px;
+  }
+}

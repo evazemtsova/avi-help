@@ -1,0 +1,88 @@
+.section {
+  margin-top: var(--space-5);
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 var(--space-3);
+  color: var(--color-text);
+  letter-spacing: -0.1px;
+}
+
+.para {
+  font-size: 16px;
+  line-height: 1.65;
+  margin: 0 0 var(--space-3);
+}
+
+.para:last-child {
+  margin-bottom: 0;
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.list li {
+  position: relative;
+  padding-left: 22px;
+  margin-bottom: var(--space-3);
+  line-height: 1.55;
+  font-size: 16px;
+}
+
+.list li::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 10px;
+  width: 6px;
+  height: 6px;
+  background: var(--color-text);
+  border-radius: 50%;
+}
+
+.list li:last-child {
+  margin-bottom: 0;
+}
+
+.ordered {
+  counter-reset: item;
+}
+
+.ordered li {
+  counter-increment: item;
+}
+
+.ordered li::before {
+  content: counter(item) ".";
+  background: transparent;
+  width: auto;
+  height: auto;
+  top: 0;
+  left: 0;
+  font-weight: 600;
+  color: var(--color-text);
+  border-radius: 0;
+}
+
+.link {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.link:hover {
+  color: var(--color-accent-hover);
+}
+
+.code {
+  background: var(--color-bg-soft);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 14px;
+}

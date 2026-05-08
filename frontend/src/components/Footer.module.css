@@ -1,0 +1,23 @@
+.footer {
+  max-width: var(--container-max);
+  margin: var(--space-8) auto 0;
+  padding: 0 var(--pad-x) var(--space-10);
+  text-align: center;
+}
+
+.text {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-text-subtle);
+}
+
+.text a {
+  color: var(--color-text-subtle);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.text a:hover {
+  color: var(--color-text);
+}
