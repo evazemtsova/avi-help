@@ -74,19 +74,56 @@
   font-weight: 700;
 }
 
+/*
+ * Курсор-glyph ▍ — full-block character. Виден намного лучше чем
+ * 2px-палочка; цвет берётся через color (не background), потому что
+ * это текстовый узел.
+ */
 .cursor {
   display: inline-block;
-  width: 2px;
-  height: 1em;
-  background: var(--color-accent);
+  color: var(--color-accent);
   margin-left: 2px;
-  vertical-align: -2px;
-  animation: blink 1s steps(2, start) infinite;
+  font-weight: 400;
+  animation: blink 0.9s steps(2, start) infinite;
+  vertical-align: baseline;
 }
 
 @keyframes blink {
   to {
-    visibility: hidden;
+    opacity: 0;
+  }
+}
+
+/*
+ * Каждый delta-chunk лида приходит отдельным <span>. При mount
+ * применяется blur+opacity-анимация — текст «приходит в фокус».
+ * Длительность 220мс, чтобы при темпе 50 chunk/sec анимации
+ * отдельных чанков успевали накладываться и создавать эффект
+ * «волны проявления». После завершения никакого визуального
+ * эффекта не остаётся (это inline-spans на одной строке).
+ */
+.chunk {
+  display: inline;
+  animation: chunkAppear 220ms ease-out;
+}
+
+@keyframes chunkAppear {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chunk {
+    animation: none;
+  }
+  .cursor {
+    animation: none;
   }
 }
 

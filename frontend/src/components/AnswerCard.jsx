@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Sparkles, X } from "lucide-react";
 import SourceCluster from "./SourceCluster";
 import Section from "./Section";
+import SectionsSkeleton from "./SectionsSkeleton";
 import ExpandButton from "./ExpandButton";
 import FeedbackButtons from "./FeedbackButtons";
 import { showToast } from "../lib/toast";
@@ -56,9 +57,28 @@ function renderLeadWithCluster(text, sources) {
   );
 }
 
+/**
+ * Рендер лида во время стрима — каждый delta-chunk это отдельный <span>,
+ * к которому при mount применяется CSS-анимация blur+opacity. Эффект
+ * «текст приходит в фокус» вместо «появился кусок мгновенно».
+ *
+ * Bold-разметка (**...**) во время стрима не парсится — крайне редко
+ * встречается в лидах справочного контента; после done renderInline
+ * отрабатывает как обычно.
+ */
+function renderStreamingChunks(chunks) {
+  if (!chunks || chunks.length === 0) return null;
+  return chunks.map((c, i) => (
+    <span key={i} className={styles.chunk}>
+      {c}
+    </span>
+  ));
+}
+
 export default function AnswerCard({
   query,
   answer,
+  leadChunks = null,
   streaming = false,
   onClose,
 }) {
@@ -115,20 +135,34 @@ export default function AnswerCard({
 
       <div className={styles.body}>
         <p className={styles.lead}>
-          {renderLeadWithCluster(answer.lead, sources)}
-          {streaming && <span className={styles.cursor} aria-hidden="true" />}
+          {streaming
+            ? renderStreamingChunks(leadChunks)
+            : renderLeadWithCluster(answer.lead, sources)}
+          {streaming && answer.lead && (
+            <span className={styles.cursor} aria-hidden="true">
+              ▍
+            </span>
+          )}
         </p>
 
-        {visibleSections.length > 0 && (
-          <div
-            className={`${styles.sectionsWrap} ${
-              isLong && !expanded ? styles.fade : ""
-            }`}
-          >
-            {visibleSections.map((s, i) => (
-              <Section key={`${s.title}-${i}`} title={s.title} body={s.body} />
-            ))}
-          </div>
+        {streaming && sections.length === 0 ? (
+          <SectionsSkeleton />
+        ) : (
+          visibleSections.length > 0 && (
+            <div
+              className={`${styles.sectionsWrap} ${
+                isLong && !expanded ? styles.fade : ""
+              }`}
+            >
+              {visibleSections.map((s, i) => (
+                <Section
+                  key={`${s.title}-${i}`}
+                  title={s.title}
+                  body={s.body}
+                />
+              ))}
+            </div>
+          )
         )}
 
         {isLong && (

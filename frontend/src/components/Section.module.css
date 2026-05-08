@@ -1,5 +1,23 @@
 .section {
   margin-top: var(--space-5);
+  animation: sectionAppear 320ms ease-out;
+}
+
+@keyframes sectionAppear {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section {
+    animation: none;
+  }
 }
 
 .title {

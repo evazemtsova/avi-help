@@ -40,6 +40,7 @@ function reducer(state, action) {
         kind: "streaming",
         stage: "thinking",
         lead: "",
+        leadChunks: [],
         sections: [],
         sources: [],
         is_fallback: false,
@@ -55,7 +56,11 @@ function reducer(state, action) {
       };
     case "LEAD_DELTA":
       if (state.kind !== "streaming") return state;
-      return { ...state, lead: state.lead + action.text };
+      return {
+        ...state,
+        lead: state.lead + action.text,
+        leadChunks: [...state.leadChunks, action.text],
+      };
     case "SECTION":
       if (state.kind !== "streaming") return state;
       return {
@@ -235,6 +240,7 @@ export default function App() {
                     is_fallback: view.is_fallback,
                   }
             }
+            leadChunks={view.kind === "streaming" ? view.leadChunks : null}
             streaming={view.kind === "streaming"}
             onClose={handleClose}
           />
