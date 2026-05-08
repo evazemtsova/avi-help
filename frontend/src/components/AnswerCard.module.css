@@ -73,6 +73,10 @@
   font-size: 16px;
   line-height: 1.65;
   margin: 0;
+  /* Длинный URL или непереносимое слово (типа alphanumeric chunk_id из
+     LLM, если он попал в текст) не должен ломать вёрстку на узких
+     экранах. anywhere разрешает перенос в любой точке как fallback. */
+  overflow-wrap: anywhere;
 }
 
 .lead strong {

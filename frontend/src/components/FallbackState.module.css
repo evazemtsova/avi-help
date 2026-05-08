@@ -84,8 +84,8 @@
   padding: 8px 14px;
   border-radius: var(--radius-md);
   border: 1px solid var(--color-accent);
-  /* >= 36px touch target */
-  min-height: 36px;
+  /* >= 44px touch target по Apple HIG */
+  min-height: 44px;
   transition: background var(--dur-fast) var(--ease);
 }
 

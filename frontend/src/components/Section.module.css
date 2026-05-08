@@ -1,6 +1,8 @@
 .section {
   margin-top: var(--space-5);
   animation: sectionAppear 320ms ease-out;
+  /* Та же страховка от длинных URL/слов что и в .lead */
+  overflow-wrap: anywhere;
 }
 
 @keyframes sectionAppear {

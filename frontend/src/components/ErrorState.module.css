@@ -60,8 +60,8 @@
   font-size: 14px;
   color: var(--color-text);
   font-weight: 500;
-  /* >= 36px touch target */
-  min-height: 36px;
+  /* >= 44px touch target по Apple HIG */
+  min-height: 44px;
   transition: background var(--dur-fast) var(--ease);
 }
 

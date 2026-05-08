@@ -47,9 +47,9 @@
   font-size: 15px;
   line-height: 1.4;
   color: var(--color-text);
-  padding: var(--space-2) 0;
-  /* >= 36px touch target за счёт padding+font */
-  min-height: 36px;
+  padding: var(--space-3) 0;
+  /* >= 44px touch target по Apple HIG */
+  min-height: 44px;
   transition: color var(--dur-fast) var(--ease);
 }
 
