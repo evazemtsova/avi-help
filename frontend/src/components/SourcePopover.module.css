@@ -86,9 +86,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
-  font-size: 12px;
-  font-weight: 700;
+  background: var(--color-border-strong);
+  color: var(--color-text-muted);
   flex-shrink: 0;
   margin-top: 2px;
 }

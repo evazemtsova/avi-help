@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { Paperclip } from "lucide-react";
 import {
   openCluster,
   closeCluster,
@@ -7,35 +8,17 @@ import {
 import styles from "./SourceCluster.module.css";
 
 /**
- * Inline-кластер источников — одна пилюля: бейдж + название первого
- * источника + «+N» если их больше.  Клик открывает SourcePopover со
- * списком всех ссылок кластера.
+ * Inline-кластер источников — одна пилюля: бейдж со скрепкой +
+ * название первого источника + «+N» если их больше. Клик открывает
+ * SourcePopover со списком всех ссылок кластера.
  *
  * Дизайн по референсу Google AI Overview: ссылки не дублируются (нет
  * отдельной полоски под лидом), вся группа источников живёт ровно
- * там, где привязана к тексту.
+ * там, где привязана к тексту. Бейдж — единый серый кружок со
+ * скрепкой для всех источников (раньше была первая буква категории
+ * с цветовой палитрой; убрали ради единообразия и чтобы не путать
+ * пользователя «что значит буква»).
  */
-
-const PALETTE = [
-  "#00aaff",
-  "#4da6ff",
-  "#a855f7",
-  "#00d747",
-  "#ff6163",
-  "#f59e0b",
-];
-
-function colorFor(source) {
-  const key = source?.category || source?.title || "?";
-  let h = 0;
-  for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) | 0;
-  return PALETTE[Math.abs(h) % PALETTE.length];
-}
-
-function letterFor(source) {
-  const key = source?.category || source?.title || "?";
-  return key.slice(0, 1).toUpperCase();
-}
 
 function clusterIdFor(sources) {
   return sources.map((s) => s.article_id).join(",");
@@ -87,8 +70,8 @@ export default function SourceCluster({ sources }) {
           : `${sources.length} источника по теме, первый: ${first.title}`
       }
     >
-      <span className={styles.badge} style={{ background: colorFor(first) }}>
-        {letterFor(first)}
+      <span className={styles.badge}>
+        <Paperclip size={12} aria-hidden="true" />
       </span>
       <span className={styles.title}>{first.title}</span>
       {extra > 0 && <span className={styles.plus}>+{extra}</span>}

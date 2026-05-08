@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { ExternalLink, X } from "lucide-react";
+import { ExternalLink, Paperclip, X } from "lucide-react";
 import { closeCluster, useActiveCluster } from "../lib/sourcePopover";
 import { formatLastmod } from "../utils/date";
 import styles from "./SourcePopover.module.css";
@@ -9,28 +9,11 @@ import styles from "./SourcePopover.module.css";
  * Глобальный поповер кластера источников. Каждый item — прямая ссылка
  * на support.avito.ru, открывается в новой вкладке. Поповер закрывается
  * на: клик-вне / Escape / scroll / resize / повторный клик на кластер.
+ *
+ * Бейджи у всех ссылок одинаковые (серый кружок со скрепкой), без
+ * привязки к категории — единообразный визуал, как у внешних ссылок
+ * во многих UI-системах.
  */
-
-const PALETTE = [
-  "#00aaff",
-  "#4da6ff",
-  "#a855f7",
-  "#00d747",
-  "#ff6163",
-  "#f59e0b",
-];
-
-function colorFor(source) {
-  const key = source?.category || source?.title || "?";
-  let h = 0;
-  for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) | 0;
-  return PALETTE[Math.abs(h) % PALETTE.length];
-}
-
-function letterFor(source) {
-  const key = source?.category || source?.title || "?";
-  return key.slice(0, 1).toUpperCase();
-}
 
 export default function SourcePopover() {
   const state = useActiveCluster();
@@ -114,11 +97,8 @@ export default function SourcePopover() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <span
-                  className={styles.badge}
-                  style={{ background: colorFor(s) }}
-                >
-                  {letterFor(s)}
+                <span className={styles.badge}>
+                  <Paperclip size={14} aria-hidden="true" />
                 </span>
                 <span className={styles.text}>
                   <span className={styles.title}>{s.title}</span>
