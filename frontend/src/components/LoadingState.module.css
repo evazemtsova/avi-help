@@ -1,6 +1,6 @@
 .wrap {
   width: 100%;
-  max-width: var(--content-max);
+  max-width: calc(var(--content-max) + 2 * var(--pad-x));
   margin: var(--space-6) auto 0;
   padding: 0 var(--pad-x);
 }

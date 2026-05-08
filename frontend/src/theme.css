@@ -89,7 +89,12 @@ p {
 
   /* Layout */
   --container-max: 1200px;
-  --content-max: 644px;
+  /*
+   * --content-max — видимая ширина текста в карточках (без боковых
+   * padding'ов). Совпадает с шириной поискового инпута, чтобы инпут
+   * и блок ответа визуально были «одной колонкой».
+   */
+  --content-max: 640px;
   --hero-search-max: 640px;
 
   /* Spacing scale (4-based) */
