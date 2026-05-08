@@ -213,25 +213,29 @@ export default function App() {
 
         {isLoading && <LoadingState stage={view.stage || "thinking"} />}
 
-        {view.kind === "streaming" && view.lead !== "" && (
+        {/*
+          Один AnswerCard поверх streaming → answer. React видит только
+          смену пропсов, не размонтирует узел — CSS `appear` срабатывает
+          один раз при первом появлении карточки, дальше inplace-апдейт.
+          Без этого на DONE карточка визуально перерисовывалась с нуля
+          («обновление прошло») и секции вылетали разом.
+        */}
+        {((view.kind === "streaming" && view.lead !== "") ||
+          view.kind === "answer") && (
           <AnswerCard
             query={view.query}
-            answer={{
-              lead: view.lead,
-              sections: view.sections,
-              sources: view.sources,
-              sources_used: [],
-              is_fallback: view.is_fallback,
-            }}
-            streaming
-            onClose={handleClose}
-          />
-        )}
-
-        {view.kind === "answer" && (
-          <AnswerCard
-            query={view.query}
-            answer={view.data}
+            answer={
+              view.kind === "answer"
+                ? view.data
+                : {
+                    lead: view.lead,
+                    sections: view.sections,
+                    sources: view.sources,
+                    sources_used: [],
+                    is_fallback: view.is_fallback,
+                  }
+            }
+            streaming={view.kind === "streaming"}
             onClose={handleClose}
           />
         )}

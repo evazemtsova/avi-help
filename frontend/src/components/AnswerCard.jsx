@@ -76,7 +76,10 @@ export default function AnswerCard({
     return n;
   }, [answer, sections]);
 
-  const isLong = totalLength > LONG_THRESHOLD;
+  // Во время стрима не сворачиваем хвост: иначе при пересечении порога
+  // (лид + первая секция > 600 знаков) визуально «прыгает» fade + expand
+  // button. После done isLong кнопка появится, но карточка уже на экране.
+  const isLong = !streaming && totalLength > LONG_THRESHOLD;
 
   const visibleSections = isLong && !expanded ? sections.slice(0, 1) : sections;
   const hiddenSections = isLong && !expanded ? sections.slice(1) : [];
