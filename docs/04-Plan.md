@@ -195,8 +195,9 @@ _Сюда выносим то, что касается всего проекта
 
 ## Спринт 3 — Фронт и интеграция (M5, M6)
 
-**Статус:** в работе
+**Статус:** ✅ готов
 **Цель:** G1 в чистом виде — открыл Vercel-ссылку, спросил, получил ответ. Демо можно показывать.
+**Демо:** https://avi-help.vercel.app/
 
 ### Задачи
 
@@ -207,8 +208,32 @@ _Сюда выносим то, что касается всего проекта
 - [x] Стейт «retrieval ничего не нашёл» — отдельный визуал (`FallbackState`), срабатывает на `is_fallback: true`
 - [x] CORS прогнан, фронт→бэк работает — 3/3 sanity-запроса на проде curl-ом успешны; allowed_origins содержит `avi-help.vercel.app`
 - [x] Кнопки фидбека 👍/👎 — POST в заглушку `/feedback` (бэк-stub отвечает 204; полное JSONL-логирование в Спринте 4)
-- [ ] Проверка с мобильного устройства
-- [ ] Финальный деплой, ссылки работают
+- [x] Проверка с мобильного устройства — DevTools mobile-аудит (44px touch targets, overflow-wrap, ErrorState side margins на узком viewport); ручной DevTools-прогон подтверждён пользователем
+- [x] Финальный деплой, ссылки работают — Vercel автодеплой из main, прод стабилен на `https://avi-help.vercel.app/`, бэк на `https://avi-help-production.up.railway.app/`
+
+### Сводка спринта
+
+**Что сделано в сумме за Спринт 3:**
+
+1. **17-компонентный React-фронт** (`frontend/src/components/`) поверх Vite + CSS-модули + `theme.css`. Никакого Tailwind/Next.js, всё на классическом CSS-подходе. React 19, lucide-react для иконок, react-markdown для тела секций.
+2. **Дизайн по референсу Google AI Overview**: один inline-кластер источников после первого предложения лида + popover на клик (portal в body, fixed-positioning с flip), без дублирующей полоски пилюль. Бейджи источников унифицированы — серый кружок со скрепкой `Paperclip` для всех ссылок.
+3. **API-проводка** через `api.js`: `getAnswer` (sync через `/answer/sync`), `streamAnswer` (SSE через `/answer`), `submitFeedback` (POST `/feedback`). Класс `ApiError` с типами `network/timeout/http/parse/warming/abort`. 30с timeout через `AbortController`, отдельная ветка для 503 → жёлтый «Бэкенд прогревается» плакат.
+4. **SSE-стриминг** через `fetch + ReadableStream + TextDecoder` (без `EventSource` — он только GET). Собственный SSE-парсер с поддержкой `\n\n` и `\r\n\r\n`. `App.jsx` на `useReducer` (action-ы START/META/LEAD_DELTA/SECTION/DONE/SYNC_OK/ERROR/CLOSE), `AbortController` для cancel предыдущего стрима при новом запросе.
+5. **Бэк-пейсинг SSE** (блок 3.5 после реального UX-замера): `await asyncio.sleep(0.02)` после `yield lead_delta`, `0.08` после `section`. Без этого Anthropic-пачки 5-10 событий бандлились uvicorn'ом в один TCP-segment → пользователь видел «бух весь параграф». Замер на проде: 25 дельт по 20мс gap, секции с 80мс gap.
+6. **Streaming-polish UX** в стиле Google AI Overview: каждый delta-chunk лида рендерится отдельным `<span>` с CSS-анимацией `blur(4px)→0 + opacity 0→1` за 220мс (эффект «текст в фокус»); `SectionsSkeleton` (4 shimmer-полосы) на месте секций пока они генерятся; курсор-glyph `▍` (full-block character, мигает 0.9с). Один `<AnswerCard>` поверх перехода streaming→answer (без unmount/remount → нет повторного запуска `appear`-анимации).
+7. **Edge cases** покрыты: пустой инпут (`disabled`), maxLength 200, network/timeout/503/fallback (через `ApiError` + `ErrorState`/`FallbackState`), CategoryGrid → авто-сабмит. Никаких mocks.js / DevPanel / console.log в финальном коде.
+8. **Mobile-полировка**: 44px touch-targets на CategoryGrid/ErrorState/FallbackState; `overflow-wrap: anywhere` на `.lead` и `.section` против длинных URL; `<html lang="ru">`; ErrorState side margins через `width: calc(100% - 2 * var(--pad-x))`.
+9. **Backend stub `/feedback`**: Pydantic-схема `FeedbackRequest` (`rating: ^(up|down)$`), статус 204, печать в stderr для дебага. JSONL-логирование оставлено на Спринт 4.
+10. **Smoke 5/5 на проде** (curl): возврат денег / SMS-код безопасность / резюме / вход в аккаунт / out-of-domain — все категории отвечают релевантно, fallback срабатывает за 128мс без LLM-вызова.
+
+**Цели PRD:**
+- ✅ **G1** (working e2e RAG на проде) — выполнено, демо `https://avi-help.vercel.app/`
+- ✅ **M5** (фронт-интеграция) — выполнено
+- ✅ **M6** (деплой) — Vercel + Railway работают
+
+**Ключевой UX-trade-off:** Реального стрима секций нет — Anthropic шлёт их одним блоком после закрытия tool_use, дробить массив объектов через partial-json-parser сложно. Закрыто скелетоном (Google-pattern) — пока секции готовятся, юзер видит shimmer вместо пустоты. Реальный per-char стрим секций — отдельная фича на Спринт 5 если важно.
+
+**Заметки по блокам ниже** — детальные Сделал/Получил/Важно для каждого блока в порядке выполнения.
 
 ### Заметки
 
@@ -357,3 +382,8 @@ _Из PRD раздел 9 + добавляем своё._
 - [ ] Финальный `chunk_size` (стартово 600, ablation после прогона eval)
 - [ ] Делать ли ablation с `text-embedding-3-large`, если стартовый MVP покажет Recall@5 > 0.9
 - [ ] На eval-наборе в Спринте 4 переформулировать общие запросы про размещение под конкретные категории (например, вместо «как разместить объявление» → «как опубликовать объявление о квартире», «как подать объявление о работе»). Причина — content gap в БЗ Авито (см. Заметки Спринта 1), не размытость запроса.
+- [ ] **Реальный стрим секций** (per-char через расширение partial-json-parser на массив объектов) vs текущий skeleton-pattern Google AI Overview. Сейчас закрыто скелетоном — UX'но норм, но если рекрутер на демо спросит «почему секции прыгают целиком» — есть готовый рассказ про trade-off (см. Заметки Спринт 3 блок 3.5). Делать только если останется время на Спринте 5.
+- [ ] **Расширить safety-priming триггер** по ключевым словам запроса (код / sms / звонят / ссылка / перевод), не только по category top-3 retrieval (TODO из блока 2 Спринта 2 — на «звонят и просят код из смс» категория «Профиль» возвращается, не «Безопасность», safety-priming угадал по другой логике). Делать в Спринте 5 после eval, чтобы померить false positives/negatives.
+- [ ] **Sticky-hover на тач-устройствах** — 17 hover-стилей не обёрнуты в `@media (hover: hover)`. Терпимо, но если на eval/Спринте 5 будет окно — оборачиваю одним проходом по всем `*.module.css`.
+- [ ] **bundle 343 KB JS / 107 KB gzip** — в основном `react-markdown` + `remark` + `unified` (~35 KB gzip). Если на mobile metrics увидим медленный first paint на Slow 3G — варианты: `marked` (~10 KB) или вернуться к самописному markdown-рендеру.
+- [ ] **PRD F11 (latency) переписать** под streaming-декомпозицию — отмечено в «Документация требует правок» в начале файла. P50 4.5с end-to-end больше не релевантно как единая метрика.
