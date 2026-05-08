@@ -103,5 +103,7 @@ pnpm-debug.log*
 
 # === Project-specific ===
 data/llm_cache.jsonl
+data/embedding_cache.jsonl
 data/*.log
 data/chroma/
+data/eval/runs/

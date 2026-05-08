@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import os
 import sys
 from typing import AsyncGenerator, Optional
@@ -151,6 +152,22 @@ def _extract_tool_use(response) -> Optional[dict]:
     return None
 
 
+def _normalize_sections(raw) -> list[dict]:
+    """Haiku иногда возвращает sections в виде JSON-encoded строки вместо массива
+    (даже при tool_choice=force). Пытаемся распарсить; на любой проблеме — пусто."""
+    if raw is None:
+        return []
+    if isinstance(raw, str):
+        try:
+            raw = json.loads(raw)
+        except Exception:
+            print("WARN: tool_use.sections returned as string, dropping", file=sys.stderr)
+            return []
+    if not isinstance(raw, list):
+        return []
+    return [s for s in raw if isinstance(s, dict)]
+
+
 def _low_retrieval_fallback(model: str) -> GenerationResult:
     return GenerationResult(
         lead=LOW_RETRIEVAL_LEAD,
@@ -213,7 +230,7 @@ def generate(query: str, hits: list[SearchHit]) -> GenerationResult:
 
     sections = [
         Section(title=s.get("title", ""), body=s.get("body", ""))
-        for s in (tool_input.get("sections") or [])
+        for s in _normalize_sections(tool_input.get("sections"))
     ]
     sources = _resolve_sources(sources_used, hits)
 
@@ -409,7 +426,7 @@ async def generate_stream(
         is_fallback = True
 
     if not is_fallback:
-        for s in (tool_input.get("sections") or []):
+        for s in _normalize_sections(tool_input.get("sections")):
             yield {
                 "event": "section",
                 "data": {
