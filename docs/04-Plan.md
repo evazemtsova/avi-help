@@ -292,14 +292,14 @@ _Сюда выносим то, что касается всего проекта
 
 ### Цели по метрикам (из PRD)
 
-- Recall@5 ≥ 0.85: _результат_
-- MRR@10 ≥ 0.6: _результат_
-- Faithfulness ≥ 0.9: _результат_
-- Relevance avg ≥ 4: _результат_
-- Refusal rate = 1.0: _результат_
-- Latency P50 ≤ 4 сек: _результат_
-- Latency P95 ≤ 8 сек: _результат_
-- Cost per query ≤ $0.005: _результат_
+- Recall@5 ≥ 0.85: **0.8125** ❌ −0.04 (open question Sprint 5: reranker → ожидаем +5-15 п.п.)
+- MRR@10 ≥ 0.6: **0.7007** ✅
+- Faithfulness ≥ 0.9: **0.4433** ❌ −0.46 (open question Sprint 5: убрать SAFETY_PRIMING +10 п.п. + reranker + переписать judge-prompt)
+- Relevance avg ≥ 4: **4.6701** ✅
+- Refusal rate = 1.0: **1.0** (20/20) ✅
+- Latency P50 ≤ 4 сек: **4.69 сек** ❌ +17% (open question Sprint 5: streaming-декомп + кэш популярных запросов)
+- Latency P95 ≤ 8 сек: **7.46 сек** ✅
+- Cost per query ≤ $0.005: **$0.0068** in-domain gen-only ❌ +36% (open question Sprint 5: top_k=3 после reranker)
 
 ### Заметки
 
@@ -322,6 +322,11 @@ _Сюда выносим то, что касается всего проекта
 - Сделал: `backend/logging_jsonl.py` (Pydantic схемы `RequestLogEntry`/`FeedbackLogEntry`, `hash_ip` через `LOG_IP_SALT`, atomic-ish append с фолбэком в stderr); `main.py` — `request_id=uuid4` на `/answer`+`/answer/sync` (в SSE прокинут через первое `meta`-событие, в sync — поле `request_id` в `AnswerResponse`), запись в `requests_{date}.jsonl` через `BackgroundTasks` (sync) и inline после стрима (SSE), error-путь логируется отдельно; `/feedback` пишет в `feedback_{date}.jsonl`, fallback-id `fb-{sha256(query+ts)[:16]}` если фронт не прислал request_id; admin-ручки `GET /admin/logs?date=&limit=&kind=` (JSON) и `GET /admin/logs.jsonl?date=&kind=` (FileResponse) за `X-Admin-Token`; фронт (api.js + App reducer) ловит `request_id` из meta/sync и шлёт обратно.
 - Получил: локальный sanity 5 запросов через curl → ровно 5 строк в `requests_{date}.jsonl`, IP захеширован (16 hex), все поля валидны; SSE-curl полного стрима (21 событие) → 6-я строка в логе с `endpoint=/answer`; `/feedback` с `request_id` → строка в `feedback_{date}.jsonl`; без токена `/admin/logs` → 401, с токеном → JSON со счётчиком и items, `.jsonl`-вариант отдаёт raw-файл; прод-curl SSE→/feedback с тем же request_id отрабатывает 204; fallback `fb-…`-id работает когда `request_id` не пришёл.
 - Важно: `LOG_PATH` дефолтит на `<repo>/data/logs` локально, на Railway нужно явно `LOG_PATH=/data/logs` чтобы логи лежали на persistent volume; без `LOG_IP_SALT` `ip_hash=null` (по дизайну — без соли хеш реверсится перебором IPv4); SSE-лог пишется ИНЛАЙНОМ в генераторе (BackgroundTasks в SSE стартует только после закрытия стрима = после генератора, что эквивалентно); словил баг во фронте — `onMeta({sources, is_fallback})` деструктуризацией ронял `request_id` до dispatch, фидбек уходил без id и бэк подставлял `fb-…`-fallback; фикс одной строкой в `App.jsx`.
+
+**Блок 5 — Финальный прогон + ablation + prod latency + eval_results.md:**
+- Сделал: финальный mvp-прогон из кэша 1.2с / $0.00 paid; ablation `--config baseline` (без `SAFETY_PRIMING`) — 213с, $0.43 paid (только новые safety-кейсы); 30 sequential prod-curl на `/answer/sync` для P50/P95 latency; `docs/eval_results.md` с таблицами целей, разбивками retrieval/judge, ablation, failure-cases, insights for Sprint 5; обновил «Цели по метрикам» в плане реальными числами.
+- Получил: **Recall@5=0.8125** ❌, **MRR@10=0.7007** ✅, **Faithfulness=0.4433** ❌, **Relevance=4.67** ✅, **Refusal=1.0** ✅, **prod P50=4.69с** ❌ (+17%), **P95=7.46с** ✅, **cost/query=$0.0068** in-domain ❌ (+36%); **ablation: baseline без safety-priming → faithfulness +10 п.п.** (0.44 → 0.54), retrieval идентичен, refusal не пострадал.
+- Важно: главный кандидат для Спринта 5 — reranker, должен закрыть Recall@5 + снять основные unfaithful-overgeneralizations (model отвечает по неправильным «семантически близким» чанкам); SAFETY_PRIMING можно убрать целиком или сузить до явных query-триггеров (не retrieval-категории) — отыграем +10 п.п. faithfulness без потери refusal; faithfulness target 0.9 нереалистичен на этом judge-промпте даже с лучшим retrieval — Sonnet нит-пикает, нужно переписать FAITHFULNESS_SYSTEM с явным правилом «не флагь мягкие переформулировки если факт верен».
 
 ### Блокеры
 

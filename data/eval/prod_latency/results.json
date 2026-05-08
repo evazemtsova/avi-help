@@ -1,0 +1,404 @@
+{
+  "stats": {
+    "n_total": 30,
+    "n_ok": 30,
+    "server_p50": 4688,
+    "server_p95": 7455,
+    "wall_p50": 4866,
+    "wall_p95": 8035,
+    "min": 1775,
+    "max": 9927
+  },
+  "records": [
+    {
+      "id": "g001",
+      "query": "что делать если приехал разбитый товар",
+      "category": "Заказы с доставкой",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 1620,
+        "generation": 5053,
+        "total": 6674
+      },
+      "wall_ms": 6939,
+      "request_id": "d757577e72564a2ab874a73c9a4ab89a"
+    },
+    {
+      "id": "g002",
+      "query": "трек номер не отслеживается куда копать",
+      "category": "Заказы с доставкой",
+      "is_fallback": true,
+      "latency_ms": {
+        "retrieval": 150,
+        "generation": 1852,
+        "total": 2002
+      },
+      "wall_ms": 2248,
+      "request_id": "b1102c89cb95449e92468fe3a6e19bb8"
+    },
+    {
+      "id": "g003",
+      "query": "как сделать возврат если заказ не подошёл",
+      "category": "Заказы с доставкой",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 130,
+        "generation": 5055,
+        "total": 5185
+      },
+      "wall_ms": 5755,
+      "request_id": "7607c9adbaf7471ba25d4067af2b8aa1"
+    },
+    {
+      "id": "g004",
+      "query": "продавец не отправляет заказ уже неделю",
+      "category": "Заказы с доставкой",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 141,
+        "generation": 4028,
+        "total": 4169
+      },
+      "wall_ms": 4334,
+      "request_id": "c6617f4674574f6098161a38aa6ce443"
+    },
+    {
+      "id": "g005",
+      "query": "не пришёл код плучения посылки",
+      "category": "Заказы с доставкой",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 128,
+        "generation": 4909,
+        "total": 5037
+      },
+      "wall_ms": 5382,
+      "request_id": "e0bf2df267144c298050750dc7a7ae95"
+    },
+    {
+      "id": "g006",
+      "query": "сколько стоит доставка кто платит",
+      "category": "Заказы с доставкой",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 165,
+        "generation": 7289,
+        "total": 7455
+      },
+      "wall_ms": 8035,
+      "request_id": "120c6a7455a349a6b02cbce230b73ea0"
+    },
+    {
+      "id": "g007",
+      "query": "купил наушники с авито доставкой пришло не то что заказывал но продавец говорит всё нормально как мне быть",
+      "category": "Заказы с доставкой",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 133,
+        "generation": 4590,
+        "total": 4723
+      },
+      "wall_ms": 5152,
+      "request_id": "61ab6ab71468425794fdf8548c809f2f"
+    },
+    {
+      "id": "g008",
+      "query": "как отменить заказ",
+      "category": "Заказы с доставкой",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 267,
+        "generation": 4420,
+        "total": 4688
+      },
+      "wall_ms": 5272,
+      "request_id": "107fd873134442ba90f09d6b5d00972e"
+    },
+    {
+      "id": "g009",
+      "query": "где мой заказ почему так долго",
+      "category": "Заказы с доставкой",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 141,
+        "generation": 3655,
+        "total": 3796
+      },
+      "wall_ms": 4331,
+      "request_id": "b94191ea74d34ef9b9fcabf361f25c57"
+    },
+    {
+      "id": "g010",
+      "query": "не успеваю забрать заказ что будет",
+      "category": "Заказы с доставкой",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 126,
+        "generation": 1648,
+        "total": 1775
+      },
+      "wall_ms": 2406,
+      "request_id": "cc7ee98a84994591877c62ed0ceec9db"
+    },
+    {
+      "id": "g011",
+      "query": "курьер не приехал что делать",
+      "category": "Заказы с доставкой",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 129,
+        "generation": 3137,
+        "total": 3266
+      },
+      "wall_ms": 3428,
+      "request_id": "95dde7a64c634031b6eceb7d7b059ac1"
+    },
+    {
+      "id": "g012",
+      "query": "как поменять адрес доставки уже после оплаты",
+      "category": "Заказы с доставкой",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 116,
+        "generation": 4125,
+        "total": 4242
+      },
+      "wall_ms": 4414,
+      "request_id": "cec54248268346af9ad358c049759b5d"
+    },
+    {
+      "id": "g013",
+      "query": "в каких городах работает авито доставка",
+      "category": "Заказы с доставкой",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 132,
+        "generation": 3379,
+        "total": 3511
+      },
+      "wall_ms": 4131,
+      "request_id": "59d3cc657aa549378e810ca73cad88f2"
+    },
+    {
+      "id": "g014",
+      "query": "как включить доставку в своих обявах",
+      "category": "Заказы с доставкой",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 116,
+        "generation": 4309,
+        "total": 4425
+      },
+      "wall_ms": 4607,
+      "request_id": "3d38fb6a36d2403f8fc357682be278a7"
+    },
+    {
+      "id": "g015",
+      "query": "заказ потерялся куда писать",
+      "category": "Заказы с доставкой",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 95,
+        "generation": 4129,
+        "total": 4225
+      },
+      "wall_ms": 4791,
+      "request_id": "1fb9e0c43d3a4b1fa9e961b296e54590"
+    },
+    {
+      "id": "g016",
+      "query": "продавец не забрал возврат что мне делать с моими бабками",
+      "category": "Заказы с доставкой",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 139,
+        "generation": 2898,
+        "total": 3038
+      },
+      "wall_ms": 3222,
+      "request_id": "41da2c6759ff44d7af0029e5aa733f05"
+    },
+    {
+      "id": "g017",
+      "query": "хочу отправить посылку через авито как это работает",
+      "category": "Заказы с доставкой",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 236,
+        "generation": 4489,
+        "total": 4725
+      },
+      "wall_ms": 5336,
+      "request_id": "b176154d0e86466a9d5bb5e7d42853cd"
+    },
+    {
+      "id": "g018",
+      "query": "не дают распаковать перед получением это нормально",
+      "category": "Заказы с доставкой",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 255,
+        "generation": 3140,
+        "total": 3396
+      },
+      "wall_ms": 4040,
+      "request_id": "efe4e3776c4b4dac947c6839531bf04c"
+    },
+    {
+      "id": "g019",
+      "query": "почему доставка не вкючается у меня в объявлении",
+      "category": "Заказы с доставкой",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 135,
+        "generation": 4567,
+        "total": 4703
+      },
+      "wall_ms": 4866,
+      "request_id": "02776d2621304d738882e0896e3d11c6"
+    },
+    {
+      "id": "g020",
+      "query": "приехал телефон со сколом на экране а продавец говорит всё было целое и не признаёт что мне делать чтобы не остаться без денег",
+      "category": "Заказы с доставкой",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 141,
+        "generation": 3471,
+        "total": 3613
+      },
+      "wall_ms": 3994,
+      "request_id": "3d42630ed0744e89b96f3790064c0cc9"
+    },
+    {
+      "id": "g021",
+      "query": "звонят якобы из службы безопасности авито просят код из смс говорят что взломан профиль что делать срочно",
+      "category": "Безопасность",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 123,
+        "generation": 5394,
+        "total": 5518
+      },
+      "wall_ms": 6035,
+      "request_id": "d15d1cc6a600476791512b8fe3ce55fe"
+    },
+    {
+      "id": "g022",
+      "query": "пришла ссылка на оплату вне авито это нормально",
+      "category": "Безопасность",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 149,
+        "generation": 5241,
+        "total": 5391
+      },
+      "wall_ms": 5710,
+      "request_id": "be418dbcd18541d79aae1b6d38e6f88c"
+    },
+    {
+      "id": "g023",
+      "query": "в чате просят перейти в вотсап для разговора что не так",
+      "category": "Безопасность",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 161,
+        "generation": 3233,
+        "total": 3395
+      },
+      "wall_ms": 3608,
+      "request_id": "bc34d23fe2f24f569226367fb37c604d"
+    },
+    {
+      "id": "g024",
+      "query": "подозрительный qr код продавец прислал что делать",
+      "category": "Безопасность",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 136,
+        "generation": 3128,
+        "total": 3265
+      },
+      "wall_ms": 3445,
+      "request_id": "273b84ff64be4b7e9490bc2e91b7dd4b"
+    },
+    {
+      "id": "g025",
+      "query": "пришло на почту письмо мол обновите данные карты на авито иначе доступ закроют это похоже на фишинг или нет",
+      "category": "Безопасность",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 135,
+        "generation": 5476,
+        "total": 5612
+      },
+      "wall_ms": 5791,
+      "request_id": "0bb8ede662de4d7cac03754e9ceb2f16"
+    },
+    {
+      "id": "g026",
+      "query": "в смс пришёл код хотя я ничего не запрашивал что это",
+      "category": "Безопасность",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 116,
+        "generation": 4992,
+        "total": 5108
+      },
+      "wall_ms": 5333,
+      "request_id": "756c5349aefe4f75a349bd55e140f746"
+    },
+    {
+      "id": "g027",
+      "query": "профиль взломали как восстановить",
+      "category": "Безопасность",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 168,
+        "generation": 5171,
+        "total": 5339
+      },
+      "wall_ms": 5838,
+      "request_id": "e9df46e70daa4d118c58accad1539377"
+    },
+    {
+      "id": "g028",
+      "query": "хочу вход по смс настроть",
+      "category": "Безопасность",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 147,
+        "generation": 6173,
+        "total": 6321
+      },
+      "wall_ms": 6483,
+      "request_id": "881d6967fe24464e982164c161381006"
+    },
+    {
+      "id": "g029",
+      "query": "как защитить аккаунт от взлома",
+      "category": "Безопасность",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 149,
+        "generation": 4598,
+        "total": 4747
+      },
+      "wall_ms": 5003,
+      "request_id": "48d139a2b60f4292922eab8158e5432a"
+    },
+    {
+      "id": "g030",
+      "query": "что такое защита номера",
+      "category": "Безопасность",
+      "is_fallback": false,
+      "latency_ms": {
+        "retrieval": 125,
+        "generation": 9802,
+        "total": 9927
+      },
+      "wall_ms": 10110,
+      "request_id": "1035ed17a11b4a4392675fbe40fbbabf"
+    }
+  ]
+}
