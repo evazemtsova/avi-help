@@ -29,6 +29,7 @@ _Сюда выносим то, что касается всего проекта
 - **ML System Design 2.3** — прогноз размера индекса 42 MB пересмотреть до 68 MB после фактической индексации.
 - **PRD F11 (latency)** — метрика «P50 end-to-end ≤ 4 сек» устарела со streaming. Со SSE релевантна декомпозиция: TTFB до пилюль источников (~300ms на проде), TTFB до первого слова лида (~1.5с — Haiku + tool use partial JSON), полное время (P50 5.4с / P95 ~8с на in-domain). Переписать F11 под три отдельные цели вместо одной end-to-end.
 - **PRD 7.3 (стоимость)** — «cheap: $0.001–0.002» переписать под фактический setup: **$0.003–0.006 без reranker** (5 чанков ~3700 input + ~400–700 output на Haiku), **$0.001–0.003 с reranker** (top-3 после rerank, ~2200 input). Текущая реализация без reranker даёт $0.0064 на in-domain.
+- **PRD 7.2 (Faithfulness ≥ 0.9)** — помечено ⚠️ под пересмотр после Спринта 4 (см. сноску в PRD). Декомпозиция в `docs/eval_results.md` показала: 70% потерь — false-positive judge, 26% — реальные галлюцинации, 4% safety boilerplate. Реалистичный потолок ≈0.80–0.85 после переписывания `FAITHFULNESS_SYSTEM` в Спринте 5. Финальное решение по таргету — после этого.
 
 ---
 
@@ -265,7 +266,7 @@ _Сюда выносим то, что касается всего проекта
 
 ## Спринт 4 — Eval и логи (M7, S2)
 
-**Статус:** не начат
+**Статус:** ✅ готов
 **Цель:** G3 закрыт цифрами в репо, G4 виден из логов токенов, есть из чего смотреть failure cases.
 
 ### Задачи
@@ -280,7 +281,7 @@ _Сюда выносим то, что касается всего проекта
 - [x] Метрики generation: faithfulness и relevance через Sonnet-judge с tool use (`claude-sonnet-4-6`, `--no-judge` для отключения)
 - [x] Refusal rate на out-of-domain (через `is_fallback` от модели)
 - [x] Конфиги: `mvp` (Haiku + safety-priming), `baseline` (без safety-priming, для ablation в Спринте 5)
-- [ ] `scripts/compare.py` → `docs/eval_results.md` с финальной таблицей
+- [x] `docs/eval_results.md` с финальной таблицей метрик vs цели, ablation, failure cases, декомпозицией faithfulness и methodological finding (отдельный `compare.py` не понадобился — eval.py пишет summary.json, ablation сделан двумя прогонами с разными `--config`)
 
 #### Логи
 
@@ -327,6 +328,34 @@ _Сюда выносим то, что касается всего проекта
 - Сделал: финальный mvp-прогон из кэша 1.2с / $0.00 paid; ablation `--config baseline` (без `SAFETY_PRIMING`) — 213с, $0.43 paid (только новые safety-кейсы); 30 sequential prod-curl на `/answer/sync` для P50/P95 latency; `docs/eval_results.md` с таблицами целей, разбивками retrieval/judge, ablation, failure-cases, insights for Sprint 5; обновил «Цели по метрикам» в плане реальными числами.
 - Получил: **Recall@5=0.8125** ❌, **MRR@10=0.7007** ✅, **Faithfulness=0.4433** ❌, **Relevance=4.67** ✅, **Refusal=1.0** ✅, **prod P50=4.69с** ❌ (+17%), **P95=7.46с** ✅, **cost/query=$0.0068** in-domain ❌ (+36%); **ablation: baseline без safety-priming → faithfulness +10 п.п.** (0.44 → 0.54), retrieval идентичен, refusal не пострадал.
 - Важно: главный кандидат для Спринта 5 — reranker, должен закрыть Recall@5 + снять основные unfaithful-overgeneralizations (model отвечает по неправильным «семантически близким» чанкам); SAFETY_PRIMING можно убрать целиком или сузить до явных query-триггеров (не retrieval-категории) — отыграем +10 п.п. faithfulness без потери refusal; faithfulness target 0.9 нереалистичен на этом judge-промпте даже с лучшим retrieval — Sonnet нит-пикает, нужно переписать FAITHFULNESS_SYSTEM с явным правилом «не флагь мягкие переформулировки если факт верен».
+
+**Блок 5.5 — Декомпозиция faithfulness + methodological finding:**
+- Сделал: ручной разбор 10 unfaithful-кейсов из mvp с привязкой к чанкам, категоризация 27 unsupported_claims; нашла отдельный self-contradiction glitch judge'а (g008/g019 — Sonnet помечает каждый claim как «(ок)/подкреплено», но возвращает is_faithful=false); добавила в `eval_results.md` секцию «Methodological finding: LLM-judge inconsistency» с буквальной цитатой tool-output'а g008; переписала «Insights for Sprint 5» в 3-колоночную таблицу Insight/Цена/Эффект; пометила в `docs/01-PRD.md` Faithfulness-target ≥0.9 как ⚠️ под пересмотр со сноской на findings.
+- Получил: распределение 27 claims = 70% false-positive judge / 26% реальная галлюцинация / 4% safety boilerplate; реалистичный потолок faithfulness без переписывания judge ≈0.70, с переписанным judge ≈0.80–0.85, цель ≥0.9 нереалистична на этом judge.
+- Важно: топ-1 «бесплатное» улучшение для Спринта 5 — переписать `FAITHFULNESS_SYSTEM` (30 мин работы → +25-35 п.п. faithfulness на тех же ответах); цифра 0.45 в репо без этой декомпозиции выглядит как «50% галлюцинаций», что неверно — реальных hallucinations 26% claims.
+
+### Итоговая summary Спринта 4
+
+**Что построено:**
+- Eval-фреймворк (`backend/llm_cache.py` + `scripts/eval.py`) — полный прогон 100+20 запросов воспроизводим, повторный = 0$; конфиги `mvp` / `baseline` для ablation; LLM-judge на Sonnet через тот же кэш; разбивка по категории и difficulty.
+- Golden-set (100 in-domain + 20 OOD) на user-style формулировках с опечатками и slang'ом — `data/eval/{golden_set,ood_set}.jsonl`.
+- Структурированное JSONL-логирование запросов и фидбека (`backend/logging_jsonl.py`) с `request_id`-связкой, IP-хешем, atomic-append, фолбэком в stderr; admin-ручки `GET /admin/logs?date=&kind=&limit=` и `GET /admin/logs.jsonl?date=&kind=` за `X-Admin-Token`; всё на проде.
+- `docs/eval_results.md` — главный артефакт спринта для собеса.
+
+**Что узнали:**
+- ✅ `MRR@10=0.70`, `Relevance=4.67`, `Refusal=1.0`, `Latency P95=7.5с` — выполнены.
+- ❌ `Recall@5=0.81` (vs 0.85), `Faithfulness=0.44` (vs 0.9), `P50=4.7с` (vs 4с), `Cost=$0.0068` (vs $0.005) — недобор.
+- Ablation `baseline` без safety-priming: faithfulness **+10 п.п.** (0.44→0.54), retrieval идентичен, refusal не пострадал.
+- Декомпозиция faithfulness 0.45: 70% потерь — false-positive judge (нит-пик + buggy is_faithful), 26% — реальные галлюцинации, 4% — safety boilerplate. Реалистичный потолок ≈0.80–0.85 после Спринта 5, ≥0.9 нереалистично.
+- Methodological finding: Sonnet-judge возвращает is_faithful=false при claims, помеченных в собственном выводе как «(ок)»/«подкреплено» — отдельный buggy паттерн, не свойство ответов.
+
+**Открытые вопросы → Спринт 5:**
+- Reranker `bge-reranker-v2-m3` (топ-1 ROI: Recall@5 +5-15 п.п. + Faithfulness через корректные чанки).
+- Переписать `FAITHFULNESS_SYSTEM` (топ-1 «бесплатно»: +25-35 п.п. за 30 мин).
+- Сузить `SAFETY_PRIMING` до query-триггеров.
+- Top_k=3 после reranker (cost −30%).
+- Финальное решение по PRD-таргету Faithfulness — после переписывания judge'а.
+- PRD F11 (P50 ≤4с) переписать в декомпозицию TTFB-метрик под streaming.
 
 ### Блокеры
 

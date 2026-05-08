@@ -183,9 +183,11 @@
 |---|---|---|
 | Recall@5 (retrieval) | % вопросов, где эталонный URL попал в top-5 retrieval | ≥0.85 |
 | MRR@10 (retrieval) | mean reciprocal rank | ≥0.6 |
-| Faithfulness (generation) | % ответов, где утверждения подтверждаются цитируемыми источниками. Считаем через LLM-as-judge (Claude Sonnet оценивает ответ Haiku). | ≥0.9 |
+| Faithfulness (generation) | % ответов, где утверждения подтверждаются цитируемыми источниками. Считаем через LLM-as-judge (Claude Sonnet оценивает ответ Haiku). | ⚠️ ≥0.9 (под пересмотр)¹ |
 | Answer relevance | насколько ответ отвечает на вопрос (LLM-as-judge, 1–5) | avg ≥4 |
 | Refusal rate on out-of-domain | % корректных отказов на 10 заранее заготовленных вне-доменных вопросов | =1.0 |
+
+¹ **Faithfulness target — пересмотр после Спринта 4.** Замер на mvp-конфиге дал 0.45, ablation `baseline` (без safety-priming) — 0.54. Декомпозиция 10 unfaithful-кейсов с чанками показала: 70% claims — false-positive judge (нит-пик переформулировок + buggy `is_faithful=false` при claims, помеченных самим судьёй как «(ок)»), 26% — реальные галлюцинации, 4% — safety boilerplate. Реалистичный потолок без переписывания judge ≈ 0.70; с переписанным `FAITHFULNESS_SYSTEM` ≈ 0.80–0.85. Цель ≥0.9 на этом judge нереалистична даже с идеальным retrieval. **Финальное решение по таргету — после переписывания judge-prompt в Спринте 5.** Детали и примеры — `docs/eval_results.md`, секции «Декомпозиция потерь Faithfulness» и «Methodological finding: LLM-judge inconsistency».
 
 ### 7.3. Экономика
 
