@@ -171,8 +171,8 @@ export default function App() {
 
     await streamAnswer(trimmed, {
       signal: ctrl.signal,
-      onMeta: ({ sources, is_fallback }) =>
-        dispatch({ type: "META", sources, is_fallback }),
+      onMeta: ({ sources, is_fallback, request_id }) =>
+        dispatch({ type: "META", sources, is_fallback, request_id }),
       onLeadDelta: ({ text }) => dispatch({ type: "LEAD_DELTA", text }),
       onSection: ({ title, body }) =>
         dispatch({ type: "SECTION", title, body }),
