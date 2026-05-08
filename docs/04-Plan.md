@@ -138,32 +138,46 @@ _Сюда выносим то, что касается всего проекта
 
 ## Спринт 2 — Retrieval и Generation (M3, M4)
 
-**Статус:** не начат
+**Статус:** в работе
 **Цель:** через curl на проде задаёшь вопрос — получаешь осмысленный JSON с цитатами. G1 фактически достигнут на уровне API.
 
 ### Задачи
 
-- [ ] Ручка `/search`: запрос → embedding → Chroma top-K → JSON со списком чанков и скорами
-- [ ] Системный промпт для генерации (правила цитирования, отказ на out-of-domain, fallback)
-- [ ] Tool use схема: `lead`, `sections[]`, `sources_used[]`
-- [ ] Ручка `/answer`: retrieval → контекст → Claude Haiku → парсинг tool use
-- [ ] Валидация: все `sources_used` есть в выданных чанках
-- [ ] Постпроцессинг: при ссылке на несуществующий чанк — лог + fallback
-- [ ] Промпт-усиление по категории «Безопасность» (top-3 чанка из категории → предупреждение про SMS)
-- [ ] Fallback при низких скорах retrieval (стартовый порог 0.3)
+- [x] Ручка `/search`: запрос → embedding → Chroma top-K → JSON со списком чанков и скорами
+- [x] Системный промпт для генерации (правила цитирования, отказ на out-of-domain, fallback)
+- [x] Tool use схема: `lead`, `sections[]`, `sources_used[]`
+- [x] Ручка `/answer`: retrieval → контекст → Claude Haiku → парсинг tool use
+- [x] Валидация: все `sources_used` есть в выданных чанках
+- [x] Постпроцессинг: при ссылке на несуществующий чанк — лог + fallback
+- [x] Промпт-усиление по категории «Безопасность» (top-3 чанка из категории → предупреждение про SMS)
+- [x] Fallback при низких скорах retrieval (стартовый порог 0.3)
 - [ ] Флаг `MODEL=sonnet` для будущих сравнений
 - [ ] Проверка на проде: 5–10 ручных запросов через curl, ответы осмысленные
+- [x] Streaming SSE для `/answer` + non-streaming `/answer/sync` (вытащено из Спринта 5 S1)
 
 ### Решения, которые надо зафиксировать по ходу
 
-- [ ] Финальный `chunk_size` (стартово 600, ablation в спринте 5)
-- [ ] Финальный `top-K` для retrieval
-- [ ] Финальный порог отсечения (стартово 0.3)
-- [ ] Стартовая модель (Haiku по дефолту)
+- [ ] Финальный `chunk_size` — оставлен как был в Спринте 1 (структурный, после cap=50 чанков на статью); ablation в Спринте 5
+- [x] Финальный `top-K` для retrieval — **5** по умолчанию
+- [x] Финальный порог отсечения — **0.3** на top-1 score (подтверждён эмпирически: OOD `0.263`, in-domain ≥ `0.485`)
+- [x] Стартовая модель — **Haiku** (`claude-haiku-4-5`)
 
 ### Заметки
 
-- _пока пусто_
+**Блок 1 — Retrieval:**
+- Сделал: модуль `backend/retrieval.py` (`SearchHit`, `search`, `embed_query`, `get_chroma_collection`, `warmup`) + ручка `/search` с pydantic-валидацией; cwd-независимый резолв пути к Chroma (`CHROMA_PATH` env → `<repo>/data/chroma`).
+- Получил: latency `/search` 190–500ms на тёплом, 1.4s на холодном (init OpenAI client); 3 sanity-запроса из Спринта 1 воспроизводятся 1-в-1, content gap «как разместить объявление» подтверждён.
+- Важно: один outlier OpenAI embedding на 5.7s в ручных пробах → поставил `OpenAI(timeout=8.0, max_retries=1)`. Без таймаута P95 спорадически уезжал бы за 6 секунд.
+
+**Блок 2 — Generation:**
+- Сделал: `backend/generation.py` + `backend/prompts.py`, ручка `/answer` через Anthropic tool use (`tool_choice` форс), валидация sources_used, pre-LLM fallback на `top-1 < 0.3`, safety-priming по категории «Безопасность» в топ-3.
+- Получил: ~$0.0034 за запрос в среднем (5 запросов, 2 в pre-LLM fallback) → $3.4 за 1k, $3.4k за 1M, в пределах цели PRD ≤$0.005; latency 180–268ms на pre-LLM fallback, 2.8–6s на LLM-пути; нет invented chunk_id; на «как опубликовать первое объявление» модель сама ставит is_fallback=true и при этом даёт валидную секцию + источники — паттерн «грамотная неуверенность», подсветить на демо.
+- Важно: safety-priming по category="Безопасность" не сработал на «звонят и просят код из смс» (retrieval вернул «Профиль», статья «Что-то с телефоном или смс»). Модель угадала, но это удача — TODO для Спринта 4: расширить триггер по ключевым словам запроса (код / sms / звонят / ссылка / перевод), false negatives здесь хуже false positives.
+
+**Блок 3 — Streaming (SSE):**
+- Сделал: `generate_stream` (AsyncAnthropic + partial-json-parser для дельт лида), ручка `/answer` → `StreamingResponse(text/event-stream)` с `Cache-Control: no-cache` и `X-Accel-Buffering: no`; non-streaming перенесён в `/answer/sync`; pre-LLM fallback и safety-priming работают по тем же правилам, что и в блоке 2.
+- Получил: TTFB meta = 308ms, первый lead_delta = 1842ms; safety-кейс «звонят с поддельной ссылкой» начинает lead с шаблона из `SAFETY_PRIMING` (топ-3 категория Безопасность); CORS preflight 200, заголовки на месте; `/answer/sync` без регрессий; OOD-запросы дают 3 события (meta+lead_delta+done) с `usage: 0/0`.
+- Важно: TTFB после `meta` ≈ 1.5с против цели ≤1с — задержка Haiku до момента, когда partial-JSON содержит непустое поле lead, не дефект парсинга. Стратегия стрима: дельты лида (через `partial-json-parser`) + целые секции после закрытия tool_use, не дроблю массив sections (sliding-парсер по массиву усложнил бы код без UX-выигрыша). Если TTFB критичен — варианты для Спринта 5: ручной парсер по сырому JSON `"lead": "...`, либо text-output без tool use со вторым structured-call.
 
 ### Блокеры
 

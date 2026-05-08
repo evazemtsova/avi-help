@@ -1,11 +1,53 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+import json
 import os
+import sys
+import tarfile
+import tempfile
+import time
+import urllib.request
+from pathlib import Path
+
+from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
+from pydantic import BaseModel, Field
+
+load_dotenv()
+
+from generation import GenerationResult, generate, generate_stream
+from retrieval import SearchHit, search, warmup
+
+
+def _bootstrap_chroma_if_empty() -> None:
+    """Если CHROMA_PATH пуст (нет chroma.sqlite3) и задан BOOTSTRAP_CHROMA_URL —
+    скачиваем tar.gz и распаковываем. Идемпотентно: при заполненном volume
+    ничего не делает. Для одноразовой инициализации Railway volume."""
+    chroma_path_env = os.getenv("CHROMA_PATH")
+    bootstrap_url = os.getenv("BOOTSTRAP_CHROMA_URL")
+    if not chroma_path_env or not bootstrap_url:
+        return
+
+    chroma_path = Path(chroma_path_env)
+    if (chroma_path / "chroma.sqlite3").exists():
+        return
+
+    print(
+        f"Bootstrapping chroma at {chroma_path} from {bootstrap_url}",
+        file=sys.stderr,
+    )
+    chroma_path.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(suffix=".tar.gz", delete=False) as tmp:
+        urllib.request.urlretrieve(bootstrap_url, tmp.name)
+        with tarfile.open(tmp.name, "r:gz") as tar:
+            tar.extractall(path=str(chroma_path))
+    print(
+        f"Bootstrap done: {sum(1 for _ in chroma_path.rglob('*'))} entries in {chroma_path}",
+        file=sys.stderr,
+    )
 
 app = FastAPI(title="A-Help API")
 
-# CORS — фронт с Vercel + локальный dev
 ALLOWED_ORIGINS = os.getenv(
     "ALLOWED_ORIGINS",
     "http://localhost:5173,https://avi-help.vercel.app"
@@ -20,46 +62,105 @@ app.add_middleware(
 )
 
 
+_RETRIEVAL_INIT_ERROR: str | None = None
+
+
+@app.on_event("startup")
+def _startup() -> None:
+    global _RETRIEVAL_INIT_ERROR
+    try:
+        _bootstrap_chroma_if_empty()
+    except Exception as e:
+        print(f"Bootstrap failed (continuing without): {e}", file=sys.stderr)
+    _RETRIEVAL_INIT_ERROR = warmup()
+
+
 class SearchRequest(BaseModel):
+    query: str = Field(..., min_length=1, max_length=500)
+    top_k: int = Field(5, ge=1, le=50)
+
+
+class SearchResponse(BaseModel):
     query: str
+    hits: list[SearchHit]
+    latency_ms: int
 
 
 class AnswerRequest(BaseModel):
+    query: str = Field(..., min_length=1, max_length=500)
+    top_k: int = Field(5, ge=1, le=20)
+
+
+class AnswerResponse(BaseModel):
     query: str
-
-
-VOLUME_PATH = "/data"
+    answer: GenerationResult
+    retrieval_scores: list[float]
+    latency_ms: dict[str, int]
 
 
 @app.get("/health")
 def health():
-    return {"status": "ok"}
-
-
-@app.post("/search")
-def search(req: SearchRequest):
-    # Заглушка — потом заменим на реальный retrieval
     return {
-        "query": req.query,
-        "chunks": [
-            {"chunk_id": "stub-1", "title": "Заглушка", "score": 0.99}
-        ],
+        "status": "ok",
+        "retrieval_ready": _RETRIEVAL_INIT_ERROR is None,
     }
+
+
+@app.post("/search", response_model=SearchResponse)
+def search_endpoint(req: SearchRequest):
+    if _RETRIEVAL_INIT_ERROR is not None:
+        raise HTTPException(status_code=503, detail=_RETRIEVAL_INIT_ERROR)
+
+    t0 = time.perf_counter()
+    hits = search(req.query, top_k=req.top_k)
+    elapsed_ms = int((time.perf_counter() - t0) * 1000)
+    return SearchResponse(query=req.query, hits=hits, latency_ms=elapsed_ms)
+
+
+@app.post("/answer/sync", response_model=AnswerResponse)
+def answer_sync(req: AnswerRequest):
+    if _RETRIEVAL_INIT_ERROR is not None:
+        raise HTTPException(status_code=503, detail=_RETRIEVAL_INIT_ERROR)
+
+    t0 = time.perf_counter()
+    hits = search(req.query, top_k=req.top_k)
+    t_retrieval = time.perf_counter()
+
+    result = generate(req.query, hits)
+    t_done = time.perf_counter()
+
+    return AnswerResponse(
+        query=req.query,
+        answer=result,
+        retrieval_scores=[round(h.score, 3) for h in hits],
+        latency_ms={
+            "retrieval": int((t_retrieval - t0) * 1000),
+            "generation": int((t_done - t_retrieval) * 1000),
+            "total": int((t_done - t0) * 1000),
+        },
+    )
+
+
+def _sse_format(event: str, data: dict) -> str:
+    return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
 
 
 @app.post("/answer")
-def answer(req: AnswerRequest):
-    # Заглушка — потом заменим на retrieval + LLM
-    return {
-        "query": req.query,
-        "lead": f"Это mock-ответ на вопрос: «{req.query}». Реальный LLM подключим в Спринте 2.",
-        "sections": [],
-        "sources": [
-            {
-                "article_id": 1833,
-                "url": "https://support.avito.ru/articles/1833",
-                "title": "Пример статьи",
-                "category": "Безопасность",
-            }
-        ],
-    }
+async def answer(req: AnswerRequest):
+    if _RETRIEVAL_INIT_ERROR is not None:
+        raise HTTPException(status_code=503, detail=_RETRIEVAL_INIT_ERROR)
+
+    hits = search(req.query, top_k=req.top_k)
+
+    async def event_stream():
+        async for ev in generate_stream(req.query, hits):
+            yield _sse_format(ev["event"], ev["data"])
+
+    return StreamingResponse(
+        event_stream(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+        },
+    )

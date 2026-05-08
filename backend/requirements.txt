@@ -1,5 +1,6 @@
 annotated-doc==0.0.4
 annotated-types==0.7.0
+anthropic==0.100.0
 anyio==4.13.0
 beautifulsoup4==4.14.3
 certifi==2026.4.22
@@ -14,6 +15,7 @@ httpx==0.28.1
 idna==3.13
 lxml==6.1.0
 openai==2.35.1
+partial-json-parser==0.2.1.1.post7
 pydantic==2.13.4
 pydantic_core==2.46.4
 python-dotenv==1.2.2
