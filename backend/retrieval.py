@@ -26,6 +26,10 @@ _collection: Optional[Collection] = None
 _openai_client: Optional[OpenAI] = None
 _reranker = None  # CrossEncoder, lazy-инициализация
 
+# Sprint 5 Block 5: timing breakdown для каждой фазы search() — чтобы увидеть
+# где в реальности тратится время на проде (embed / chroma / rerank).
+last_search_timings: dict = {}
+
 
 class SearchHit(BaseModel):
     chunk_id: str
@@ -129,26 +133,27 @@ def _build_hit(chunk_id: str, doc: str, meta: dict, score: float) -> SearchHit:
 
 
 def search(query: str, top_k: int = 5) -> list[SearchHit]:
-    """Двухступенчатый retrieval:
-      1) bi-encoder Chroma top-RERANKER_CANDIDATES (default 20)
-      2) cross-encoder rerank → top_k
+    """Двухступенчатый retrieval с timing-breakdown в `last_search_timings`."""
+    import time as _t
+    global last_search_timings
 
-    Если USE_RERANKER=false ИЛИ модель не загрузилась — fall-back на bi-encoder
-    top_k (старая логика). `score` в SearchHit:
-      - bi-encoder: 1 - cosine_distance (как раньше)
-      - reranker: sigmoid(logit) ∈ (0, 1) — нормализованный score кросс-энкодера
-    """
+    t0 = _t.perf_counter()
     collection = get_chroma_collection()
+
+    t_embed_start = _t.perf_counter()
     embedding = embed_query(query)
+    t_embed = (_t.perf_counter() - t_embed_start) * 1000
 
     reranker = get_reranker()
     fetch_k = max(top_k, RERANKER_CANDIDATES) if reranker is not None else top_k
 
+    t_chroma_start = _t.perf_counter()
     res = collection.query(
         query_embeddings=[embedding],
         n_results=fetch_k,
         include=["documents", "metadatas", "distances"],
     )
+    t_chroma = (_t.perf_counter() - t_chroma_start) * 1000
 
     ids = res["ids"][0]
     documents = res["documents"][0]
@@ -156,16 +161,24 @@ def search(query: str, top_k: int = 5) -> list[SearchHit]:
     distances = res["distances"][0]
 
     if reranker is None:
-        # Bi-encoder only (USE_RERANKER=false или модель не загрузилась)
+        last_search_timings = {
+            "embed_ms": round(t_embed, 1),
+            "chroma_ms": round(t_chroma, 1),
+            "rerank_ms": 0.0,
+            "fetch_k": fetch_k,
+            "reranker": False,
+            "total_ms": round((_t.perf_counter() - t0) * 1000, 1),
+        }
         hits: list[SearchHit] = []
         for chunk_id, doc, meta, dist in zip(ids, documents, metadatas, distances):
             hits.append(_build_hit(chunk_id, doc, meta, 1.0 - float(dist)))
         return hits
 
-    # Rerank: считаем cross-encoder score для каждой пары (query, chunk_text)
+    t_rerank_start = _t.perf_counter()
     pairs = [(query, doc) for doc in documents]
     raw_scores = reranker.predict(pairs)
-    # Нормализуем sigmoid-ом — bge-reranker-v2-m3 возвращает logit (примерно ±10)
+    t_rerank = (_t.perf_counter() - t_rerank_start) * 1000
+
     import math
     sig_scores = [1.0 / (1.0 + math.exp(-float(s))) for s in raw_scores]
 
@@ -174,6 +187,15 @@ def search(query: str, top_k: int = 5) -> list[SearchHit]:
         key=lambda i: sig_scores[i],
         reverse=True,
     )[:top_k]
+
+    last_search_timings = {
+        "embed_ms": round(t_embed, 1),
+        "chroma_ms": round(t_chroma, 1),
+        "rerank_ms": round(t_rerank, 1),
+        "fetch_k": fetch_k,
+        "reranker": True,
+        "total_ms": round((_t.perf_counter() - t0) * 1000, 1),
+    }
 
     return [
         _build_hit(ids[i], documents[i], metadatas[i], sig_scores[i])

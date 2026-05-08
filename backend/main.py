@@ -242,10 +242,17 @@ def answer_sync(
         )
         raise
 
+    # Sprint 5 Block 5: timing-breakdown по фазам search() для prod-замера.
+    import retrieval as _retrieval
+    breakdown = _retrieval.last_search_timings or {}
     latency = {
         "retrieval": int((t_retrieval - t0) * 1000),
         "generation": int((t_done - t_retrieval) * 1000),
         "total": int((t_done - t0) * 1000),
+        "embed_ms": breakdown.get("embed_ms"),
+        "chroma_ms": breakdown.get("chroma_ms"),
+        "rerank_ms": breakdown.get("rerank_ms"),
+        "rerank_fetch_k": breakdown.get("fetch_k"),
     }
 
     background_tasks.add_task(
