@@ -363,37 +363,56 @@ _Сюда выносим то, что касается всего проекта
 
 ---
 
-## Спринт 5 — Оформление и stretch
+## Спринт 5 — Технические улучшения по итогам Спринта 4
 
-**Статус:** не начат
-**Цель:** G5 — все артефакты на месте, демо-ссылка работает, в репо есть таблица сравнений конфигов.
-**Принцип:** пункты сверху вниз по приоритету. Если время поджимает — режем снизу.
+**Статус:** в работе
+**Цель:** довести метрики Sprint 4 baseline до целей PRD путём 4 раздельно измеряемых правок. Главный артефакт — `docs/sprint5_changes_log.md` с декомпозицией «какое изменение что дало».
+**Принцип:** один блок = одна правка = один замер = одна запись в журнал. Без исключений.
 
-### Must (оформление)
+> Оформление (README, демо-вопросы, чеклист готовности, stretch-эксперименты) перенесено в Спринт 6 — этим спринтом не занимаемся.
 
-- [ ] README с архитектурной диаграммой
-- [ ] README: метрики из eval, стоимость на 1k и 1M запросов
-- [ ] README: инструкция запуска
-- [ ] Страница `/about` или раздел в README: «что бы я сделал на 6-й день / на 30-й день»
-- [ ] 3–5 готовых демо-вопросов
-- [ ] Финальный прогон чеклиста готовности (PRD раздел 10)
+### Задачи
 
-### Should (если останется время)
-
-- [ ] S1. Стриминг ответа (SSE) — текст по словам
-- [ ] S3. Reranker — bge-reranker или второй проход через LLM по top-20
-- [ ] S4. Кэш ответов на популярные запросы
-
-### Stretch-эксперименты (каждый = +1 пункт на собесе)
-
-- [ ] Haiku vs Sonnet vs Opus на eval-сете (~30 мин с кэшем)
-- [ ] Ablation по `chunk_size` 300/600/1000 (~1 ч)
-- [ ] HyDE как опциональный шаг (~1.5 ч)
-- [ ] Multi-query expansion (~1 ч)
+- [x] Блок 0 — Подготовка журнала и baseline-снимок
+- [x] Блок 1 — Переписать FAITHFULNESS_SYSTEM (judge rewrite + страховочный override) ⚠️ faithfulness 0.6392 на non-fb — на 1.1 п.п. ниже барa приёмки 0.65, обсуждение трейд-оффа
+- [x] Блок 2 — Сузить SAFETY_PRIMING до query-триггеров
+- [x] Блок 3 — Cross-encoder reranker `bge-reranker-v2-m3` (top-20 → top-5)
+- [x] Блок 3.5 — Refusal threshold calibration (0.0 → 0.6125)
+- [x] Блок 4 — top_k=3 после reranker (cost/latency) ⚠️ cost $0.00577 — не дотянул до PRD ≤$0.005 на $0.00077, нужно prompt caching (roadmap)
+- [ ] Блок 5 — Деплой на прод + замер latency на проде
+- [ ] Блок 6 — Финальный прогон + декомпозиция + апдейт `eval_results.md`
 
 ### Заметки
 
-- _пока пусто_
+**Блок 0 — Подготовка журнала:**
+- Сделал: создал `docs/sprint5_changes_log.md` со структурой из брифа (Baseline-таблица + failure cases по 5 группам с привязкой к блокам-починщикам + 4 пустых секции изменений + Финальная сводка).
+- Получил: Sprint 4 baseline зафиксирован цифрами; failure cases распределены — buggy judge (g008, g019) и нит-пик (g001, g006, g012) → блок 1; safety boilerplate (g007, g020) → блок 2; реальные галлюцинации (g003, g011, g014, g017) и bad retrieval (g002, g020) → блок 3.
+- Важно: цель Faithfulness ≥0.9 в журнале явно помечена ⚠️ — финальное решение по таргету откладывается на блок 6 после всех замеров; реалистичный потолок 0.80–0.85 принят как ожидание.
+
+**Блок 1 — Переписан FAITHFULNESS_SYSTEM + override:**
+- Сделал: переписан judge-промпт с явным правилом is_faithful, правилом про overgeneralization и двумя few-shots; добавлен страховочный override `_looks_soft` с hard-disqualifier'ами и узкими soft-маркерами; новый режим `--rerun-judge-only [--from-run] [--ids] [--limit]` в `scripts/eval.py` восстанавливает stub'ы hits/result из `results.jsonl` и пересчитывает только judge.
+- Получил: Faithfulness (non-fb) 0.4433 → **0.6392** (+19.6 п.п.); g008/g019 ушли (через промпт + override), g006 ушёл, g005 ушёл (override на пустом списке); 22 unfaithful-кейса исчезли (55 → 33); Recall/MRR/Relevance/Refusal без изменений (cache hit на relevance, retrieval не трогали); $1.04 paid вместо $1.6 ожидавшихся.
+- Важно: критерий приёмки блока ≥0.65 на non-fb недотянут на 1.1 п.п. — выбран trade-off между v1-override (0.6701, но 4 false-positive override flipped реальные hallucinations g007/g014/g041 в true) и v4 (0.6392, override строго по явным маркерам, raw метрика честная). Sprint 4 baseline 0.4433 в ретроспективе тоже был занижен — судья ложно флагил ~22 кейса. Стоп для обсуждения какой override фиксировать.
+
+**Блок 2 — SAFETY_PRIMING на query-триггеры:**
+- Сделал: переписан `_needs_safety_priming(query, hits)` с frozenset-триггерами (22 паттерна с word-boundary через ведущий пробел для « звонит»/« звонят») и анти-триггеров (13: access recovery «сменить пароль» + коды посылок «код получения»); ablation `baseline` lambda обновлена под новый signature.
+- Получил: Faithfulness (non-fb) 0.6392 → **0.6907** (+5.15 п.п. vs Блок 1, +24.7 п.п. vs Sprint 4) — выше барa приёмки 0.65; Recall/MRR/Refusal без изменений; g007/g020 ушли (lead'ы без SMS-boilerplate, ответ по делу — «обратитесь в полицию» / «отказаться при доставке»); $0.14 paid (cache hit на 297 из 310 вызовов — большинство ответов не менялись).
+- Важно: word-boundary через padded substring (ведущий пробел в триггере + padding query) дешевле regex и поймал 5 false-positive «как позвонить продавцу» на sanity ДО запуска paid eval; g041 «не приходит смс с кодом для входа» остался false (в брифе не целевой) — отказ от анти-триггера «не приходит код» сознательный против overfitting на одиночный кейс.
+
+**Блок 3 — Cross-encoder reranker bge-reranker-v2-m3:**
+- Сделал: установил `sentence-transformers` (тянет torch); добавил в `backend/retrieval.py` lazy-init `CrossEncoder` через `get_reranker()` (graceful degradation на bi-encoder если модель не загрузилась); `search()` стал двухступенчатым (Chroma top-20 → reranker → top_k); `warmup()` догружает модель на старте; новый `--config mvp_no_reranker` для ablation; временный `RETRIEVAL_THRESHOLD=0.0` потому что reranker sigmoid scores группируются в полосе 0.5±0.1 (Блок 4 откалибрует).
+- Получил: **Recall@5 0.8125 → 0.8854 (+7.29 п.п.)** — закрыта PRD-цель ≥0.85; **MRR@10 0.7007 → 0.7605 (+5.98 п.п.)**; Faithfulness (non-fb) 0.6907 → 0.6562 (−3.45 п.п. от reranker, но cumulative vs Sprint 4 +21.3 п.п.); Refusal rate 1.0 → 0.9 (ood19/ood20 «конкуренты» прошли — побочка `THRESHOLD=0.0`); Relevance +0.04; $2.91 paid (полный rerun, 320 misses из 320).
+- Важно: 3 целевых cherry-picked failure cases (g002, g011, g020) НЕ починились — g002 expected URL вообще не в top-20 (content gap), g011/g020 на позициях 14–17 в top-20 но reranker не вытянул в top-5 (короткие/разговорные запросы дают неинформативные logits около 0). Демо-frustration «телефон со сколом» сохранится. Faith-регрессии на g005/g007/g019 — известный side effect правильной retrieval-инвариантности (новые top-5 → новые формулировки ответа → Sonnet находит новые hard claims). Стоп-условия не пробиты, локальная latency ~5с — Блок 5 проверит на проде.
+
+**Блок 3.5 — Refusal threshold calibration (две итерации):**
+- Сделал: iteration #1 threshold 0.6125 single-mechanism — был overcorrection, 8 in-domain CORRECT в fallback включая 2 safety и demo-blocker g061; iteration #2 → competitor-list (38 padded-substring маркеров: юла/озон/wb/lamoda/я.маркет/ali/ebay/мегамаркет/drom/лавка/amazon/джум) + threshold понижен до 0.55 в `apply_config('mvp')` и `baseline`.
+- Получил: **Refusal rate 1.0** ✓ через 2 механизма (ood19/ood20 ловятся через competitor, остальные 18 OOD через threshold); Recall@5=0.8854 ✓ без изменений; vs iteration #1: Relevance full 4.19→**4.39** (+0.20), n_non_fallback 82→**89** (7 in-domain вернулись в LLM), faithfulness full 0.75→0.70 (искусственный fallback-bonus уменьшился на меньшем числе fallback'ов — это правильно). 5/8 целевых in-domain CORRECT прошли (g025/g032/g036/g052/g055), 3 остались в fallback (g023, g050, g061 — top-1 ниже 0.55); $0.022 paid (288/291 cache hits).
+- Важно: g061 demo-blocker НЕ починен (top-1 0.510 < 0.55) — нужна query-нормализация «обяв→объявления» в roadmap; iteration #1→#2 — пример что precision-over-recall (Блок 1 валидированный принцип) требует валидации на конкретных кейсах, слепо «строже всегда лучше» не работает; зафиксированы 2 методологические находки спринта в `sprint5_changes_log.md` Финальная сводка.
+
+**Блок 4 — top_k=3 после reranker:**
+- Сделал: `backend/main.py` AnswerRequest top_k default 5→3; `scripts/eval.py` slice `hits[:5]` → `hits[:3]` в вызове `generation.generate`. Retrieval по-прежнему возвращает top_k=10 для метрики MRR@10.
+- Получил: **Cost per query $0.0068 → $0.00577 (−15%)** недобор PRD на $0.00077; **Faithfulness non-fb +3.7 п.п. (0.6629→0.7000)**; **Latency локально prod-like P50 6068→5148ms (−15%) P95 9199→7143ms (−22%)** — ожидание −10% превышено; Recall@5/MRR@10/Refusal без изменений ✓; Relevance non-fb −0.12 (минор регрессия); input tokens avg 3985→3353 (−16%), output 514→483 (−6%); $2.47 paid (полный rerun, 271/291 misses).
+- Важно: PRD-цель cost $0.005 нереалистична на текущей архитектуре — system_prompt (~600) + tool definition (~900) = ~1500 токенов фиксированный input + ~750 чанки + ~500 output → потолок $0.0058 без prompt caching; roadmap-кандидат — Anthropic prompt caching на system+tool (TTL 5 мин, −90% cached input). Cumulative cost/latency-эффект Sprint 5 — весь от блока 4 (reranker нейтрален по cost, добавляет +1.5s к retrieval компенсируется −19% generation).
 
 ### Блокеры
 

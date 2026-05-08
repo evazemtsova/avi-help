@@ -13,12 +13,18 @@ from pydantic import BaseModel, Field
 EMBEDDING_MODEL = "text-embedding-3-small"
 COLLECTION_NAME = "avi_help"
 
+# Sprint 5 Блок 3: cross-encoder reranker.
+RERANKER_MODEL = os.getenv("RERANKER_MODEL", "BAAI/bge-reranker-v2-m3")
+USE_RERANKER = os.getenv("USE_RERANKER", "true").lower() in ("1", "true", "yes")
+RERANKER_CANDIDATES = int(os.getenv("RERANKER_CANDIDATES", "20"))
+
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent
 _DEFAULT_CHROMA_PATH = _PROJECT_ROOT / "data" / "chroma"
 
 _chroma_client: Optional[chromadb.api.ClientAPI] = None
 _collection: Optional[Collection] = None
 _openai_client: Optional[OpenAI] = None
+_reranker = None  # CrossEncoder, lazy-инициализация
 
 
 class SearchHit(BaseModel):
@@ -87,13 +93,60 @@ def _none_if_empty(value) -> Optional[str]:
     return value
 
 
+def get_reranker():
+    """Lazy-инициализация CrossEncoder. Возвращает None если USE_RERANKER=false
+    или модель не загрузилась (graceful degradation: fall-back на bi-encoder)."""
+    global _reranker
+    if not USE_RERANKER:
+        return None
+    if _reranker is not None:
+        return _reranker
+    try:
+        from sentence_transformers import CrossEncoder
+        _reranker = CrossEncoder(RERANKER_MODEL, max_length=512)
+        print(f"[retrieval] reranker loaded: {RERANKER_MODEL}", file=sys.stderr)
+    except Exception as e:
+        print(f"[retrieval] reranker FAILED to load ({e!r}) — falling back "
+              f"to bi-encoder only", file=sys.stderr)
+        _reranker = None
+    return _reranker
+
+
+def _build_hit(chunk_id: str, doc: str, meta: dict, score: float) -> SearchHit:
+    return SearchHit(
+        chunk_id=meta.get("chunk_id", chunk_id),
+        article_id=int(meta["article_id"]),
+        article_url=meta["article_url"],
+        title=meta["title"],
+        category=meta["category"],
+        section=_none_if_empty(meta.get("section")),
+        lastmod=_none_if_empty(meta.get("lastmod")),
+        chunk_text=doc,
+        chunk_index=int(meta["chunk_index"]),
+        total_chunks=int(meta["total_chunks"]),
+        score=score,
+    )
+
+
 def search(query: str, top_k: int = 5) -> list[SearchHit]:
+    """Двухступенчатый retrieval:
+      1) bi-encoder Chroma top-RERANKER_CANDIDATES (default 20)
+      2) cross-encoder rerank → top_k
+
+    Если USE_RERANKER=false ИЛИ модель не загрузилась — fall-back на bi-encoder
+    top_k (старая логика). `score` в SearchHit:
+      - bi-encoder: 1 - cosine_distance (как раньше)
+      - reranker: sigmoid(logit) ∈ (0, 1) — нормализованный score кросс-энкодера
+    """
     collection = get_chroma_collection()
     embedding = embed_query(query)
 
+    reranker = get_reranker()
+    fetch_k = max(top_k, RERANKER_CANDIDATES) if reranker is not None else top_k
+
     res = collection.query(
         query_embeddings=[embedding],
-        n_results=top_k,
+        n_results=fetch_k,
         include=["documents", "metadatas", "distances"],
     )
 
@@ -102,34 +155,44 @@ def search(query: str, top_k: int = 5) -> list[SearchHit]:
     metadatas = res["metadatas"][0]
     distances = res["distances"][0]
 
-    hits: list[SearchHit] = []
-    for chunk_id, doc, meta, dist in zip(ids, documents, metadatas, distances):
-        hits.append(
-            SearchHit(
-                chunk_id=meta.get("chunk_id", chunk_id),
-                article_id=int(meta["article_id"]),
-                article_url=meta["article_url"],
-                title=meta["title"],
-                category=meta["category"],
-                section=_none_if_empty(meta.get("section")),
-                lastmod=_none_if_empty(meta.get("lastmod")),
-                chunk_text=doc,
-                chunk_index=int(meta["chunk_index"]),
-                total_chunks=int(meta["total_chunks"]),
-                score=1.0 - float(dist),
-            )
-        )
-    return hits
+    if reranker is None:
+        # Bi-encoder only (USE_RERANKER=false или модель не загрузилась)
+        hits: list[SearchHit] = []
+        for chunk_id, doc, meta, dist in zip(ids, documents, metadatas, distances):
+            hits.append(_build_hit(chunk_id, doc, meta, 1.0 - float(dist)))
+        return hits
+
+    # Rerank: считаем cross-encoder score для каждой пары (query, chunk_text)
+    pairs = [(query, doc) for doc in documents]
+    raw_scores = reranker.predict(pairs)
+    # Нормализуем sigmoid-ом — bge-reranker-v2-m3 возвращает logit (примерно ±10)
+    import math
+    sig_scores = [1.0 / (1.0 + math.exp(-float(s))) for s in raw_scores]
+
+    indexed = sorted(
+        range(len(documents)),
+        key=lambda i: sig_scores[i],
+        reverse=True,
+    )[:top_k]
+
+    return [
+        _build_hit(ids[i], documents[i], metadatas[i], sig_scores[i])
+        for i in indexed
+    ]
 
 
 def warmup() -> Optional[str]:
-    """Вызывается на старте FastAPI. Если индекса нет — возвращает строку с
-    причиной (для логов и /search 503). Если ОК — возвращает None."""
+    """Вызывается на старте FastAPI. Прогружает индекс + reranker (если включён).
+    Если индекса нет — возвращает строку с причиной. Если reranker не загрузился —
+    логирует и продолжает (graceful degradation)."""
     try:
         col = get_chroma_collection()
         _ = col.count()
-        return None
     except Exception as e:
         msg = f"Chroma not initialized at {_resolve_chroma_path()}: {e}"
         print(msg, file=sys.stderr)
         return msg
+    # Reranker — best effort, не блокирует health-check
+    if USE_RERANKER:
+        get_reranker()
+    return None

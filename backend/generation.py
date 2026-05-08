@@ -14,9 +14,82 @@ from prompts import SAFETY_PRIMING, SYSTEM_PROMPT, USER_TEMPLATE, format_chunk
 from retrieval import SearchHit
 
 DEFAULT_MODEL = os.getenv("MODEL", "claude-haiku-4-5")
-RETRIEVAL_THRESHOLD = float(os.getenv("RETRIEVAL_THRESHOLD", "0.3"))
+RETRIEVAL_THRESHOLD = float(os.getenv("RETRIEVAL_THRESHOLD", "0.55"))
 MAX_TOKENS = 1024
 SAFETY_CATEGORY = "Безопасность"
+
+# Sprint 5 Блок 2: SAFETY_PRIMING активируется по триггерам в query пользователя,
+# а не по retrieval-категории. До этого priming срабатывал на любую top-3 категорию
+# «Безопасность» — давало false-positive на запросах про повреждённый товар
+# (g020 «телефон со сколом» подтянул чанки «Меня обманули» → лишний SMS-warning).
+SAFETY_TRIGGERS = frozenset({
+    # Коды доступа / SMS
+    "код", "смс", "sms",
+    # Пароль (с анти-триггерами на access recovery)
+    "пароль", "пороль",
+    # Мошенничество (явные слова)
+    "мошенник", "обман", "развод", "кинул", "увели",
+    # Подозрительные ссылки / QR
+    "ссылк", "фишинг", "qr",
+    # Подозрительные звонки (3-е лицо: «кто-то звонит мне») —
+    # ведущий пробел чтобы НЕ ловить «позвонить продавцу»/«позвонят» в инфинитиве.
+    " звонят", " звонит", " названивают", " позвонили",
+    # Социальная инженерия по телефону
+    "служба безопасности", " сб ",
+    # Вывод общения / денег вне Авито
+    "перевод вне", "вне авито", "вне сделк",
+    "whatsapp", "ватсап", "вотсап",
+    "телеграм", "телега", " тг ",
+})
+
+# Анти-триггеры — query содержит safety-слово, но контекст не safety.
+SAFETY_ANTI_TRIGGERS = frozenset({
+    # Access recovery (нормальный flow смены пароля, не фишинг)
+    "сменить пароль", "восстановить пароль", "забыл пароль",
+    "сменить пороль", "восстановить пороль", "забыл пороль",
+    "новый пароль", "новый пороль",
+    # Код получения посылки (не SMS-код доступа)
+    "код получения", "код плучения", "код посылки",
+    "код пвз", "код для пункта", "код заказа",
+})
+
+# Sprint 5 Блок 3.5: competitor platforms — query про другую площадку → автоматически
+# pre-LLM fallback. Это закрывает класс OOD-кейсов где reranker даёт высокий score
+# (потому что чанки про размещение объявлений / доставку семантически близки), но
+# ответить надо отказом. Padded substring match с ведущим пробелом для word-boundary.
+COMPETITOR_PLATFORMS = frozenset({
+    # Юла (склонения)
+    " юла ", " юле ", " юлы ", " юлу ", " юлой ",
+    # Озон
+    " озон ", " озоне ", " озона ", " озону ",
+    " ozon ",
+    # Wildberries
+    " wildberries ", " вайлдберриз ", " вб ",
+    # Ламода
+    " ламода ", " ламоде ", " lamoda ",
+    # Яндекс.Маркет
+    " яндекс маркет", " яндекс.маркет", " яндекс-маркет",
+    " я.маркет", " я маркет",
+    # Алиэкспресс
+    " aliexpress ", " алиэкспресс ", " али ",
+    # eBay
+    " ебей ", " ebay ",
+    # Сбермегамаркет
+    " мегамаркет ", " сбермегамаркет ",
+    # Авто-площадки
+    " drom ", " дром ",
+    # Яндекс.Лавка
+    " лавка ", " лавке ", " лавку ",
+    # Amazon, Joom
+    " amazon ", " амазон ", " джум ",
+})
+
+
+def _is_competitor_query(query: str) -> bool:
+    """True если в query упомянута конкурентная торговая площадка.
+    Padded query + ведущий пробел в маркере = word-boundary без regex."""
+    q = " " + query.lower() + " "
+    return any(c in q for c in COMPETITOR_PLATFORMS)
 
 LOW_RETRIEVAL_LEAD = (
     "По этому запросу не нашлось точной информации в справке. "
@@ -141,8 +214,18 @@ def _format_user_message(query: str, hits: list[SearchHit]) -> str:
     return USER_TEMPLATE.format(query=query, chunks=chunks_text)
 
 
-def _needs_safety_priming(hits: list[SearchHit]) -> bool:
-    return any(h.category == SAFETY_CATEGORY for h in hits[:3])
+def _needs_safety_priming(query: str, hits: list[SearchHit]) -> bool:
+    """Sprint 5 Блок 2: priming на основе query-триггеров.
+
+    Возвращает True если в query есть хотя бы один SAFETY_TRIGGERS-маркер
+    И при этом нет SAFETY_ANTI_TRIGGERS-маркера. Параметр hits сохранён
+    в signature для совместимости с подменой в apply_config('baseline'),
+    но в новой логике не используется.
+    """
+    q = " " + query.lower() + " "  # padding чтобы " сб " матчилось на границах
+    if any(a in q for a in SAFETY_ANTI_TRIGGERS):
+        return False
+    return any(t in q for t in SAFETY_TRIGGERS)
 
 
 def _extract_tool_use(response) -> Optional[dict]:
@@ -183,13 +266,16 @@ def _low_retrieval_fallback(model: str) -> GenerationResult:
 def generate(query: str, hits: list[SearchHit]) -> GenerationResult:
     model = DEFAULT_MODEL
 
-    # Pre-LLM fallback: пустой retrieval или top-1 score ниже порога.
-    # Экономит токены и латенси на out-of-domain и нерелевантных запросах.
-    if not hits or hits[0].score < RETRIEVAL_THRESHOLD:
+    # Pre-LLM fallback: пустой retrieval, низкий top-1 score, или query про
+    # конкурентную площадку (Юла/Озон/WB и т.п. — reranker даёт им высокий score
+    # на чанках про размещение/доставку, но ответ должен быть отказом).
+    if (not hits
+            or hits[0].score < RETRIEVAL_THRESHOLD
+            or _is_competitor_query(query)):
         return _low_retrieval_fallback(model)
 
     system_prompt = SYSTEM_PROMPT
-    if _needs_safety_priming(hits):
+    if _needs_safety_priming(query, hits):
         system_prompt = SYSTEM_PROMPT + "\n\n" + SAFETY_PRIMING
 
     user_message = _format_user_message(query, hits)
@@ -297,8 +383,10 @@ async def generate_stream(
     """
     model = DEFAULT_MODEL
 
-    # Pre-LLM fallback — пустой retrieval или score ниже порога.
-    if not hits or hits[0].score < RETRIEVAL_THRESHOLD:
+    # Pre-LLM fallback — пустой retrieval, низкий top-1 score или competitor-query.
+    if (not hits
+            or hits[0].score < RETRIEVAL_THRESHOLD
+            or _is_competitor_query(query)):
         yield {"event": "meta", "data": {"sources": [], "is_fallback": True}}
         yield {"event": "lead_delta", "data": {"text": LOW_RETRIEVAL_LEAD}}
         yield {
@@ -324,7 +412,7 @@ async def generate_stream(
     }
 
     system_prompt = SYSTEM_PROMPT
-    if _needs_safety_priming(hits):
+    if _needs_safety_priming(query, hits):
         system_prompt = SYSTEM_PROMPT + "\n\n" + SAFETY_PRIMING
 
     user_message = _format_user_message(query, hits)

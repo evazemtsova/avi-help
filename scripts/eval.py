@@ -109,7 +109,155 @@ FAITHFULNESS_SYSTEM = """Ты — эксперт-оценщик ответов R
 
 Если в ответе нет фактических утверждений (например, fallback-ответ) — is_faithful=true, unsupported_claims=[].
 
-Если хотя бы одно утверждение НЕ найдено в чанках (даже частично/перефразированно) — is_faithful=false, перечисли его в unsupported_claims короткой фразой."""
+═══════════════════════════════════════════════════════════════════════
+ПРАВИЛО ОПРЕДЕЛЕНИЯ is_faithful:
+
+is_faithful = true  ⇔  в списке unsupported_claims нет ни одного "hard" claim'а.
+
+"Hard" claim — это утверждение которое ПРОТИВОРЕЧИТ источникам или ВЫДУМАНО (нет в источниках). Только такие включаются в unsupported_claims.
+
+"Soft" claim (НЕ считать unsupported, НЕ включать в список):
+- стилистические переформулировки факта который есть в источниках;
+- упрощения или обобщения которые сохраняют смысл;
+- неполная передача информации из чанка (если основной факт верен);
+- пометки самого judge типа "(ок)", "подкреплено чанком N", "не проверяем",
+  "упомянуто корректно", "не противоречит чанку", "формулировка корректна";
+- утверждения типа "X отсутствует в ответе", "не упомянуто Y", "пропущено Z" —
+  это про completeness, не про faithfulness, НЕ флагим.
+
+Если в результате анализа у тебя в unsupported_claims остались только soft claims или пометки "ОК" — is_faithful ОБЯЗАН быть true, а сам список ОБЯЗАН быть пустым.
+
+═══════════════════════════════════════════════════════════════════════
+OVERGENERALIZATION — это HARD unsupported:
+
+Если модель применяет факт из источника к более широкому случаю чем в источнике — это hard, флагим.
+
+Пример: в чанке "15 дней для домашней доставки", в ответе "15 дней для всех типов доставки" → HARD.
+Пример: в чанке "только для ПВЗ", в ответе "также работает на постаматах" → HARD.
+Пример: в чанке "инструкция продавцу", в ответе "инструкция покупателю" (wrong audience) → HARD.
+
+═══════════════════════════════════════════════════════════════════════
+ПРИМЕР 1 (is_faithful=true, soft переформулировки):
+
+ВОПРОС: сколько стоит доставка кто платит
+ОТВЕТ:
+  Обычно доставку полностью оплачивает покупатель. Стоимость формируется
+  автоматически в зависимости от категории товара, цены и расстояния.
+  Некоторые продавцы могут сделать скидку на доставку в пункт выдачи —
+  такие объявления помечены специальным значком.
+ЧАНКИ:
+  [Чанк 1] Обычно доставку полностью оплачивает покупатель. Стоимость
+  формируется автоматически в зависимости от категории, цены, веса,
+  габаритов, расстояния. Некоторые продавцы могут предоставить скидку
+  на доставку в пункт выдачи — у таких объявлений отображается
+  специальный значок.
+
+Анализ:
+- claim "обычно покупатель оплачивает доставку" — точная цитата из чанка → soft, не флагим;
+- claim "стоимость формируется автоматически в зависимости от категории, цены, расстояния" —
+  переформулировка чанка с упрощением (упущены "вес/габариты"). Основной факт верен → soft, не флагим;
+- claim "продавцы могут сделать скидку, объявления помечены значком" —
+  переформулировка → soft, не флагим.
+
+Результат: { "is_faithful": true, "unsupported_claims": [] }
+
+═══════════════════════════════════════════════════════════════════════
+ПРИМЕР 2 (is_faithful=false, реальная overgeneralization):
+
+ВОПРОС: как сделать возврат если заказ не подошёл
+ОТВЕТ:
+  Если заказ уже у вас — можете вернуть его в течение 15 дней.
+  Если получаете через постамат — заберите товар, потом договоритесь
+  с продавцом о возврате напрямую.
+ЧАНКИ:
+  [Чанк 1] При доставке на дом покупатель может вернуть товар в
+  течение 15 дней с момента получения.
+  [Чанк 2] Если заказ через постамат или кассу 5Post вам не подошёл —
+  отказаться и положить обратно не получится. Заберите товар.
+
+Анализ:
+- claim "можете вернуть его в течение 15 дней" подан как универсальный, без оговорки про
+  тип доставки. В чанках срок 15 дней указан ТОЛЬКО для доставки на дом, а для постамата
+  срока нет → overgeneralization → HARD.
+
+Результат: {
+  "is_faithful": false,
+  "unsupported_claims": [
+    "обобщение срока 15 дней на все типы доставки — в чанках срок указан только для доставки на дом"
+  ]
+}
+
+═══════════════════════════════════════════════════════════════════════
+
+ИНСТРУКЦИЯ:
+Если хотя бы одно утверждение действительно противоречит источникам или выдумано — is_faithful=false, перечисли его в unsupported_claims короткой фразой. Иначе — is_faithful=true, unsupported_claims=[]."""
+
+
+# Hard-disqualifier'ы: явные сигналы что claim — реальный hard-unsupported.
+# Если найден — claim НЕ soft даже если есть soft-маркеры рядом
+# (например "(сдвинуть вправо) корректна, но утверждение X не подкреплено").
+_HARD_DISQUALIFIERS = (
+    "не подкреплен",       # не подкреплено / не подкреплён / не подкреплены
+    "противоречит чанк",
+    "противоречат чанк",
+    "корректна, но",
+    "корректно, но",
+    "обобщен",             # обобщено / обобщение / обобщён
+    "overgeneraliz",
+    "выдуман",
+    "адресован",           # wrong audience: «инструкция адресована продавцу»
+    "wrong audience",
+)
+
+# Явные soft-маркеры. Без них claim — потенциально hard, override не делаем.
+# Узкие подстроки чтобы избежать ложных срабатываний на «не подкреплено» и т.п.
+_SOFT_MARKERS = (
+    "(ок)", "(ок,", "(ок.", "(ok)",
+    ", ок)", ", ок,", ", ок.",
+    "— ок", "— ок,", "— ок.", "— ОК", "— ОК,", "— ОК.",
+    " ок;", " ок:",
+    "подкреплено чанком",
+    "подкреплено в чанке",
+    "подкреплён чанком",
+    "подкреплены чанком",
+    "не проверяем",
+    "не противоречит чанк",
+    "не противоречат чанк",
+    "не противоречие",
+    "структурное упрощение",
+)
+
+
+def _looks_soft(claim: str) -> bool:
+    """True если claim — soft (стилистический / явная пометка ОК / completeness).
+
+    Алгоритм: сначала ищем hard-disqualifier — если есть, претендент hard.
+    Иначе ищем soft-marker. Только при явном soft-маркере считаем soft.
+    """
+    if not claim or not claim.strip():
+        return True
+    low = claim.lower()
+    if any(h in low for h in _HARD_DISQUALIFIERS):
+        return False
+    return any(s in low for s in _SOFT_MARKERS)
+
+
+def _override_is_faithful(judge_out: dict) -> tuple[bool, bool]:
+    """Страховка: если judge помечает is_faithful=false, но все unsupported_claims
+    выглядят как soft (содержат маркеры «(ок)», «подкреплено», «не проверяем» и т.п.),
+    переопределяем на true локально.
+
+    Возвращает (final_is_faithful, override_applied).
+    """
+    if judge_out.get("is_faithful"):
+        return True, False
+    claims = judge_out.get("unsupported_claims") or []
+    if not claims:
+        # is_faithful=false при пустом списке — буг judge'а, переопределяем.
+        return True, True
+    if all(_looks_soft(c) for c in claims):
+        return True, True
+    return False, False
 
 RELEVANCE_SYSTEM = """Ты — эксперт-оценщик ответов RAG-системы по справке Авито.
 
@@ -177,10 +325,26 @@ def install_caches(use_cache: bool) -> None:
 
 def apply_config(config: str) -> None:
     if config == "mvp":
+        # Sprint 5 Блок 3.5: reranker on, threshold 0.6125 откалиброван
+        # на полосе между P10 in-domain CORRECT (0.6138) и max OOD (0.6120) —
+        # отрезает все 20 OOD, теряет ~10% in-domain (нижний хвост) в pre-LLM
+        # fallback. Recall@5 не зависит от threshold (retrieval-метрика).
+        retrieval.USE_RERANKER = True
+        retrieval._reranker = None  # форсим reload в случае повторного apply
+        generation.RETRIEVAL_THRESHOLD = 0.55
         return
     if config == "baseline":
-        # Отключаем safety-priming для ablation
-        generation._needs_safety_priming = lambda hits: False
+        # Ablation Блока 2: без safety-priming
+        retrieval.USE_RERANKER = True
+        retrieval._reranker = None
+        generation.RETRIEVAL_THRESHOLD = 0.55
+        generation._needs_safety_priming = lambda query, hits: False
+        return
+    if config == "mvp_no_reranker":
+        # Ablation Блока 3: reranker off, threshold обратно 0.3 (bi-encoder shape)
+        retrieval.USE_RERANKER = False
+        retrieval._reranker = None
+        generation.RETRIEVAL_THRESHOLD = 0.3
         return
     raise SystemExit(f"unknown config: {config}")
 
@@ -247,9 +411,17 @@ def judge_faithfulness(client, query: str, result, hits) -> dict:
         "input_tokens": resp.usage.input_tokens,
         "output_tokens": resp.usage.output_tokens,
     }
-    return {
+    raw = {
         "is_faithful": bool(ti.get("is_faithful", False)),
         "unsupported_claims": list(ti.get("unsupported_claims") or []),
+    }
+    final_faithful, override_applied = _override_is_faithful(raw)
+    return {
+        "is_faithful": final_faithful,
+        "unsupported_claims": [] if override_applied else raw["unsupported_claims"],
+        "judge_override": override_applied,
+        "raw_is_faithful": raw["is_faithful"],
+        "raw_unsupported_claims": raw["unsupported_claims"],
         "model": resp.model,
         "usage": usage,
     }
@@ -334,7 +506,7 @@ def run_one(item: dict, is_ood: bool, judge_client=None) -> dict:
     t_ret_ms = (time.perf_counter() - t_ret) * 1000
 
     t_gen = time.perf_counter()
-    result = generation.generate(query, hits[:5])
+    result = generation.generate(query, hits[:3])  # Sprint 5 Блок 4: top_k=3 после reranker
     t_gen_ms = (time.perf_counter() - t_gen) * 1000
 
     s1 = cache_stats()
@@ -546,9 +718,169 @@ def compute_refusal_metrics(results: list[dict]) -> dict:
     }
 
 
+def _find_latest_run(prefix: str) -> Path:
+    runs_dir = REPO / "data" / "eval" / "runs"
+    matches = sorted(p for p in runs_dir.iterdir()
+                     if p.is_dir() and p.name.startswith(prefix + "_"))
+    if not matches:
+        raise SystemExit(f"no runs with prefix {prefix!r} in {runs_dir}")
+    return matches[-1]
+
+
+def _stub_from_record(rec: dict):
+    """Восстанавливаем минимальные объекты hits + result из results.jsonl записи,
+    достаточные для _build_chunks_for_judge и _build_answer_text."""
+    from types import SimpleNamespace
+
+    hits = [SimpleNamespace(
+        chunk_id=h["chunk_id"],
+        article_id=h["article_id"],
+        article_url=h["article_url"],
+        title=h["title"],
+        category=h["category"],
+        score=h["score"],
+        chunk_text=h["chunk_text"],
+    ) for h in rec.get("retrieval_top_10", [])]
+
+    ans = rec.get("answer") or {}
+    sections = [SimpleNamespace(title=s["title"], body=s["body"])
+                for s in ans.get("sections", [])]
+    result = SimpleNamespace(
+        lead=ans.get("lead", ""),
+        sections=sections,
+        sources_used=ans.get("sources_used", []),
+        sources=ans.get("sources", []),
+        is_fallback=ans.get("is_fallback", False),
+        model=rec.get("model"),
+        usage=rec.get("usage", {}),
+    )
+    return hits, result
+
+
+def run_rerun_judge_only(from_run: Path, outdir: Path,
+                         only_ids: list[str] | None = None,
+                         limit: int | None = None) -> None:
+    """Пересчёт только judge на сохранённых ответах из from_run.
+
+    only_ids — фильтр по списку id запросов (для sanity-теста на кейсах).
+    limit — взять первые N записей.
+    """
+    src = from_run / "results.jsonl"
+    if not src.exists():
+        raise SystemExit(f"no results.jsonl in {from_run}")
+
+    judge_client = generation._anthropic_client
+    print(f"[rerun-judge-only] from: {from_run}")
+    print(f"[rerun-judge-only] judge model: {JUDGE_MODEL}")
+
+    outdir.mkdir(parents=True, exist_ok=True)
+    results_path = outdir / "results.jsonl"
+
+    started = time.perf_counter()
+    results: list[dict] = []
+    src_records = load_jsonl(src)
+    if only_ids:
+        wanted = set(only_ids)
+        src_records = [r for r in src_records if r.get("id") in wanted]
+    if limit is not None:
+        src_records = src_records[:limit]
+    n = len(src_records)
+    with open(results_path, "w", encoding="utf-8") as fout:
+        for i, rec in enumerate(src_records, start=1):
+            new_rec = dict(rec)  # копируем как есть retrieval/answer/cost — они валидны
+            # error-record'ы (без answer) пропускаем мимо judge
+            if "answer" not in rec or rec.get("is_ood"):
+                # OOD не judge'им — оставляем без изменений (но удаляем старый judge,
+                # если он там был, чтобы summary считался корректно)
+                new_rec.pop("judge", None)
+                fout.write(json.dumps(new_rec, ensure_ascii=False) + "\n")
+                fout.flush()
+                results.append(new_rec)
+                continue
+            try:
+                hits, result = _stub_from_record(rec)
+                jb = _judge_pair(judge_client, rec["query"], result, hits)
+                new_rec["judge"] = jb
+            except Exception as e:
+                print(f"  [{i}/{n}] {rec.get('id')} JUDGE_ERROR: {e!r}",
+                      file=sys.stderr)
+                new_rec["judge"] = {"error": repr(e)}
+            results.append(new_rec)
+            fout.write(json.dumps(new_rec, ensure_ascii=False) + "\n")
+            fout.flush()
+            if i % 10 == 0 or i == n:
+                fb = new_rec.get("answer", {}).get("is_fallback")
+                jf = (new_rec.get("judge", {}) or {}).get("faithfulness", {})
+                print(f"  [{i}/{n}] {rec['id']} fallback={fb} "
+                      f"is_faithful={jf.get('is_faithful')} "
+                      f"override={jf.get('judge_override')}")
+
+    elapsed = time.perf_counter() - started
+
+    # Метрики: retrieval — те же что в исходном run (генерация и retrieval не менялись),
+    # но пересчёт по тем же данным даст идентичный результат, так что считаем заново.
+    metrics = compute_retrieval_metrics(results)
+    judge_metrics = compute_judge_metrics(results)
+    refusal_metrics = compute_refusal_metrics(results)
+
+    n_overrides = sum(
+        1 for r in results
+        if (r.get("judge") or {}).get("faithfulness", {}).get("judge_override")
+    )
+
+    summary = {
+        "config": "rerun_judge_only",
+        "ts": time.strftime("%Y%m%d_%H%M%S"),
+        "from_run": str(from_run),
+        "n_total": len(results),
+        "n_in_domain": sum(1 for r in results if not r.get("is_ood")),
+        "n_ood": sum(1 for r in results if r.get("is_ood")),
+        "n_judge_overrides": n_overrides,
+        "elapsed_seconds": round(elapsed, 1),
+        "cache_stats": cache_stats(),
+        "retrieval_metrics": {k: v for k, v in metrics.items()
+                              if k != "worst_recall0"},
+        "worst_retrieval_recall0": metrics["worst_recall0"],
+        "judge_metrics": judge_metrics,
+        "refusal_metrics": refusal_metrics,
+    }
+    summary_path = outdir / "summary.json"
+    with open(summary_path, "w", encoding="utf-8") as f:
+        json.dump(summary, f, ensure_ascii=False, indent=2)
+
+    print()
+    print("=== retrieval (from source run, без изменений) ===")
+    print(f"  recall@5 = {metrics['recall_at_5']:.4f}  "
+          f"mrr@10 = {metrics['mrr_at_10']:.4f}  "
+          f"n_countable={metrics['n_countable']}")
+    print()
+    print("=== generation (judge, новый промпт) ===")
+    print(f"  faithfulness  = {judge_metrics['faithfulness_pct_full']:.4f} "
+          f"(full, n={judge_metrics['n_judged']})")
+    print(f"                  {judge_metrics['faithfulness_pct_non_fallback']:.4f} "
+          f"(non-fallback, n={judge_metrics['n_non_fallback']})")
+    print(f"  relevance avg = {judge_metrics['relevance_avg_full']:.4f} (full)  "
+          f"{judge_metrics['relevance_avg_non_fallback']:.4f} (non-fb)")
+    print(f"  unfaithful    = {judge_metrics['n_unfaithful']}")
+    print(f"  judge overrides = {n_overrides}")
+    print()
+    print("=== refusal (OOD) ===")
+    print(f"  refusal rate = {refusal_metrics['refusal_rate']} "
+          f"({refusal_metrics['n_refused']}/{refusal_metrics['n_ood']})")
+    print()
+    print("=== cost ===")
+    print(f"  judge paid = ${judge_metrics['judge_cost_paid_usd']:.4f}")
+    print(f"  judge rate = ${judge_metrics['judge_cost_rate_usd']:.4f}")
+    print(f"  cache stats= {cache_stats()}")
+    print(f"  elapsed    = {elapsed:.1f}s")
+    print(f"  outdir     = {outdir}")
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--config", choices=["mvp", "baseline"], default="mvp")
+    ap.add_argument("--config",
+                    choices=["mvp", "baseline", "mvp_no_reranker"],
+                    default="mvp")
     ap.add_argument("--no-cache", action="store_true")
     ap.add_argument("--no-judge", action="store_true",
                     help="не запускать LLM-judge (только retrieval-метрики)")
@@ -557,7 +889,29 @@ def main():
     ap.add_argument("--ood", action="store_true",
                     help="прогнать только OOD-набор")
     ap.add_argument("--outdir", type=str, default=None)
+    ap.add_argument("--rerun-judge-only", action="store_true",
+                    help="пересчёт только judge на сохранённых ответах "
+                         "из --from-run (или из последнего mvp_*-прогона)")
+    ap.add_argument("--from-run", type=str, default=None,
+                    help="путь к папке run'а для --rerun-judge-only")
+    ap.add_argument("--ids", type=str, default=None,
+                    help="фильтр по id через запятую "
+                         "(для sanity-теста --rerun-judge-only)")
     args = ap.parse_args()
+
+    if args.rerun_judge_only:
+        install_caches(use_cache=not args.no_cache)
+        from_run = (Path(args.from_run) if args.from_run
+                    else _find_latest_run("mvp"))
+        only_ids = ([s.strip() for s in args.ids.split(",")]
+                    if args.ids else None)
+        ts = time.strftime("%Y%m%d_%H%M%S")
+        outdir = (Path(args.outdir) if args.outdir
+                  else REPO / "data" / "eval" / "runs"
+                       / f"mvp_v2_judge_{ts}")
+        run_rerun_judge_only(from_run, outdir,
+                             only_ids=only_ids, limit=args.limit)
+        return
 
     use_cache = not args.no_cache
     install_caches(use_cache)

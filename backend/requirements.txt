@@ -33,3 +33,7 @@ uvicorn==0.46.0
 uvloop==0.22.1
 watchfiles==1.1.1
 websockets==16.0
+# Sprint 5 Блок 3: cross-encoder reranker. На Linux Railway тянет torch + transformers
+# (~700-900 MB combined CPU build). HuggingFace download модели BAAI/bge-reranker-v2-m3
+# происходит при первом старте (lazy в retrieval.get_reranker), кэшируется в HF_HOME.
+sentence-transformers==5.4.1
