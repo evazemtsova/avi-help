@@ -27,9 +27,9 @@ _Сюда выносим то, что касается всего проекта
 
 - **PRD 4.4 и TDR 2.6** — после Спринта 1 факты разошлись с описанием API: реальная иерархия резолвится через `parentId` в каталоге, а не через `categoryId/sectionId` из `/api/1/article`; все 518 статей имеют `url` (PRD заявлял «1 без URL»); `alias` в ответе article API всегда `null`. Детали в Заметки Спринта 1.
 - **ML System Design 2.3** — прогноз размера индекса 42 MB пересмотреть до 68 MB после фактической индексации.
-- **PRD F11 (latency)** — метрика «P50 end-to-end ≤ 4 сек» устарела со streaming. Sprint 6 prod replay: P50 4798ms / P95 7315ms / retrieval P50 151ms. Переписать F11 как декомпозицию TTFB: до пилюль ≤ 500ms (151ms ✓), до первого слова lead ≤ 2s (Sprint 5 замер ~1.5s ✓), полный non-streaming P50 ≤ 5s (4798ms ✓) / P95 ≤ 8s (7315ms ✓).
-- **PRD 7.2 (Faithfulness ≥ 0.9)** — Sprint 5 revised до ≥ 0.7 с обоснованием (Sonnet строгий judge). Sprint 6 факт **0.7400 — закрыли revised PRD**. Окончательно зафиксировать ≥ 0.7 в PRD, убрать ⚠️ метку.
-- **PRD 7.3 (стоимость)** — Sprint 6 факт $0.0068, недостижимо без Anthropic prompt caching на ~1500 input tokens константной части. Предложение: ослабить до ≤ $0.007 (current in-target) ИЛИ принять что цель достижима только с prompt caching (roadmap Sprint 7+).
+- **PRD F11 (latency)** — переписать как декомпозицию TTFB: до пилюль ≤ 500ms (Sp6 151ms ✓), до первого слова lead ≤ 2s (Sp5 ~1.5s ✓), полный non-streaming P50 ≤ 5s (Sp6 4798ms ✓) / P95 ≤ 8s (Sp6 7315ms ✓). Источник: `data/eval/prod_latency_v4/results.json`.
+- **PRD 7.2 (Faithfulness ≥ 0.9)** — Sp6 факт **0.7400 — закрыли revised PRD ≥ 0.7**. Окончательно зафиксировать ≥ 0.7, убрать ⚠️ метку. Honest Δ Sp5→Sp6 = +5..+7 п.п. устойчивых; +8 п.п. на Sonnet-judge включает 10-20% noise (см. methodological finding #1).
+- **PRD 7.3 (Cost ≤ $0.005)** — **decision B (user, 2026-05-09):** оставить цель ≤ $0.005, явно прописать Anthropic prompt caching на system+tool (~1500 input tokens) как **required Sprint 7+ dependency**. Sp5/6 факт $0.0068 — недостижимо без caching. Roadmap-кандидат топ-1 для cost-PRD.
 
 ---
 

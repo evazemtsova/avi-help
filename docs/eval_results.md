@@ -277,7 +277,7 @@ Top_k=3 без reranker — экономия за счёт качества; top
 ### 7.3 (Cost ≤ $0.005)
 
 **Sprint 5/6 факт:** $0.0068 — недостижимо без Anthropic prompt caching на ~1500 input tokens константной части.
-**Предложение:** ослабить до **≤ $0.007** (current $0.0068, in-target) ИЛИ принять что цель достижима только с prompt caching (roadmap Sprint 7+).
+**Decision (user, 2026-05-09): B — оставить цель ≤ $0.005**, явно прописать Anthropic prompt caching на system + tool definition как **required Sprint 7+ dependency**. Это методологически чище — PRD ставит ambitious цель, roadmap её закрывает через конкретную фичу.
 
 ## Воспроизводимость
 

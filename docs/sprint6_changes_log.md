@@ -722,3 +722,36 @@ Sprint 6 bi_only baseline: 18 кейсов с R@5=0. После hybrid:
 - Расширенный confusion matrix с end-to-end success_rate
 - Stemming / stop-words / лемматизация (минимальный baseline по брифу)
 - Query-нормализация для опечаток / сленга
+
+### I. PRD revision — финальные decisions (user, 2026-05-09)
+
+После Block 6 chat-обсуждения зафиксированы 3 PRD-правки (применит сам user в `docs/01-PRD.md`):
+
+1. **F11 (latency)** — переписать как TTFB-декомпозицию вместо single end-to-end:
+   - TTFB до пилюль источников: ≤ 500ms (Sp6 151ms ✓✓ 3× запас)
+   - TTFB до первого слова lead: ≤ 2s (Sp5 ~1.5s ✓)
+   - Полное non-streaming P50 ≤ 5s (Sp6 4798ms ✓), P95 ≤ 8s (Sp6 7315ms ✓)
+
+2. **7.2 (Faithfulness)** — окончательно зафиксировать **≥ 0.7** (revised в Sp5, закрыто в Sp6: 0.7400). Убрать ⚠️ метку. В сноске указать honest Δ Sp5→Sp6 = +5..+7 п.п.
+
+3. **7.3 (Cost)** — **decision B:** оставить цель **≤ $0.005**, явно прописать Anthropic prompt caching на system + tool definition (~1500 input tokens константной части) как **required Sprint 7+ dependency**. Sp5/6 факт $0.0068 недостижим без caching. Это методологически чище — PRD ставит ambitious цель, roadmap её закрывает через конкретную фичу.
+
+**Сводная таблица PRD после правок (для собеса):**
+
+| PRD цель | Sp4 факт | Sp5 факт | **Sp6 факт** | Verdict |
+|---|---|---|---|---|
+| Recall@5 ≥ 0.85 | 0.8125 ❌ | 0.8125 ❌ | **0.8542** | ✅ закрыта |
+| MRR@10 ≥ 0.6 | 0.7007 ✓ | 0.7007 ✓ | 0.7024 | ✅ |
+| Faithfulness ≥ 0.7 (revised) | 0.4500 ❌ | 0.6900 ❌ | **0.7400** | ✅ закрыта |
+| Relevance avg ≥ 4 | 4.6701 ✓ | 4.6495 ✓ | 4.6979 | ✅ |
+| Refusal rate = 1.0 | 1.0 ✓ | 1.0 ✓ | 1.0 | ✅ |
+| TTFB до пилюль ≤ 500ms (revised) | n/a | ~300ms ✓ | **151ms** | ✅ |
+| Полный non-streaming P50 ≤ 5s (revised) | 4.69s ✓ | 4.56s ✓ | 4.80s | ✅ |
+| Полный non-streaming P95 ≤ 8s | 7.46s ✓ | 7.32s ✓ | 7.32s | ✅ |
+| Cost ≤ $0.005 (требует prompt caching) | $0.0068 ❌ | $0.0068 ❌ | $0.0068 ❌ | ❌ Sprint 7 dependency |
+
+**8/9 закрыто.** Cost — последний открытый PRD-пункт, явно зависит от Sprint 7 prompt caching.
+
+---
+
+**Sprint 6 ✅ закрыт окончательно.** Все артефакты в репо: журнал (этот файл), `docs/eval_results.md` (Sprint 6 final), `docs/eval_results_sprint5.md` (Sp5 архив), `data/eval/prod_latency_v4/results.json`, `data/eval/runs/{bi_only_20260509_174555, mvp_20260509_181603, mvp_20260509_191629, mvp_retrieval_only_20260509_181027}/`. Прод: `https://avi-help-production.up.railway.app/` (hybrid mode active, `bm25_ready: true` в `/health`).
