@@ -121,7 +121,7 @@ class SearchResponse(BaseModel):
 
 class AnswerRequest(BaseModel):
     query: str = Field(..., min_length=1, max_length=500)
-    top_k: int = Field(3, ge=1, le=20)  # Sprint 5 Блок 4: было 5, после reranker 3 топовых релевантнее, экономим input tokens
+    top_k: int = Field(5, ge=1, le=20)  # Sprint 5 Блок 5: после отката reranker'а top_k=3 терял контекст без фильтра релевантности — вернули к 5
 
 
 class FeedbackRequest(BaseModel):

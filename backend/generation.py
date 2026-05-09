@@ -14,10 +14,11 @@ from prompts import SAFETY_PRIMING, SYSTEM_PROMPT, USER_TEMPLATE, format_chunk
 from retrieval import SearchHit
 
 DEFAULT_MODEL = os.getenv("MODEL", "claude-haiku-4-5")
-# Sprint 5 Блок 5: переименовано с RETRIEVAL_THRESHOLD на _V2 чтобы новый default
-# (0.55 на reranker scale) подхватился на Railway, где старая env-переменная
-# RETRIEVAL_THRESHOLD=0.3 (от Sprint 2 на bi-encoder scale) унаследована.
-RETRIEVAL_THRESHOLD = float(os.getenv("RETRIEVAL_THRESHOLD_V2", "0.55"))
+# Sprint 5 Блок 5 final: reranker откатили (был v2-m3 → base+10 → провалилось
+# по Recall@5). Threshold возвращён к bi-encoder scale 0.3 (Sprint 2 default).
+# Env-переменная RETRIEVAL_THRESHOLD_V2 на Railway теперь не нужна — default
+# в коде совпадает с bi-encoder scale, в которой работает прод.
+RETRIEVAL_THRESHOLD = float(os.getenv("RETRIEVAL_THRESHOLD_V2", "0.3"))
 MAX_TOKENS = 1024
 SAFETY_CATEGORY = "Безопасность"
 

@@ -325,26 +325,28 @@ def install_caches(use_cache: bool) -> None:
 
 def apply_config(config: str) -> None:
     if config == "mvp":
-        # Sprint 5 Блок 3.5: reranker on, threshold 0.6125 откалиброван
-        # на полосе между P10 in-domain CORRECT (0.6138) и max OOD (0.6120) —
-        # отрезает все 20 OOD, теряет ~10% in-domain (нижний хвост) в pre-LLM
-        # fallback. Recall@5 не зависит от threshold (retrieval-метрика).
-        retrieval.USE_RERANKER = True
-        retrieval._reranker = None  # форсим reload в случае повторного apply
-        generation.RETRIEVAL_THRESHOLD = 0.55
-        return
-    if config == "baseline":
-        # Ablation Блока 2: без safety-priming
-        retrieval.USE_RERANKER = True
-        retrieval._reranker = None
-        generation.RETRIEVAL_THRESHOLD = 0.55
-        generation._needs_safety_priming = lambda query, hits: False
-        return
-    if config == "mvp_no_reranker":
-        # Ablation Блока 3: reranker off, threshold обратно 0.3 (bi-encoder shape)
+        # Sprint 5 Блок 5 final: reranker откатили (см. журнал, Изменение #5).
+        # bi-encoder + threshold 0.3 (Sprint 2 default). Faithfulness/safety
+        # фиксы Блоков 1+2+3.5 продолжают работать (они независимы от reranker).
         retrieval.USE_RERANKER = False
         retrieval._reranker = None
         generation.RETRIEVAL_THRESHOLD = 0.3
+        return
+    if config == "baseline":
+        # Ablation Блока 2: без safety-priming
+        retrieval.USE_RERANKER = False
+        retrieval._reranker = None
+        generation.RETRIEVAL_THRESHOLD = 0.3
+        generation._needs_safety_priming = lambda query, hits: False
+        return
+    if config == "mvp_with_reranker":
+        # Ablation для журнала Sprint 5 Блока 3: reranker v2-m3 + candidates=20.
+        # Не используем как mvp — оставлено для воспроизводимости старых runs.
+        retrieval.USE_RERANKER = True
+        retrieval._reranker = None
+        retrieval.RERANKER_MODEL = "BAAI/bge-reranker-v2-m3"
+        retrieval.RERANKER_CANDIDATES = 20
+        generation.RETRIEVAL_THRESHOLD = 0.55
         return
     raise SystemExit(f"unknown config: {config}")
 
@@ -506,7 +508,7 @@ def run_one(item: dict, is_ood: bool, judge_client=None) -> dict:
     t_ret_ms = (time.perf_counter() - t_ret) * 1000
 
     t_gen = time.perf_counter()
-    result = generation.generate(query, hits[:3])  # Sprint 5 Блок 4: top_k=3 после reranker
+    result = generation.generate(query, hits[:5])  # Sprint 5 Блок 5 final: после отката reranker top_k=5 вернулся
     t_gen_ms = (time.perf_counter() - t_gen) * 1000
 
     s1 = cache_stats()
