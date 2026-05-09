@@ -23,6 +23,7 @@ from pydantic import BaseModel, Field
 
 load_dotenv()
 
+from bm25 import init_from_chroma as init_bm25_from_chroma
 from generation import GenerationResult, generate, generate_stream
 from logging_jsonl import (
     FeedbackLogEntry,
@@ -39,7 +40,7 @@ from logging_jsonl import (
     write_feedback_log,
     write_request_log,
 )
-from retrieval import SearchHit, search, warmup
+from retrieval import SearchHit, get_chroma_collection, search, warmup
 
 
 def _bootstrap_chroma_if_empty() -> None:
@@ -86,16 +87,36 @@ app.add_middleware(
 
 
 _RETRIEVAL_INIT_ERROR: str | None = None
+_BM25_INIT_ERROR: str | None = None
 
 
 @app.on_event("startup")
 def _startup() -> None:
-    global _RETRIEVAL_INIT_ERROR
+    global _RETRIEVAL_INIT_ERROR, _BM25_INIT_ERROR
     try:
         _bootstrap_chroma_if_empty()
     except Exception as e:
         print(f"Bootstrap failed (continuing without): {e}", file=sys.stderr)
     _RETRIEVAL_INIT_ERROR = warmup()
+
+    # Sprint 6 Блок 1: BM25 индекс in-RAM. Пересобираем из Chroma на старте
+    # (~1-2s на 4288 чанков) — вариант A брифа: проще, чем хранить pickle на
+    # volume, и автоматически синхронизирован с Chroma. Hybrid-логика (RRF)
+    # подключается в Блоке 2; здесь только инициализация singleton.
+    if _RETRIEVAL_INIT_ERROR is None:
+        try:
+            t0 = time.perf_counter()
+            searcher = init_bm25_from_chroma(get_chroma_collection())
+            elapsed_ms = (time.perf_counter() - t0) * 1000
+            print(
+                f"[bm25] index built over {searcher.size} chunks "
+                f"in {elapsed_ms:.0f}ms",
+                file=sys.stderr,
+            )
+            _BM25_INIT_ERROR = None
+        except Exception as e:
+            _BM25_INIT_ERROR = f"BM25 init failed: {e!r}"
+            print(_BM25_INIT_ERROR, file=sys.stderr)
 
 
 def _client_ip(request: Request) -> Optional[str]:
@@ -145,6 +166,7 @@ def health():
     return {
         "status": "ok",
         "retrieval_ready": _RETRIEVAL_INIT_ERROR is None,
+        "bm25_ready": _BM25_INIT_ERROR is None,
     }
 
 

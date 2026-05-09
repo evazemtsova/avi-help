@@ -37,3 +37,6 @@ websockets==16.0
 # (~700-900 MB combined CPU build). HuggingFace download модели BAAI/bge-reranker-v2-m3
 # происходит при первом старте (lazy в retrieval.get_reranker), кэшируется в HF_HOME.
 sentence-transformers==5.4.1
+# Sprint 6 Блок 1: BM25 sparse retrieval для hybrid pipeline (BM25 + bi-encoder + RRF).
+# Чисто питон, ~5 KB пакет; индекс на 4288 чанков строится ~1s в lifespan event.
+rank-bm25==0.2.2

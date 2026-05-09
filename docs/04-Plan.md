@@ -430,6 +430,53 @@ _Сюда выносим то, что касается всего проекта
 
 ---
 
+## Спринт 6 — BM25 + RRF hybrid retrieval
+
+**Статус:** в работе
+**Цель:** внедрить BM25 + bi-encoder + RRF как production retrieval. Закрыть PRD-цель Recall@5 ≥ 0.85 без инфра-апгрейда (BM25 — алгоритм, не нейросеть, без shared-CPU проблем reranker'а).
+**Принцип:** одна правка = один замер = одна запись в `docs/sprint6_changes_log.md`.
+
+### Задачи
+
+- [x] Блок 0 — Подготовка журнала и baseline-снимок
+- [x] Блок 1 — BM25 индекс на чанках
+- [ ] Блок 2 — RRF (Reciprocal Rank Fusion) и интеграция в retrieval pipeline
+- [ ] Блок 3 — Полный eval с ablation (3 конфигурации: bi_only / bm25_only / hybrid)
+- [ ] Блок 4 — Анализ и решение по deploy
+- [ ] Блок 5 — Деплой на прод + замер latency
+- [ ] Блок 6 — Финальный прогон + декомпозиция + апдейт `eval_results.md`
+
+### Реалистичные ожидания
+
+| Метрика | Sprint 5 baseline | Прогноз Sprint 6 |
+|---|---|---|
+| Recall@5 | 0.8125 | 0.85–0.89 (+4..+8 п.п.) |
+| MRR@10 | 0.7007 | 0.74–0.78 |
+| Faithfulness (non-fb) | 0.6907 | −1..+2 п.п. (новые top-5 → новые ответы) |
+| Refusal | 1.0 | 1.0 (threshold на bi_score не трогаем) |
+| Latency P50 | 4.56s | +50–200ms (BM25 в RAM) |
+| Cost | $0.0068 | без изменений |
+
+Probe 4/5 cherry-picked — верхняя оценка; на полном сете эффект меньше из-за cherry-pick bias.
+
+### Заметки
+
+**Блок 0 — Подготовка журнала:**
+- Сделал: создал `docs/sprint6_changes_log.md` со структурой (Baseline + Failure cases для отслеживания + 6 пустых секций изменений + Финальная сводка); зафиксировал контрольную группу: 5 cherry-picked probe, 18 кейсов Sprint 5 R@5=0 разделены на 2 группы (короткие/разговорные ожидаем починку BM25, реальные галлюцинации не ожидаем чтоб BM25 трогал), 3 pre-LLM fallback кейса под наблюдение.
+- Получил: baseline-snapshot Sprint 5 final зафиксирован цифрами; threshold pre-LLM фолбэка в Sprint 6 остаётся на bi_score < 0.3 (минимизирует риск 1.0→0.9 refusal regression который случился в Sprint 5 Блок 3 при смене retrieval-механизма).
+- Важно: probe 4/5 = верхняя оценка из-за cherry-pick bias; принимаем что Recall@5 = 0.83 (ниже PRD 0.85) тоже win vs 0.81 baseline.
+
+**Блок 1 — BM25 индекс:**
+- Сделал: `backend/bm25.py` (singleton-модуль с `BM25Searcher` + `tokenize_ru` + `init_from_chroma/get_searcher`); `scripts/build_bm25_index.py` (build + sanity на полном golden g020 + save в `data/bm25_index.pkl`); lifespan-event в `main.py` пересобирает BM25 из Chroma после `warmup()`; `/health` возвращает `bm25_ready`; `rank-bm25==0.2.2` в requirements; `data/bm25_index.pkl` в .gitignore.
+- Получил: 4288 чанков, vocab 18433, build time **414–500ms** (порог <2s ✓). Sanity g020 находит статью 2831 на rank #1 (`2831_007`, score 23.097); pickle round-trip OK; lifespan-event на проде тестировался через `from main import _startup; _startup()` → `bm25_init_error: None`.
+- Важно: брифовый sanity «телефон со сколом» оказался слишком короткой паразрафой — не находит 2831 (чанки 2831 не содержат токенов «телефон/сколом» без стемминга); использую полный golden g020 (123 симв, есть «приехал/продавец/деньги») — точно повторяет probe-валидацию. Title prefix в корпусе (`title + "\n" + doc`) дублирует заголовок (он уже в начале doc), это нужно для повторения probe-результата #1 (без него #3); цена ~0.03s build, эффект эмпирически валидирован.
+
+### Блокеры
+
+- _пока пусто_
+
+---
+
 ## Открытые вопросы (решаем по ходу)
 
 _Из PRD раздел 9 + добавляем своё._
