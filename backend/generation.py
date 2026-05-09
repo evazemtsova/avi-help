@@ -95,6 +95,21 @@ def _is_competitor_query(query: str) -> bool:
     q = " " + query.lower() + " "
     return any(c in q for c in COMPETITOR_PLATFORMS)
 
+
+def _query_bi_top1(hits: list[SearchHit]) -> float:
+    """Sprint 6 Блок 2: bi-encoder top-1 score для решения о fallback.
+
+    В Sprint 5 бралось `hits[0].score` (legacy cosine bi-encoder). В Sprint 6 в
+    hybrid-режиме hits[0] может быть BM25-only чанком с `bi_score=0` (BM25
+    нашёл лексический матч, но bi-encoder не считает чанк релевантным) — на
+    нём наивный `hits[0].bi_score < 0.3` дал бы false-positive fallback на
+    легитимных in-domain запросах. Берём `max(bi_score)` по hits — это
+    bi-encoder top-1 если он попал в RRF top-K (типичный случай), иначе
+    наибольший bi-cosine среди возвращённых чанков. Семантика брифа Блока 2
+    «fallback решается по bi-encoder части независимо от BM25» сохраняется.
+    """
+    return max((h.bi_score for h in hits), default=0.0)
+
 LOW_RETRIEVAL_LEAD = (
     "По этому запросу не нашлось точной информации в справке. "
     "Попробуйте сформулировать вопрос конкретнее или обратитесь в чат поддержки."
@@ -270,11 +285,13 @@ def _low_retrieval_fallback(model: str) -> GenerationResult:
 def generate(query: str, hits: list[SearchHit]) -> GenerationResult:
     model = DEFAULT_MODEL
 
-    # Pre-LLM fallback: пустой retrieval, низкий top-1 score, или query про
-    # конкурентную площадку (Юла/Озон/WB и т.п. — reranker даёт им высокий score
-    # на чанках про размещение/доставку, но ответ должен быть отказом).
+    # Pre-LLM fallback: пустой retrieval, низкий bi-encoder top-1 score, или
+    # query про конкурентную площадку (Юла/Озон/WB и т.п.). bi_score-based
+    # threshold изолирует решение о fallback от смены retrieval-механизма
+    # (bi-only / hybrid / reranker) — все режимы используют один и тот же
+    # bi-encoder cosine 0.3 cutoff.
     if (not hits
-            or hits[0].score < RETRIEVAL_THRESHOLD
+            or _query_bi_top1(hits) < RETRIEVAL_THRESHOLD
             or _is_competitor_query(query)):
         return _low_retrieval_fallback(model)
 
@@ -387,9 +404,11 @@ async def generate_stream(
     """
     model = DEFAULT_MODEL
 
-    # Pre-LLM fallback — пустой retrieval, низкий top-1 score или competitor-query.
+    # Pre-LLM fallback — пустой retrieval, низкий bi-encoder top-1 score или
+    # competitor-query. См. `_query_bi_top1` про переход с hits[0].score на
+    # max(bi_score) (Sprint 6 Блок 2: hybrid может ставить BM25-only с bi=0 в #1).
     if (not hits
-            or hits[0].score < RETRIEVAL_THRESHOLD
+            or _query_bi_top1(hits) < RETRIEVAL_THRESHOLD
             or _is_competitor_query(query)):
         yield {"event": "meta", "data": {"sources": [], "is_fallback": True}}
         yield {"event": "lead_delta", "data": {"text": LOW_RETRIEVAL_LEAD}}

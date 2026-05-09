@@ -25,6 +25,7 @@ load_dotenv(REPO / "backend" / ".env")
 
 from anthropic import Anthropic  # noqa: E402
 
+import bm25 as bm25_module  # noqa: E402
 import generation  # noqa: E402
 import retrieval  # noqa: E402
 from llm_cache import (  # noqa: E402
@@ -325,16 +326,27 @@ def install_caches(use_cache: bool) -> None:
 
 def apply_config(config: str) -> None:
     if config == "mvp":
-        # Sprint 5 Блок 5 final: reranker откатили (см. журнал, Изменение #5).
-        # bi-encoder + threshold 0.3 (Sprint 2 default). Faithfulness/safety
-        # фиксы Блоков 1+2+3.5 продолжают работать (они независимы от reranker).
+        # Sprint 6 Блок 2: mvp по умолчанию = hybrid (BM25 + bi-encoder + RRF).
+        # Faithfulness/safety фиксы из Sprint 5 Блоков 1+2+3.5 продолжают работать
+        # (они независимы от retrieval-механизма).
         retrieval.USE_RERANKER = False
+        retrieval.USE_HYBRID_RETRIEVAL = True
+        retrieval._reranker = None
+        generation.RETRIEVAL_THRESHOLD = 0.3
+        return
+    if config == "bi_only":
+        # Sprint 6 Блок 3 ablation: только bi-encoder (Sprint 5 final state).
+        # На текущем кэше = $0 (top-5 идентичны Sprint 5 mvp_20260509_153514).
+        retrieval.USE_RERANKER = False
+        retrieval.USE_HYBRID_RETRIEVAL = False
         retrieval._reranker = None
         generation.RETRIEVAL_THRESHOLD = 0.3
         return
     if config == "baseline":
-        # Ablation Блока 2: без safety-priming
+        # Ablation Sprint 5 Блока 2: без safety-priming. Retrieval — bi-only
+        # (как было в Sprint 5; для Sprint 6 ablation hybrid-без-safety не нужно).
         retrieval.USE_RERANKER = False
+        retrieval.USE_HYBRID_RETRIEVAL = False
         retrieval._reranker = None
         generation.RETRIEVAL_THRESHOLD = 0.3
         generation._needs_safety_priming = lambda query, hits: False
@@ -343,6 +355,7 @@ def apply_config(config: str) -> None:
         # Ablation для журнала Sprint 5 Блока 3: reranker v2-m3 + candidates=20.
         # Не используем как mvp — оставлено для воспроизводимости старых runs.
         retrieval.USE_RERANKER = True
+        retrieval.USE_HYBRID_RETRIEVAL = False
         retrieval._reranker = None
         retrieval.RERANKER_MODEL = "BAAI/bge-reranker-v2-m3"
         retrieval.RERANKER_CANDIDATES = 20
@@ -558,6 +571,59 @@ def run_one(item: dict, is_ood: bool, judge_client=None) -> dict:
     if judge_block is not None:
         rec["judge"] = judge_block
     return rec
+
+
+def run_one_retrieval_only(item: dict, is_ood: bool) -> dict:
+    """Sprint 6 Блок 3.2: только retrieval (skip generation + judge).
+
+    Считаем синтетический is_fallback по тому же правилу что в `generation.generate()`:
+        is_fallback = (not hits) or (max bi_score < threshold) or competitor-query
+    Это чистый retrieval-side decision, LLM не нужен. Cost = $0 (только embed cache hit).
+    """
+    query = item["query"]
+    s0 = cache_stats()
+    t_ret = time.perf_counter()
+    hits = retrieval.search(query, top_k=10)
+    t_ret_ms = (time.perf_counter() - t_ret) * 1000
+    s1 = cache_stats()
+    embedding_hit = s1["emb_hits"] > s0["emb_hits"]
+
+    bi_top1 = max((h.bi_score for h in hits), default=0.0)
+    is_fallback = (
+        not hits
+        or bi_top1 < generation.RETRIEVAL_THRESHOLD
+        or generation._is_competitor_query(query)
+    )
+
+    return {
+        "id": item["id"],
+        "query": query,
+        "is_ood": is_ood,
+        "category": item.get("category"),
+        "difficulty": item.get("difficulty"),
+        "notes": item.get("notes", ""),
+        "expected_article_urls": item.get("expected_article_urls", []),
+        "genre": item.get("genre"),
+        "retrieval_top_10": [hit_to_dict(h) for h in hits],
+        # Синтетический answer-блок только с is_fallback (для compute_refusal_metrics).
+        "answer": {
+            "lead": "",
+            "sections": [],
+            "sources_used": [],
+            "sources": [],
+            "is_fallback": is_fallback,
+        },
+        "synthetic_fallback": True,  # помечаем что это retrieval-only прогон
+        "bi_top1_score": round(bi_top1, 4),
+        "is_competitor_query": generation._is_competitor_query(query),
+        "cache_hit": {"anthropic": False, "embedding": embedding_hit},
+        "latency_ms": {
+            "retrieval": round(t_ret_ms, 1),
+            "generation": 0.0,
+            "total": round(t_ret_ms, 1),
+        },
+        "retrieval_mode": retrieval.last_search_timings.get("mode"),
+    }
 
 
 def compute_retrieval_metrics(results: list[dict]) -> dict:
@@ -881,11 +947,13 @@ def run_rerun_judge_only(from_run: Path, outdir: Path,
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--config",
-                    choices=["mvp", "baseline", "mvp_no_reranker"],
+                    choices=["mvp", "bi_only", "baseline", "mvp_with_reranker"],
                     default="mvp")
     ap.add_argument("--no-cache", action="store_true")
     ap.add_argument("--no-judge", action="store_true",
                     help="не запускать LLM-judge (только retrieval-метрики)")
+    ap.add_argument("--retrieval-only", action="store_true",
+                    help="только retrieval (skip generation + judge); $0 paid")
     ap.add_argument("--limit", type=int, default=None,
                     help="взять первые N запросов (для sanity)")
     ap.add_argument("--ood", action="store_true",
@@ -917,17 +985,36 @@ def main():
 
     use_cache = not args.no_cache
     install_caches(use_cache)
+
+    # Sprint 6 Блок 3: инициализируем BM25 singleton для hybrid-режимов.
+    # На bi_only / mvp_with_reranker не используется, но build занимает ~500ms
+    # и не блокирует eval — делаем безусловно.
+    try:
+        bm25_module.init_from_chroma(retrieval.get_chroma_collection())
+        print(f"[eval] BM25 ready ({bm25_module.get_searcher().size} chunks)")
+    except Exception as e:
+        print(f"[eval] BM25 init failed (continuing without): {e!r}",
+              file=sys.stderr)
+
     apply_config(args.config)
 
     # Judge использует тот же Anthropic-клиент (с кэшем) что и generation.
     # Sonnet и Haiku — разные cache-keys, не пересекаются.
-    judge_client = None if args.no_judge else generation._anthropic_client
+    judge_client = (
+        None
+        if (args.no_judge or args.retrieval_only)
+        else generation._anthropic_client
+    )
     if judge_client is not None:
         print(f"[eval] judge model: {JUDGE_MODEL} (faithfulness + relevance)")
 
     ts = time.strftime("%Y%m%d_%H%M%S")
-    outdir = (Path(args.outdir) if args.outdir
-              else REPO / "data" / "eval" / "runs" / f"{args.config}_{ts}")
+    if args.outdir:
+        outdir = Path(args.outdir)
+    elif args.retrieval_only:
+        outdir = REPO / "data" / "eval" / "runs" / f"{args.config}_retrieval_only_{ts}"
+    else:
+        outdir = REPO / "data" / "eval" / "runs" / f"{args.config}_{ts}"
     outdir.mkdir(parents=True, exist_ok=True)
 
     golden = load_jsonl(REPO / "data" / "eval" / "golden_set.jsonl")
@@ -943,6 +1030,7 @@ def main():
 
     print(f"[eval] config={args.config} cache={'on' if use_cache else 'off'} "
           f"judge={'on' if judge_client else 'off'} "
+          f"retrieval_only={args.retrieval_only} "
           f"n={len(items)} outdir={outdir}")
 
     results_path = outdir / "results.jsonl"
@@ -951,7 +1039,10 @@ def main():
     with open(results_path, "w", encoding="utf-8") as fout:
         for i, (item, is_ood) in enumerate(items, start=1):
             try:
-                rec = run_one(item, is_ood, judge_client=judge_client)
+                if args.retrieval_only:
+                    rec = run_one_retrieval_only(item, is_ood)
+                else:
+                    rec = run_one(item, is_ood, judge_client=judge_client)
             except Exception as e:
                 print(f"  [{i}/{len(items)}] {item['id']} ERROR: {e!r}",
                       file=sys.stderr)
