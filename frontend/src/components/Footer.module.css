@@ -10,14 +10,3 @@
   line-height: 1.5;
   color: var(--color-text-subtle);
 }
-
-.text a {
-  color: var(--color-text-subtle);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  transition: color var(--dur-fast) var(--ease);
-}
-
-.text a:hover {
-  color: var(--color-text);
-}
