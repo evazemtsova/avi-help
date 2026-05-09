@@ -265,6 +265,7 @@ def answer_sync(
         raise
 
     # Sprint 5 Block 5: timing-breakdown по фазам search() для prod-замера.
+    # Sprint 6 Block 5: добавлены bm25_ms / merge_ms / mode для hybrid-режима.
     import retrieval as _retrieval
     breakdown = _retrieval.last_search_timings or {}
     latency = {
@@ -274,6 +275,8 @@ def answer_sync(
         "embed_ms": breakdown.get("embed_ms"),
         "chroma_ms": breakdown.get("chroma_ms"),
         "rerank_ms": breakdown.get("rerank_ms"),
+        "bm25_ms": breakdown.get("bm25_ms"),
+        "merge_ms": breakdown.get("merge_ms"),
         "rerank_fetch_k": breakdown.get("fetch_k"),
     }
 

@@ -87,6 +87,13 @@ class LatencyRecord(BaseModel):
     retrieval: int = 0
     generation: int = 0
     total: int = 0
+    # Sprint 5/6 retrieval breakdown (None в legacy записях до коммита 97fef7e).
+    embed_ms: Optional[int] = None
+    chroma_ms: Optional[int] = None
+    rerank_ms: Optional[int] = None
+    bm25_ms: Optional[int] = None
+    merge_ms: Optional[int] = None
+    rerank_fetch_k: Optional[int] = None
 
 
 class RequestLogEntry(BaseModel):
