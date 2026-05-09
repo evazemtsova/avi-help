@@ -1,41 +1,60 @@
 # Eval Results
 
-**Дата:** 2026-05-08
-**Sprint:** 4 — Eval & логирование
+**Дата:** 2026-05-09
+**Sprint:** 5 final (после Блока 6 — финальная сводка)
 **Eval-set:** 100 in-domain + 20 OOD
-**Eval-runs:** `data/eval/runs/mvp_20260508_215230/`, `data/eval/runs/baseline_20260508_215250/`, `data/eval/prod_latency/`
+**Eval-runs (финал):** `data/eval/runs/mvp_20260509_153514/` (post-rollback, $0 paid из cache); `data/eval/prod_latency_v3/results.json` (30 sequential prod-curl, no-reranker top_k=5)
 
-## Конфигурация системы
+> Журнал блочных изменений Sprint 5 — `docs/sprint5_changes_log.md`. Этот документ — финальная сводка для собеса; журнал — диагностический трек блоков с метриками каждого шага.
+
+## Конфигурация системы (Sprint 5 final)
 
 - **Generator model:** `claude-haiku-4-5` (input $1/M, output $5/M)
 - **Embeddings:** `text-embedding-3-small`, 1536 dim
 - **Vector DB:** Chroma на Railway volume, 4288 чанков из 518 статей
-- **Top-K retrieval:** 10 (для MRR@10), top-K в LLM: 5
-- **Threshold pre-LLM fallback:** top-1 score < 0.3
-- **Safety priming:** ON (в `mvp`-конфиге; OFF в `baseline`)
-- **Reranker:** **OFF** — baseline для Sprint 5 ablation
+- **Top-K retrieval:** 10 (для MRR@10), top-K в LLM: **5** (Sprint 5 Блок 5 final — после отката reranker'а top_k=3 терял контекст без фильтра релевантности)
+- **Threshold pre-LLM fallback:** top-1 score < **0.3** (bi-encoder cosine scale; калибровка под reranker scale 0.55 откатилась вместе с reranker'ом)
+- **Competitor-list refusal:** ON (38 padded-substring маркеров: юла/озон/wb/lamoda/яндекс маркет/али/ebay/мегамаркет/drom/лавка/amazon/джум) — добавлен в Блоке 3.5
+- **Safety priming:** ON (триггеры в query, не retrieval-категория — Блок 2)
+- **Faithfulness judge prompt:** v4 с override (`_HARD_DISQUALIFIERS` + `_SOFT_MARKERS`) — Блок 1
+- **Reranker:** **OFF** (Sprint 5 Блок 5 final — `bge-reranker-v2-m3` cross-encoder откатили после reality-check на shared Railway CPU; код остался, включается env-переменной `USE_RERANKER=true`)
 - **Judge model:** `claude-sonnet-4-6` (input $3/M, output $15/M), tool use
 - **Stack:** FastAPI + Vite/React, прод `https://avi-help.vercel.app/` + `https://avi-help-production.up.railway.app/`
 
-## Главная таблица — mvp vs цели
+## Главная таблица — Sprint 5 final vs PRD
 
-| Метрика | Цель | Результат | Статус |
-|---|---|---|---|
-| Recall@5 | ≥ 0.85 | **0.8125** | ❌ −0.04 |
-| MRR@10 | ≥ 0.6 | **0.7007** | ✅ +0.10 |
-| Faithfulness (non-fb) | ≥ 0.9 | **0.4433** | ❌ −0.46 |
-| Relevance avg (non-fb) | ≥ 4 | **4.6701** | ✅ +0.67 |
-| Refusal rate (OOD) | 1.0 | **1.0000** (20/20) | ✅ |
-| Latency P50 (prod) | ≤ 4s | **4.69s** | ❌ +0.69s (+17%) |
-| Latency P95 (prod) | ≤ 8s | **7.46s** | ✅ −0.54s |
-| Cost per query (in-domain, gen) | ≤ $0.005 | **$0.0068** | ❌ +36% |
+| Метрика | PRD цель | Sprint 4 baseline | **Sprint 5 final** | Δ vs Sprint 4 | Verdict |
+|---|---|---|---|---|---|
+| **Recall@5** | ≥ 0.85 | 0.8125 | **0.8125** | 0 | ❌ −0.04 (reranker не дожил до прода) |
+| MRR@10 | ≥ 0.6 | 0.7007 | **0.7007** | 0 | ✅ +0.10 |
+| **Faithfulness (full)** | ≥ 0.9 ⚠️ | 0.4500 | **0.6900** | **+0.2400** | ❌ −0.21 от PRD, но **+24 п.п. cumulative** (главный win Sprint 5) |
+| Faithfulness (non-fb) | — | 0.4433 | **0.6907** | **+0.2474** | — |
+| Relevance avg (non-fb) | ≥ 4 | 4.6701 | **4.6495** | −0.02 | ✅ +0.65 |
+| Refusal rate (OOD) | 1.0 | 1.0 | **1.0** (20/20) | 0 | ✅ |
+| Latency P50 (prod) | ≤ 4s | 4.69s | **4.56s** | −0.13s | ❌ +0.56s (но streaming-декомп интерпретация) |
+| Latency P95 (prod) | ≤ 8s | 7.46s | **7.32s** | −0.14s | ✅ −0.68s |
+| Cost per query (in-dom, gen) | ≤ $0.005 | $0.0068 | ~$0.0068 | 0 | ❌ +36% (без prompt caching недостижимо) |
 
-**Cost полного прогона eval (rate, без кэша):**
-- Generation (Haiku): $0.6755 на 120 запросов
-- Judge (Sonnet × 2): $1.7156 на 100 in-domain
-- Итого: **$2.39** за один полный прогон. Повторно из кэша: $0.0000.
+**$ потрачено за весь Sprint 5 (paid):** **$9.04** (Блок 1 $1.04 + Блок 2 $0.14 + Блок 3 $2.91 + Блок 3.5 $0.022 + Блок 4 $2.47 + Блок 5 $2.46). Остаток $5.96 от $15 бюджета.
 
-## Retrieval — разбивка mvp
+> ⚠️ PRD-цели **0.9 / ≤4s P50 / ≤$0.005** помечены под пересмотр — обоснование в секции «PRD revision» ниже. Главный win спринта — **Faithfulness +24.7 п.п. cumulative** через переписанный judge-prompt + сужение safety priming до query-триггеров (Блоки 1+2).
+
+## Декомпозиция по блокам — какой блок какой Δ дал
+
+| Блок | Изменение | Δ Recall@5 | Δ Faithfulness (non-fb) | Δ Relevance non-fb | Δ Cost | Стоило ($) | Сохранено в final? |
+|---|---|---|---|---|---|---|---|
+| 1 | переписан `FAITHFULNESS_SYSTEM` + override v4 | 0 | **+0.196** (0.4433 → 0.6392) | 0 | 0 | $1.04 | ✓ |
+| 2 | `SAFETY_PRIMING` сужен до query-триггеров | 0 | **+0.052** (0.6392 → 0.6907) | −0.02 | 0 | $0.14 | ✓ |
+| 3 | reranker `bge-v2-m3` + cand=20 (top-20 → top-5) | **+0.073** (0.8125 → 0.8854) | −0.034 | +0.04 | 0 | $2.91 | ❌ откат на Блоке 5 |
+| 3.5 | refusal threshold + competitor-list | 0 | +0.007 | +0.04 | 0 | $0.022 | ✓ (только competitor-list) |
+| 4 | top_k=3 после reranker | 0 | +0.037 (0.6629 → 0.7000) | −0.12 | **−15%** ($0.0068 → $0.00577) | $2.47 | ❌ откат вместе с reranker'ом |
+| 5 | reality check на проде → откат reranker, top_k=3→5 | **−0.073** (0.8854 → 0.8125) | −0.009 | −0.08 | +15% ($0.00577 → $0.0068) | $2.46 | финальное состояние |
+
+**Что выжило в final-state:** Блоки 1+2 (всё faithfulness-улучшение) + competitor-list из Блока 3.5. **Что не выжило:** Блоки 3+4 (reranker не работает на shared Railway CPU — P95=24s vs PRD ≤8s; после полного отката top_k=3 без фильтра релевантности теряет контекст → top_k=5 пришлось вернуть).
+
+**Cumulative win Sprint 5: +24.7 п.п. Faithfulness** (Блоки 1+2). Остальные метрики — на уровне Sprint 4 baseline (главное retrieval-достижение Recall@5 +7.3 п.п. потеряно в Блоке 5, но это сознательный trade-off под latency PRD).
+
+## Retrieval — разбивка финального run
 
 ### По категориям (n=96, content-gap excluded)
 
@@ -64,141 +83,191 @@
 
 (hard = 6 потому что 4 content-gap исключены из расчёта.)
 
-## Ablation: mvp vs baseline (без safety-priming)
+> Числа идентичны Sprint 4 baseline — естественно, retrieval = bi-encoder без reranker'а. На Блоке 3 (reranker on) Recall@5 был 0.8854 / MRR 0.7605, **+7.3 п.п. / +6.0 п.п.** соответственно.
 
-| Метрика | mvp (safety on) | baseline (safety off) | Δ |
-|---|---|---|---|
-| Recall@5 | 0.8125 | 0.8125 | 0 *(retrieval не зависит от system-prompt)* |
-| MRR@10 | 0.7007 | 0.7007 | 0 |
-| **Faithfulness (non-fb)** | 0.4433 | **0.5417** | **+0.10** |
-| Relevance avg (non-fb) | 4.67 | 4.66 | −0.01 *(статистический шум)* |
-| Refusal rate (OOD) | 1.0 | 1.0 | 0 |
+## Latency декомпозиция (prod, 30 sequential)
 
-**Интерпретация:** safety-priming дописывает в `lead` boilerplate про «не сообщайте код из SMS, не переходите по ссылкам», который Sonnet корректно флагит как unsupported (в чанках про повреждённый товар или возврат денег этих фраз нет). Отказ от safety-priming поднимает faithfulness на 10 п.п. без потери refusal-rate.
+`data/eval/prod_latency_v3/results.json` — финальный замер 30 sequential `/answer/sync` curl на Railway.
 
-## Failure cases
+### Sprint 5 final (no-reranker, top_k=5)
 
-### 5 худших по retrieval (Recall@5=0, всего таких 18)
+| | Client | Server total | Server retrieval | Server generation |
+|---|---|---|---|---|
+| P50 | **4.56s** | 4.06s | **137ms** | 3.93s |
+| P95 | **7.32s** | 6.92s | 254ms | 6.81s |
+| max | 7.71s | 7.40s | — | — |
+| n_fallback | 1/30 (g002 content-gap) | — | — | — |
 
-| id | query | expected | found top-1 |
-|---|---|---|---|
-| g002 | трек номер не отслеживается куда копать | 2802 «Заказ не движется» | 4372 «Моё объявление отклонили» |
-| g003 | как сделать возврат если заказ не подошёл | 4400 «Покупателю — отказаться/вернуть» | 4308 «Заказать товар с доставкой» |
-| g007 | купил наушники с авито доставкой пришло не то… | 2831 «Приехал повреждённый», 4400 | 4331 «Доставка: как не попасться мошенникам» |
-| g011 | курьер не приехал что делать | 2462 «Где курьер» | 1909 «Отправить заказ» |
-| g020 | приехал телефон со сколом на экране… | 2831 «Приехал повреждённый», 4400 | 4332 «Меня обманули» |
+Server retrieval breakdown P50: embed 130ms + chroma 10ms + rerank 0ms = ~140ms. **Generation доминирует** — 96% server-time'а.
 
-**Паттерн:** retrieval семантически попадает в близкую тему («Меня обманули», «Сомневаюсь в сделке», «Отправить заказ»), мимо канонической статьи. Это ровно тот случай, на который рассчитан cross-encoder reranker — он читает пару `(query, chunk)` целиком, в то время как bi-encoder cosine видит «темную» близость.
+### Сравнение по точкам spring 5 (та же golden-set 30, тот же seed)
 
-### 3 худших по faithfulness (с конкретными unsupported claims)
+| | Sprint 4 prod | Sprint 5 v2-m3+20 (Блок 5 stop) | Sprint 5 base+10 (variant 2) | **Sprint 5 final (no-reranker top_k=5)** | PRD |
+|---|---|---|---|---|---|
+| Client P50 | 4.69s | 12.73s | 5.74s | **4.56s** | ≤4s |
+| Client P95 | 7.46s | **24.27s** | 9.66s | **7.32s** ✅ | ≤8s |
+| Server retrieval P50 | ~500ms | 8855ms | 2197ms | **137ms** | — |
+| Server rerank P50 | — | ~8500ms | 2010ms | **0ms** | — |
+| n_fallback | — | 2 | 9 ⚠️ | 1 | — |
 
-| id | query | главный unsupported claim |
-|---|---|---|
-| g001 | что делать если приехал разбитый товар | «Заполните заявление на компенсацию в разделе Помощь с заказом» подано как универсальный шаг, в чанках это только для конкретных типов доставки. |
-| g003 | как сделать возврат если заказ не подошёл | «Можно вернуть в течение 15 дней» применено и к ПВЗ/постамату, в чанках срок 15 дней только для доставки на дом. |
-| g006 | сколько стоит доставка кто платит | «Когда продавец сам организует доставку, стоимость зависит от условий договора со службой доставки» — неполная передача чанка (упущена комиссия от 1 ₽). |
+**Главный вывод по latency:** на shared Railway CPU без MKL/AVX оптимизаций cross-encoder reranker (даже бoлee быстрая bge-base) даёт **2000-2500ms inference на 10 кандидатов** — несовместимо с PRD ≤8s. Локально (Mac M-series) тот же reranker даёт +200-400ms — **40× прогноза**.
 
-**Паттерн:** модель overgeneralizes — берёт условие из одного типа доставки и применяет ко всем. Это вторичное последствие неточного retrieval (модель не видит чанков-уточнений), плюс sensitivity Sonnet'а к мягким переформулировкам.
+## Failure cases (Sprint 5 final, n_unfaithful=31, n_low_relevance=2)
+
+### Прогресс по 18 худшим кейсам Sprint 4 (Recall@5=0)
+
+Те же кейсы, тот же retrieval (bi-encoder без reranker'а): **списки идентичны Sprint 4** — все 18 кейсов с Recall@5=0 остались с Recall@5=0. Эти кейсы — главный аргумент для reranker'а на dedicated CPU в roadmap.
+
+| id | query | expected | top-1 | Что починилось бы reranker'ом? |
+|---|---|---|---|---|
+| g002 | трек номер не отслеживается | 2802 | 4372 | ❌ (content gap, не в top-20) |
+| g003 | как сделать возврат если заказ не подошёл | 4400 | 4308 | ✓ Блок 3 затащил в top-5 (но faith всё равно False) |
+| g007 | купил наушники с авито доставкой | 2831, 4400 | 4331 | ✓ Блок 3 |
+| g011 | курьер не приехал | 2462 | 1909 | ❌ (top-17 in top-20, reranker не вытянул) |
+| g020 | приехал телефон со сколом | 2831, 4400 | 4332 | ❌ (top-14 in top-20) |
+
+(Полный список 18 кейсов — в `data/eval/runs/mvp_20260509_153514/results.jsonl` фильтр по `recall_at_5=0`.)
+
+### Прогресс по unfaithful-кейсам (Sprint 4: 55 → Sprint 5 final: 31, **−24 кейса**)
+
+| Категория Блока 4 (Sprint 4) | Sprint 4 кол-во | После Блока 1 (judge rewrite) | После Блока 2 (safety triggers) | Финал |
+|---|---|---|---|---|
+| Buggy judge (`is_faithful=false` при «(ок)»-claims) | 4-6 | **0** ✓ — judge с явным правилом возвращает true; override v4 ловит pure pure-soft cases | 0 | 0 |
+| Soft нит-пик (мягкие переформулировки) | ~12-15 | **−6** через few-shot examples | 0 | 0 |
+| Safety boilerplate в lead'е | 2-3 (g007, g020) | 0 | **−2** ✓ — priming не сработал, lead по делу | 0 |
+| Реальные галлюцинации (overgeneralization, wrong audience) | ~10 | 0 | 0 | **−10** *(остались — целевая аудитория Блока 3 reranker'а, но Блок 3 откатили)* |
+
+(Конкретные id остались unfaithful: g001 «разбитый товар» — overgeneralization про «компенсацию»; g003 «возврат» — 15 дней применено к ПВЗ; g017 «отправить посылку» — выдуманные 48 часов; g041 «не приходит SMS» — pograничный кейс safety priming на login flow.)
 
 ### Случаи relevance < 3 (всего 2)
 
 | id | score | причина |
 |---|---|---|
-| g002 «трек номер не отслеживается куда копать» | 2 | pre-LLM fallback (top-1 score 0.43, но retrieval мимо) → генерик-перенаправление в чат, конкретики нет. |
-| g020 «приехал телефон со сколом… не остаться без денег» | 1 | safety_priming overtrigger — top-3 dragged in «Меня обманули», модель повела с SMS-warning'ом вместо ответа про возврат повреждённого товара. |
+| g002 «трек номер не отслеживается куда копать» | 2 | pre-LLM fallback (top-1 score 0.43, retrieval мимо) → генерик-перенаправление в чат, конкретики нет. |
+| g100 «как переехать в другой город с авито» | 1 | content-gap; pre-LLM fallback. |
 
 ### OOD-кейсы где модель ответила «по теме» вместо отказа
 
-**Нет таких.** Все 20/20 OOD-запросов получили `is_fallback=true`.
+**Нет таких.** Все 20/20 OOD получили `is_fallback=true`. 18 ловятся по threshold 0.3 на bi-encoder, 2 («юла», «озон») — по competitor-list (Блок 3.5).
 
-## Декомпозиция потерь Faithfulness (доп-анализ)
+## Sprint 5 outcomes vs predictions
 
-Прошла руками 10 unfaithful-кейсов из mvp с чанками. Категоризовала каждый `unsupported_claim` (всего 27) и каждый кейс (10):
+В Sprint 4 Insights table предсказывали Δ от каждой потенциальной правки. Сводим что вышло:
 
-| Категория | Claims (27) | Кейсы (10) |
-|---|---|---|
-| (a) Реальная галлюцинация — модель выдумала факт / перепутала аудиторию / split фразу из чанка | 7 (26%) | 4 (40%) — g003, g011, g014, g017 |
-| (b) Safety boilerplate — добавлено `SAFETY_PRIMING` системой | 1 (4%) | 1 (10%) — g007 |
-| (c) False-positive judge — claim в чанках есть, но Sonnet нит-пикает или сам себе противоречит | 19 (70%) | 5 (50%) — g001, g006, g008, g012, g019 |
+| Правка | Прогноз Sprint 4 (insights) | Sprint 5 факт | Verdict |
+|---|---|---|---|
+| Переписать `FAITHFULNESS_SYSTEM` | +25-35 п.п. faithfulness, ~$1.6 paid | **+19.6 п.п.** non-fb (0.4433 → 0.6392), $1.04 paid | ⚠️ нижняя граница прогноза, дешевле |
+| Cross-encoder reranker | Recall@5 +5-15 п.п., latency +150-250ms | **+7.3 п.п.** на eval ✓; **+8500ms на Railway shared CPU** ❌ (40× прогноза) | ⚠️ eval-выигрыш реальный, но latency несовместим с прод-инфрой |
+| Сузить `SAFETY_PRIMING` | +10 п.п. faithfulness | **+5.15 п.п.** (на v4-baseline 0.6392, не на Sprint 4 0.4433) | ✓ как ожидалось |
+| Top_k=3 после reranker | Cost −30% ($0.0068 → ~$0.0048) | **−15%** ($0.0068 → $0.00577) — недобор PRD на $0.00077 | ⚠️ system+tool ~1500 input tokens fixed → потолок $0.0058 |
+| In-memory cache популярных запросов | Latency P50 на повторах −80% | Не делали (вынесено в roadmap Sprint 6+) | — |
 
-**Главное открытие:** в g008 и g019 Sonnet **в самом списке `unsupported_claims` пишет «подкреплено чанком N, ОК» / «(ок)»** для каждого claim'а, но `is_faithful=false`. То есть judge принимает финальное решение по первому впечатлению и не пересчитывает после анализа claims. Это буг judge, не нашей системы. Подробнее с цитатой — в секции «Methodological finding: LLM-judge inconsistency» ниже.
+**Главный поворот Sprint 5:** прогноз reranker'а как «главного выигрыша» сбылся на eval-метрике, но провалился на проде из-за инфраструктурного ограничения. Cost-цель PRD оказалась нереалистичной без prompt caching на любой архитектуре с tool use ≥1500 input tokens. Faithfulness-цель PRD ≥0.9 нереалистична на Sonnet-judge даже с переписанным promptом — Sonnet строгий по дизайну (см. methodological finding 1 ниже).
 
-В g001 и g006 другой паттерн: судья сам пишет «формулировка корректна, контекст немного смещён» / «не противоречат чанку» — но всё равно флагит как unsupported. Нит-пикинг overgeneralization при формально верном факте.
+## Methodological findings (полный список Sprint 4 + Sprint 5)
 
-## Methodological finding: LLM-judge inconsistency
+### 1. LLM-judge inconsistency (Sprint 4 finding, починен в Блоке 1)
 
-Самостоятельная находка Спринта 4: **Sonnet-judge возвращает `is_faithful=false` даже когда в собственных `unsupported_claims` помечает каждый claim как «подкреплено» / «(ок)»**. Это методологическая проблема judge'а, не свойство ответов системы.
-
-**Конкретный пример — кейс g008** («как отменить заказ»). Tool-output Sonnet'а (буквальная выгрузка из `data/eval/runs/mvp_20260508_215230/results.jsonl`):
+Sprint 4 baseline judge возвращал `is_faithful=false` даже когда в собственных `unsupported_claims` помечал каждый claim как «подкреплено» / «(ок)». Конкретный пример — кейс g008 («как отменить заказ»). Из tool-output Sonnet'а в `data/eval/runs/mvp_20260508_215230/results.jsonl`:
 
 ```json
 {
   "is_faithful": false,
   "unsupported_claims": [
     "Откройте его в разделе «Заказы» и нажмите кнопку «Отменить заказ» — в чанках не упоминается именно такой порядок действий как единый шаг для всех случаев",
-    "Если продавец ещё не передал товар курьеру (на странице написано «Курьер приедет во столько-то»), просто откройте страницу заказа и нажмите Отменить заказ — это подкреплено чанком 3, ОК",
-    "Если кнопки нет, значит продавец уже подтвердил заказ — напишите ему и попросите отменить доставку — подкреплено чанком 4, ОК",
-    "Напишите в поддержку Авито — мы свяжемся со службой доставки — подкреплено чанком 3, ОК",
-    "Деньги вернутся на ту же карту или на баланс для покупок в течение 5 рабочих дней — подкреплено чанком 4, ОК",
+    "Если продавец ещё не передал товар курьеру (...) — это подкреплено чанком 3, ОК",
+    "Если кнопки нет, значит продавец уже подтвердил заказ — подкреплено чанком 4, ОК",
+    "Напишите в поддержку Авито (...) — подкреплено чанком 3, ОК",
+    "Деньги вернутся (...) в течение 5 рабочих дней — подкреплено чанком 4, ОК",
     "Банк может не прислать уведомление об отмене — подкреплено чанком 4, ОК",
     "Способ отмены зависит от статуса заказа — общая фраза, не проверяем"
   ]
 }
 ```
 
-**6 из 7 claims** Sonnet **сам** маркирует как «подкреплено чанком N, ОК» или «не проверяем». Седьмой — мягкий нит-пик про «единый шаг для всех случаев». При этом финальный `is_faithful=false`.
+6/7 claims помечены как «подкреплено / не проверяем», 7-й — soft нит-пик. При этом финальный `is_faithful=false`. Гипотеза: Sonnet решает поле по первому впечатлению (видит много пунктов → flag false), потом подтверждает каждый, но boolean-поле не пересчитывается.
 
-Гипотеза о причине: Sonnet решает `is_faithful` по первому впечатлению (видит много пунктов в списке claims → flag `false`), потом анализирует каждый и подтверждает их в чанках, но финальное boolean-поле уже зафиксировано в начале tool-output'а и не пересчитывается. Аналогичный паттерн в g019 (4/4 claims помечены как «(ок)», `is_faithful=false`).
+**Починено в Блоке 1** через два механизма:
+1. Переписан `FAITHFULNESS_SYSTEM` с явным правилом *«is_faithful=true ⇔ нет hard claim'ов»* + 2 few-shot примера.
+2. Страховочный override `_looks_soft` с `_HARD_DISQUALIFIERS` (10 паттернов: «не подкреплен», «корректна, но», «обобщен», «overgeneraliz», «адресован») и `_SOFT_MARKERS` (16 явных: `(ок)`, `подкреплено чанком`, `не проверяем`, `не противоречие`, `структурное упрощение`).
 
-**Импликации для метрики:**
+### 2. Precision-over-recall на метрике (Sprint 5 Блок 1, валидирован Блоком 3.5)
 
-- Текущая `faithfulness=0.45` смешивает реальные галлюцинации (~26% claims) с judge-glitch'ами (~70%).
-- Цель ≥0.9 в PRD предполагала «разумный» judge — этот judge не подходит как метрика ground truth.
-- Для Sprint 5: переписать `FAITHFULNESS_SYSTEM` с явным правилом *«если все claims помечены как ОК / подкреплено / не проверяем — `is_faithful` ОБЯЗАН быть `true`»*. Дополнительно добавить few-shot примеры с правильным финальным значением.
-- Альтернатива (консервативнее): пересчитывать `is_faithful` на нашей стороне как `not any(claim is hard-unsupported)` после получения списка от judge.
+**«Метрика, на которую нельзя положиться, хуже чем более низкая честная метрика».**
 
-### Реалистичный потолок Faithfulness
+В Блоке 1 при выборе override-логики judge'а: v1-override (faithfulness 0.6701, формально проходил критерий приёмки 0.65) flipping 4 из 5 override-кейсов в `is_faithful=true`, маскируя реальные галлюцинации g007/g014/g041. Декомпозиция Блока 6 «какой блок какой Δ дал» сломалась бы — Блок 2 (safety priming) «починил» бы кейсы которые уже были помечены как faithful. Выбран v4 (0.6392, на 1.1 п.п. ниже барa приёмки), raw метрика честная.
 
-Текущий разрыв до цели 0.9 = **−46 п.п.** Декомпозиция:
+В Блоке 3.5 принцип валидирован в обратную сторону: первая итерация threshold=0.6125 была overcorrection — precision на refusal перевесил recall на success, 8 правильных in-domain CORRECT кейсов потеряны (включая 2 safety и demo-blocker g061 «VIP-объявления»). Вторая итерация (0.55 + competitor-list) вернула 5/8 кейсов в LLM, сохранив refusal_rate=1.0.
 
-| Источник | Доля | Лечится через |
-|---|---|---|
-| False-positive judge (нит-пик + glitch is_faithful=false при «ок»-claims) | ~70% × 55 кейсов ≈ **38 п.п.** | Переписать `FAITHFULNESS_SYSTEM`: explicit «не флагь стилистические переформулировки если факт верен» + правило «если все claims помечены ОК — is_faithful=true» |
-| Реальная галлюцинация (overgeneralization, wrong audience, выдуманные сроки) | ~30% × 55 ≈ **17 п.п.** | Reranker (точнее retrieval → меньше «соседних» чанков для domain-confusion); chunking-стратегия (раздельные чанки tabset по аудитории «продавец/покупатель») |
-| Safety boilerplate | ~10% кейсов | Сузить `SAFETY_PRIMING` до query-триггеров |
+**Вывод:** precision-over-recall — правильный default, но требует валидации на конкретных кейсах. Слепо «строже всегда лучше» не работает.
 
-**Прогноз по сценариям:**
+### 3. Recall@5 как retrieval-метрика не отражает end-to-end success (Sprint 5 Блок 3.5)
 
-| Сценарий | Faithfulness |
-|---|---|
-| Сейчас (mvp baseline) | **0.45** |
-| Снять `SAFETY_PRIMING` | **0.54** *(подтверждено ablation `baseline`)* |
-| + Reranker закрывает реальные галлюцинации | **~0.70** |
-| + Переписать judge-prompt (правильный потолок) | **~0.80–0.85** |
+Между retrieval и пользователем стоит pre-LLM fallback (threshold + competitor-list). Recall@5 измеряет **«было ли возможно ответить»** (URL в top-5), не **«дали ли мы ответ»**. В Блоке 3.5 iter#1 Recall@5=0.8854 формально не упал, но 8 in-domain CORRECT кейсов попали в pre-LLM fallback с reasoning «не нашлось точного ответа» — пользователь получил отказ при наличии правильной информации в индексе.
 
-**Вывод:** цель **≥0.9 нереалистична** на текущем judge даже с идеальным retrieval. На переписанном judge-промпте без glitch'a с `is_faithful=false` при «ок»-claims — реалистичный потолок 0.80–0.85. Цель 0.9 в PRD надо либо ослабить, либо принять что judge должен быть ещё мягче.
+Для следующего roadmap-цикла нужна **end-to-end метрика**:
 
-## Insights for Sprint 5
+```
+success_rate = (in-domain_correctly_answered + ood_correctly_refused) / total
+```
 
-Приоритезация по соотношению цена/эффект из декомпозиции выше:
+где `in-domain_correctly_answered` = `recall@5=1 AND not is_fallback AND faithfulness AND relevance≥4`.
 
-| Insight | Цена (время) | Эффект (п.п. на конкретную метрику) |
-|---|---|---|
-| **1. Переписать `FAITHFULNESS_SYSTEM`** — explicit правила «не флагь стилистические переформулировки если факт верен» + «is_faithful=true ⇔ нет hard-unsupported claims» + few-shot пример | **30 мин** — переписать промпт, повторный judge из cache на новые ключи (~$1.6 paid) | Faithfulness **+25–35 п.п.** на тех же ответах (отвязывает 19/27 false-positive claims = 70%) |
-| **2. Cross-encoder reranker** (`bge-reranker-v2-m3`) на top-20 → top-5 | **2–4ч** инфра + +150–250ms latency на запрос | Recall@5 **+5–15 п.п.** (0.81 → 0.86–0.96); MRR@10 **+5–10 п.п.**; Faithfulness **+10–17 п.п.** через снятие реальных галлюцинаций |
-| **3. Сузить `SAFETY_PRIMING`** до query-триггеров (код, sms, мошенник, фишинг, ссылка), а не retrieval-категории | **30 мин** в `generation.py:_needs_safety_priming` | Faithfulness **+10 п.п.** (подтверждено ablation `baseline`); refusal rate без потери; уберёт g020-style overtrigger («телефон со сколом» → safety boilerplate) |
-| **4. Top_k=3 после reranker** (вместо top_k=5) | **5 мин** + повторный eval из cache | Cost per query **−30%** ($0.0068 → ~$0.0048, попадание в цель ≤$0.005); latency **−10%** |
-| **5. In-memory cache популярных запросов** (TTL=24h) | **1–2ч** на инфру | Latency P50 на повторах **−80%** (для повторов); cost на повторах **−100%** |
+В Sprint 5 в качестве суррогата используем (`Recall@5` × `non-fallback ratio` × `non-fb relevance/5`) — но это не unified metric, а пара колонок которые приходится читать вместе.
 
-**Топ-1 кандидат на Sprint 5:** **Reranker (#2)** — единственное изменение, дающее одновременно Recall@5 (≥0.85), Faithfulness (через корректные чанки), и снимающее самые embarassing failure-cases для демо (g020 «телефон со сколом» → «Меня обманули»).
+### 4. Cost-оптимизация может улучшить качество если она происходит после фильтра релевантности (Sprint 5 Блок 4)
 
-**Топ-1 «бесплатное» улучшение:** **Переписать judge-prompt (#1)** — +25–35 п.п. faithfulness за 30 мин. Без этого цифра 0.45 в репо выглядит как «50% галлюцинаций», а реальных галлюцинаций — ~26% claims (40% кейсов).
+Top_k=3 без reranker — экономия за счёт качества (bi-encoder менее точный → top-3 могут пропустить нужный чанк). Top_k=3 после reranker — экономия + качество (+3.7 п.п. faithfulness, потому что reranker уже отфильтровал релевантное → меньше шума в подаче → меньше повод для overgeneralization).
 
-## Открытые вопросы
+В Sprint 5 final после отката reranker'а top_k=5 пришлось вернуть — без cross-encoder фильтра 3 чанков теряли контекст. Cost вернулся к Sprint 4 baseline.
 
-- **PRD F11 «P50 ≤4s» устарела со streaming.** На стриминге пользователь видит пилюли источников через ~300ms (TTFB до meta), первое слово lead через ~1.5s, полный ответ через ~5s. Метрика «полное время» в этой модели не критична — пользователь уже читает. Переписать раздел 6.3 PRD (отмечено в `04-Plan.md`).
-- **Cost per query $0.0068 vs цель $0.005** — превышение 36%. Снимется через reranker → top_k=3 (см. инсайт #4).
-- **Faithfulness target 0.9** — недостижим даже с reranker'ом без переписывания judge-prompt'а (Sonnet строгий по дизайну). Реалистично 0.7-0.8 на нашем датасете.
+**Урок для архитектуры:** правильная последовательность оптимизаций — сначала фильтр (reranker), потом усечение (top_k); инверсия даёт регрессию.
+
+### 5. Pre-deployment latency-замер ОБЯЗАТЕЛЕН на shared-CPU инфраструктуре (Sprint 5 Блок 5)
+
+Локально reranker `bge-v2-m3` давал +200ms (M-series, MKL/AVX/Apple Accelerate), на Railway shared CPU — +8500ms (40× прогноза). Бриф Блока 3 написал «локально retrieval ~5с — Блок 5 проверит на проде» — эта отложенная валидация стоила $5+ paid и день работы (3 деплоя + откат).
+
+**Урок:** для любого ML-инференса в проде нужен smoke-замер на target hardware ДО merge в main. Приближённое правило: на shared-CPU без MKL/AVX cross-encoder forward pass на ~250 tokens — 400-450ms; на M-series — 100-200ms; на dedicated x86 с MKL — 150-200ms.
+
+### 6. Pydantic v2 не coerces float→int с fractional part (Sprint 5 Блок 5 hotfix)
+
+Коммит `97fef7e` (timing breakdown) добавил `embed_ms`/`chroma_ms`/`rerank_ms` в `latency_ms` через `round(x, 1)` (float). `AnswerResponse.latency_ms: dict[str, int]` — Pydantic strict mode валит на любом значении с `.5`. Баг существовал ~6 часов на проде, но не был замечен потому что после коммита через `/answer/sync` не было живых запросов до моего деплоя Блока 5.
+
+**Урок:** каждое изменение response schema требует один curl smoke к **каждому** endpoint'у который его использует. И — Pydantic v2 default coercion НЕ permissive: float→int coerce только если значение целое (1934.0 OK, 1934.5 fail). Минимальный фикс — `int(round(x))` в источнике.
+
+## PRD revision (открытые вопросы для финального документа)
+
+### F11 (latency)
+
+**Текущая формулировка:** «P50 end-to-end ≤ 4s, P95 ≤ 8s»
+**Проблема:** со streaming SSE «end-to-end» не описывает UX — пользователь видит пилюли через 300ms, первое слово lead через 1.5s, полный ответ через 5s. P50=4.56s в этой модели не критично — пользователь уже читает с ~300ms.
+**Предложение:** переписать F11 как декомпозицию TTFB:
+- TTFB до пилюль источников: ≤ 500ms
+- TTFB до первого слова lead: ≤ 2s
+- Полное время (для non-streaming /answer/sync): P50 ≤ 5s, P95 ≤ 8s ✓ (current 4.56s / 7.32s)
+
+### 7.2 (Faithfulness ≥ 0.9)
+
+**Проблема:** недостижимо на Sonnet-judge даже с переписанным prompt'ом. Sonnet строгий по дизайну. Реалистичный потолок 0.80-0.85.
+**Предложение:** ослабить до **≥ 0.7** (current Sprint 5 = 0.69, near-target). Альтернатива: формулировка «пропорция реальных галлюцинаций ≤ 0.15» (декомпозиция через ручной разбор unfaithful-кейсов — 70% false-positive judge / 26% real galls / 4% safety).
+
+### 7.3 (Cost ≤ $0.005)
+
+**Проблема:** недостижимо без Anthropic prompt caching. System (~600 tokens) + tool definition (~900 tokens) = ~1500 fixed input tokens = $0.0015 only от system+tool на запрос. Чанки + output добавляют $0.005+. Потолок без caching ~$0.0058 на текущей архитектуре.
+**Предложение:** ослабить до **≤ $0.007** (current $0.0068, in-target) ИЛИ принять что цель достижима только с prompt caching (roadmap).
+
+## Roadmap (Sprint 6+)
+
+| Кандидат | Цена | Эффект | Приоритет |
+|---|---|---|---|
+| **Anthropic prompt caching** на system + tool definition (TTL 5 мин) | 1-2ч код, конфиг | Cost cached input −90% → потолок $0.001-0.002/запрос ✓ PRD 7.3 | топ-1 |
+| **Reranker на dedicated CPU instance** (env-flag `USE_RERANKER=true`) | 1ч инфра + monthly $$ | Recall@5 +7.3 п.п. ✓ PRD 0.85; latency +200-400ms (терпимо на dedicated) | при наличии бюджета на инфру |
+| **End-to-end success_rate metric** (methodological finding 3) | 2ч eval-script | Unified-метрика вместо пары колонок | high (под собес) |
+| **Расширить retrieval top-K с 20 до 50** (для reranker-варианта) | 30 мин | Закрывает g011/g020-style кейсы (top-17 в bi-encoder) | only with reranker on |
+| **Multi-query rewrite через Haiku** для коротких запросов | 4-6ч + +500ms latency | Закрывает g002-style content gaps | medium |
+| **HyDE (Hypothetical Document Embeddings)** для длинных разговорных запросов | 3-5ч + +1.5s latency | Закрывает g020-style («телефон со сколом») | low (большое latency-cost) |
+| **Query-нормализация** («обяв→объявления» и т.п.) через Haiku | 2-3ч + +200ms | Closes g061 demo-blocker «VIP-объявления» | medium (демо-фикс) |
+| **In-memory cache популярных запросов** (TTL=24h) | 1-2ч | Latency P50 на повторах −80%; cost на повторах −100% | high (под продакшн нагрузку) |
 
 ## Воспроизводимость
 
@@ -206,11 +275,14 @@
 # Полный прогон mvp (из кэша = бесплатно, ~1 сек)
 backend/.venv/bin/python scripts/eval.py --config mvp
 
-# Ablation baseline (без safety priming)
+# Ablation baseline (без safety priming, тот же no-reranker)
 backend/.venv/bin/python scripts/eval.py --config baseline
 
-# Прод latency 30 запросов
-# (см. data/eval/prod_latency/results.json)
+# Воспроизведение reranker-runs из журнала Sprint 5 Блока 3 (для аудита)
+backend/.venv/bin/python scripts/eval.py --config mvp_with_reranker
+
+# Прод latency 30 запросов (no-reranker, top_k=5)
+# (см. data/eval/prod_latency_v3/results.json)
 ```
 
 Кэш-файлы (~3.6 MB embeddings + ~210 KB LLM): `data/llm_cache.jsonl`, `data/embedding_cache.jsonl` (в `.gitignore`).

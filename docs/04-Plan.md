@@ -365,7 +365,7 @@ _Сюда выносим то, что касается всего проекта
 
 ## Спринт 5 — Технические улучшения по итогам Спринта 4
 
-**Статус:** в работе
+**Статус:** ✅ готов
 **Цель:** довести метрики Sprint 4 baseline до целей PRD путём 4 раздельно измеряемых правок. Главный артефакт — `docs/sprint5_changes_log.md` с декомпозицией «какое изменение что дало».
 **Принцип:** один блок = одна правка = один замер = одна запись в журнал. Без исключений.
 
@@ -380,7 +380,7 @@ _Сюда выносим то, что касается всего проекта
 - [x] Блок 3.5 — Refusal threshold calibration (0.0 → 0.6125)
 - [x] Блок 4 — top_k=3 после reranker (cost/latency) ⚠️ cost $0.00577 — не дотянул до PRD ≤$0.005 на $0.00077, нужно prompt caching (roadmap)
 - [x] Блок 5 — Деплой на прод + замер latency ⚠️ reranker откатили (P95=24s на shared CPU → base+10 → Recall@5 пробил stop) → final state = Sprint 4 retrieval + Sprint 5 Блоки 1+2 generation
-- [ ] Блок 6 — Финальный прогон + декомпозиция + апдейт `eval_results.md`
+- [x] Блок 6 — Финальный прогон + декомпозиция + апдейт `eval_results.md`
 
 ### Заметки
 
@@ -418,6 +418,11 @@ _Сюда выносим то, что касается всего проекта
 - Сделал: 3 деплоя за день — (1) v2-m3+20 как было; (2) base+10 (Variant 2) + hotfix Pydantic int_from_float в `last_search_timings`; (3) откат reranker `USE_RERANKER=false` + threshold 0.55→0.3 + top_k 3→5; финальный eval rerun из cache ($0 paid, 308/308 hits).
 - Получил: P95 24.27s (v2-m3) → 9.66s (base+10, Recall@5 пробил stop 0.80<0.83) → **7.32s ✓ PRD ≤8s**; финальный Recall@5 0.8125 = Sprint 4 baseline (reranker не дожил), **Faithfulness 0.6907** на non-fb (+24.7 п.п. от Блоков 1+2), Refusal 1.0 ✓, Cost ~$0.0068 (top_k=5 вернул input avg 3985); $2.46 paid за base+10 eval.
 - Важно: главный win Sprint 5 — Faithfulness через judge rewrite + safety priming (Блоки 1+2, независимы от reranker). Reranker оставлен в коде как opt-in opt-flag на dedicated CPU; Блок 4 cost/latency-выигрыш потерян вместе с reranker'ом (top_k=3 без фильтра релевантности теряет контекст). Two методолог. находки добавлены в журнал: pre-deployment latency-замер на target hardware ОБЯЗАТЕЛЕН, и Pydantic v2 не coerces float→int с fractional part — каждое изменение response schema требует curl smoke на ВСЕ endpoints его использующие.
+
+**Блок 6 — Финальная сводка + апдейт `eval_results.md`:**
+- Сделал: заполнил Финальную сводку в `sprint5_changes_log.md` (cumulative-таблица + декомпозиция по блокам + 5 методологических находок + roadmap); переписал `eval_results.md` целиком под Sprint 5 final (главная таблица, latency-декомпозиция в 4 точках, failure cases, predictions vs outcomes, PRD revision секция, roadmap Sprint 6+).
+- Получил: финальные цифры зафиксированы — Recall@5/MRR/Refusal/Latency P95/Relevance ✓ либо на baseline; Faithfulness +24.7 п.п. cumulative win; всего $9.04 paid за весь спринт (остаток $5.96 от $15 бюджета).
+- Важно: PRD-revision открыта по 3 пунктам (F11 latency → streaming-декомпозиция, 7.2 Faithfulness ≥0.7 вместо ≥0.9, 7.3 Cost ≤$0.007 вместо ≤$0.005 ИЛИ только через prompt caching как roadmap); реранкер оставлен в коде opt-in под `USE_RERANKER=true` на dedicated CPU; топ-1 roadmap-кандидат для Sprint 6 — Anthropic prompt caching на system+tool (~1500 input tokens fixed) для попадания в cost-цель.
 
 ### Блокеры
 
