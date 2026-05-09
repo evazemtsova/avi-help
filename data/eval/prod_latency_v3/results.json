@@ -1,0 +1,560 @@
+{
+  "url": "https://avi-help-production.up.railway.app/answer/sync",
+  "n": 30,
+  "n_fallback": 1,
+  "client_p50_ms": 4562,
+  "client_p95_ms": 7317,
+  "client_max_ms": 7713,
+  "server_p50_ms": 4059,
+  "server_p95_ms": 6920,
+  "server_retrieval_p50": 137,
+  "server_retrieval_p95": 254,
+  "server_generation_p50": 3925,
+  "server_generation_p95": 6809,
+  "server_embed_p50": 130,
+  "server_chroma_p50": 10,
+  "server_rerank_p50": 0,
+  "server_rerank_p95": 0,
+  "results": [
+    {
+      "i": 1,
+      "id": "g024",
+      "category": "Безопасность",
+      "query": "подозрительный qr код продавец прислал что делать",
+      "client_ms": 4252,
+      "server": {
+        "retrieval": 259,
+        "generation": 3689,
+        "total": 3948,
+        "embed_ms": 244,
+        "chroma_ms": 14,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.545
+    },
+    {
+      "i": 2,
+      "id": "g009",
+      "category": "Заказы с доставкой",
+      "query": "где мой заказ почему так долго",
+      "client_ms": 4081,
+      "server": {
+        "retrieval": 132,
+        "generation": 3546,
+        "total": 3679,
+        "embed_ms": 122,
+        "chroma_ms": 10,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.62
+    },
+    {
+      "i": 3,
+      "id": "g012",
+      "category": "Заказы с доставкой",
+      "query": "как поменять адрес доставки уже после оплаты",
+      "client_ms": 4092,
+      "server": {
+        "retrieval": 102,
+        "generation": 3660,
+        "total": 3762,
+        "embed_ms": 95,
+        "chroma_ms": 7,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.668
+    },
+    {
+      "i": 4,
+      "id": "g008",
+      "category": "Заказы с доставкой",
+      "query": "как отменить заказ",
+      "client_ms": 4688,
+      "server": {
+        "retrieval": 129,
+        "generation": 4229,
+        "total": 4358,
+        "embed_ms": 120,
+        "chroma_ms": 10,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.758
+    },
+    {
+      "i": 5,
+      "id": "g049",
+      "category": "Профиль",
+      "query": "что делать если профиль удалили без меня",
+      "client_ms": 3404,
+      "server": {
+        "retrieval": 162,
+        "generation": 2897,
+        "total": 3059,
+        "embed_ms": 144,
+        "chroma_ms": 18,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.647
+    },
+    {
+      "i": 6,
+      "id": "g014",
+      "category": "Заказы с доставкой",
+      "query": "как включить доставку в своих обявах",
+      "client_ms": 5327,
+      "server": {
+        "retrieval": 153,
+        "generation": 4755,
+        "total": 4908,
+        "embed_ms": 138,
+        "chroma_ms": 15,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.685
+    },
+    {
+      "i": 7,
+      "id": "g002",
+      "category": "Заказы с доставкой",
+      "query": "трек номер не отслеживается куда копать",
+      "client_ms": 2230,
+      "server": {
+        "retrieval": 144,
+        "generation": 1768,
+        "total": 1913,
+        "embed_ms": 132,
+        "chroma_ms": 12,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": true,
+      "top1": 0.431
+    },
+    {
+      "i": 8,
+      "id": "g092",
+      "category": "Отклонили объявление: что делать",
+      "query": "запрещенный товар на авито что значит",
+      "client_ms": 6139,
+      "server": {
+        "retrieval": 228,
+        "generation": 5594,
+        "total": 5823,
+        "embed_ms": 216,
+        "chroma_ms": 12,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.661
+    },
+    {
+      "i": 9,
+      "id": "g095",
+      "category": "Как опубликовать объявление: самые важные советы",
+      "query": "как опубликовать объявление о товаре с нуля",
+      "client_ms": 5451,
+      "server": {
+        "retrieval": 228,
+        "generation": 4827,
+        "total": 5055,
+        "embed_ms": 215,
+        "chroma_ms": 13,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.629
+    },
+    {
+      "i": 10,
+      "id": "g055",
+      "category": "Оплата",
+      "query": "квитанция криво отображается куда обратиться",
+      "client_ms": 3383,
+      "server": {
+        "retrieval": 149,
+        "generation": 2914,
+        "total": 3064,
+        "embed_ms": 134,
+        "chroma_ms": 15,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.507
+    },
+    {
+      "i": 11,
+      "id": "g017",
+      "category": "Заказы с доставкой",
+      "query": "хочу отправить посылку через авито как это работает",
+      "client_ms": 5075,
+      "server": {
+        "retrieval": 128,
+        "generation": 4607,
+        "total": 4735,
+        "embed_ms": 115,
+        "chroma_ms": 13,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.594
+    },
+    {
+      "i": 12,
+      "id": "g064",
+      "category": "Продвинуть объявление",
+      "query": "чем отличается продвижение с прогнозом от обычного",
+      "client_ms": 5098,
+      "server": {
+        "retrieval": 128,
+        "generation": 4657,
+        "total": 4785,
+        "embed_ms": 119,
+        "chroma_ms": 9,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.642
+    },
+    {
+      "i": 13,
+      "id": "g053",
+      "category": "Оплата",
+      "query": "оплатил продвижение объявления через банковскую карту а денег на балансе кошелька нет и услуга не подключилась куда смотреть",
+      "client_ms": 7071,
+      "server": {
+        "retrieval": 146,
+        "generation": 6597,
+        "total": 6744,
+        "embed_ms": 137,
+        "chroma_ms": 10,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.632
+    },
+    {
+      "i": 14,
+      "id": "g042",
+      "category": "Профиль",
+      "query": "забыл пороль как восстановить",
+      "client_ms": 3437,
+      "server": {
+        "retrieval": 124,
+        "generation": 2919,
+        "total": 3043,
+        "embed_ms": 118,
+        "chroma_ms": 6,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.412
+    },
+    {
+      "i": 15,
+      "id": "g081",
+      "category": "Мои объявления",
+      "query": "сколько действует объявление",
+      "client_ms": 3754,
+      "server": {
+        "retrieval": 254,
+        "generation": 3174,
+        "total": 3428,
+        "embed_ms": 241,
+        "chroma_ms": 13,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.573
+    },
+    {
+      "i": 16,
+      "id": "g003",
+      "category": "Заказы с доставкой",
+      "query": "как сделать возврат если заказ не подошёл",
+      "client_ms": 4757,
+      "server": {
+        "retrieval": 141,
+        "generation": 4303,
+        "total": 4444,
+        "embed_ms": 133,
+        "chroma_ms": 9,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.679
+    },
+    {
+      "i": 17,
+      "id": "g048",
+      "category": "Профиль",
+      "query": "у меня случайно образовалось два аккаунта на авито можно их объединить или связать чтобы все объявления были в одном",
+      "client_ms": 4038,
+      "server": {
+        "retrieval": 133,
+        "generation": 3570,
+        "total": 3704,
+        "embed_ms": 120,
+        "chroma_ms": 14,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.592
+    },
+    {
+      "i": 18,
+      "id": "g088",
+      "category": "Проблемы с объявлением",
+      "query": "в обяве не мой телефон",
+      "client_ms": 3445,
+      "server": {
+        "retrieval": 130,
+        "generation": 2976,
+        "total": 3106,
+        "embed_ms": 119,
+        "chroma_ms": 11,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.528
+    },
+    {
+      "i": 19,
+      "id": "g079",
+      "category": "Мои объявления",
+      "query": "как временно снять объявление",
+      "client_ms": 4437,
+      "server": {
+        "retrieval": 110,
+        "generation": 3948,
+        "total": 4058,
+        "embed_ms": 104,
+        "chroma_ms": 6,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.766
+    },
+    {
+      "i": 20,
+      "id": "g067",
+      "category": "Тарифы",
+      "query": "что такое тариф+ для авто",
+      "client_ms": 7317,
+      "server": {
+        "retrieval": 110,
+        "generation": 6809,
+        "total": 6920,
+        "embed_ms": 99,
+        "chroma_ms": 11,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.736
+    },
+    {
+      "i": 21,
+      "id": "g020",
+      "category": "Заказы с доставкой",
+      "query": "приехал телефон со сколом на экране а продавец говорит всё было целое и не признаёт что мне делать чтобы не остаться без денег",
+      "client_ms": 3874,
+      "server": {
+        "retrieval": 147,
+        "generation": 3370,
+        "total": 3517,
+        "embed_ms": 140,
+        "chroma_ms": 7,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.526
+    },
+    {
+      "i": 22,
+      "id": "g007",
+      "category": "Заказы с доставкой",
+      "query": "купил наушники с авито доставкой пришло не то что заказывал но продавец говорит всё нормально как мне быть",
+      "client_ms": 7713,
+      "server": {
+        "retrieval": 139,
+        "generation": 7260,
+        "total": 7400,
+        "embed_ms": 130,
+        "chroma_ms": 10,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.507
+    },
+    {
+      "i": 23,
+      "id": "g025",
+      "category": "Безопасность",
+      "query": "пришло на почту письмо мол обновите данные карты на авито иначе доступ закроют это похоже на фишинг или нет",
+      "client_ms": 6344,
+      "server": {
+        "retrieval": 117,
+        "generation": 5920,
+        "total": 6038,
+        "embed_ms": 107,
+        "chroma_ms": 10,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.586
+    },
+    {
+      "i": 24,
+      "id": "g011",
+      "category": "Заказы с доставкой",
+      "query": "курьер не приехал что делать",
+      "client_ms": 3561,
+      "server": {
+        "retrieval": 145,
+        "generation": 3098,
+        "total": 3244,
+        "embed_ms": 134,
+        "chroma_ms": 12,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.49
+    },
+    {
+      "i": 25,
+      "id": "g060",
+      "category": "Продвинуть объявление",
+      "query": "как продвинуть объявление чтобы его видели больше людей",
+      "client_ms": 5274,
+      "server": {
+        "retrieval": 136,
+        "generation": 4816,
+        "total": 4953,
+        "embed_ms": 130,
+        "chroma_ms": 7,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.678
+    },
+    {
+      "i": 26,
+      "id": "g031",
+      "category": "Безопасность",
+      "query": "как заблокировать пользователя",
+      "client_ms": 3726,
+      "server": {
+        "retrieval": 133,
+        "generation": 3273,
+        "total": 3407,
+        "embed_ms": 126,
+        "chroma_ms": 8,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.678
+    },
+    {
+      "i": 27,
+      "id": "g023",
+      "category": "Безопасность",
+      "query": "в чате просят перейти в вотсап для разговора что не так",
+      "client_ms": 3654,
+      "server": {
+        "retrieval": 149,
+        "generation": 3180,
+        "total": 3329,
+        "embed_ms": 133,
+        "chroma_ms": 16,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.515
+    },
+    {
+      "i": 28,
+      "id": "g030",
+      "category": "Безопасность",
+      "query": "что такое защита номера",
+      "client_ms": 5247,
+      "server": {
+        "retrieval": 129,
+        "generation": 3931,
+        "total": 4060,
+        "embed_ms": 123,
+        "chroma_ms": 6,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.74
+    },
+    {
+      "i": 29,
+      "id": "g084",
+      "category": "Проблемы с объявлением",
+      "query": "не загружаются фото в объявление",
+      "client_ms": 5382,
+      "server": {
+        "retrieval": 147,
+        "generation": 3919,
+        "total": 4066,
+        "embed_ms": 138,
+        "chroma_ms": 9,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.69
+    },
+    {
+      "i": 30,
+      "id": "g038",
+      "category": "Профиль",
+      "query": "как поменять почту",
+      "client_ms": 5662,
+      "server": {
+        "retrieval": 103,
+        "generation": 5219,
+        "total": 5322,
+        "embed_ms": 95,
+        "chroma_ms": 8,
+        "rerank_ms": 0,
+        "rerank_fetch_k": 5
+      },
+      "is_fallback": false,
+      "top1": 0.639
+    }
+  ]
+}

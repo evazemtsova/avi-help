@@ -107,3 +107,4 @@ data/embedding_cache.jsonl
 data/*.log
 data/chroma/
 data/eval/runs/
+data/logs/

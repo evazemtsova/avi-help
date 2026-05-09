@@ -1,0 +1,423 @@
+{
+  "url": "https://avi-help-production.up.railway.app/answer/sync",
+  "n": 30,
+  "client_p50_ms": 12731,
+  "client_p95_ms": 24265,
+  "client_max_ms": 28121,
+  "server_p50_ms": 12034,
+  "server_p95_ms": 19784,
+  "n_fallback": 2,
+  "results": [
+    {
+      "idx": 1,
+      "id": "g096",
+      "category": "Мои объявления",
+      "query": "как составить резюме на авито",
+      "client_lat_ms": 12065,
+      "server_lat_ms": {
+        "retrieval": 7402,
+        "generation": 4458,
+        "total": 11861
+      },
+      "is_fallback": false,
+      "top1_score": 0.73
+    },
+    {
+      "idx": 2,
+      "id": "g092",
+      "category": "Отклонили объявление: что делать",
+      "query": "запрещенный товар на авито что значит",
+      "client_lat_ms": 10905,
+      "server_lat_ms": {
+        "retrieval": 6396,
+        "generation": 4296,
+        "total": 10692
+      },
+      "is_fallback": false,
+      "top1_score": 0.722
+    },
+    {
+      "idx": 3,
+      "id": "g020",
+      "category": "Заказы с доставкой",
+      "query": "приехал телефон со сколом на экране а продавец говорит всё было целое и не призн",
+      "client_lat_ms": 8707,
+      "server_lat_ms": {
+        "retrieval": 8495,
+        "generation": 0,
+        "total": 8495
+      },
+      "is_fallback": true,
+      "top1_score": 0.506
+    },
+    {
+      "idx": 4,
+      "id": "g030",
+      "category": "Безопасность",
+      "query": "что такое защита номера",
+      "client_lat_ms": 10848,
+      "server_lat_ms": {
+        "retrieval": 7684,
+        "generation": 2953,
+        "total": 10637
+      },
+      "is_fallback": false,
+      "top1_score": 0.73
+    },
+    {
+      "idx": 5,
+      "id": "g071",
+      "category": "Связаться с пользователем",
+      "query": "почему звонок временный номер платный",
+      "client_lat_ms": 12821,
+      "server_lat_ms": {
+        "retrieval": 8855,
+        "generation": 2814,
+        "total": 11670
+      },
+      "is_fallback": false,
+      "top1_score": 0.704
+    },
+    {
+      "idx": 6,
+      "id": "g085",
+      "category": "Проблемы с объявлением",
+      "query": "ожидает оплаты объявление",
+      "client_lat_ms": 21252,
+      "server_lat_ms": {
+        "retrieval": 15691,
+        "generation": 4092,
+        "total": 19784
+      },
+      "is_fallback": false,
+      "top1_score": 0.729
+    },
+    {
+      "idx": 7,
+      "id": "g006",
+      "error": "RemoteDisconnected('Remote end closed connection without response')"
+    },
+    {
+      "idx": 8,
+      "id": "g026",
+      "category": "Безопасность",
+      "query": "в смс пришёл код хотя я ничего не запрашивал что это",
+      "client_lat_ms": 24265,
+      "server_lat_ms": {
+        "retrieval": 6596,
+        "generation": 0,
+        "total": 6596
+      },
+      "is_fallback": true,
+      "top1_score": 0.547
+    },
+    {
+      "idx": 9,
+      "id": "g083",
+      "category": "Проблемы с объявлением",
+      "query": "обяву нет в поиске почему",
+      "client_lat_ms": 12731,
+      "server_lat_ms": {
+        "retrieval": 8071,
+        "generation": 4329,
+        "total": 12400
+      },
+      "is_fallback": false,
+      "top1_score": 0.729
+    },
+    {
+      "idx": 10,
+      "id": "g080",
+      "category": "Мои объявления",
+      "query": "как восстановить удалённое объявление",
+      "client_lat_ms": 28121,
+      "server_lat_ms": {
+        "retrieval": 21203,
+        "generation": 3581,
+        "total": 24785
+      },
+      "is_fallback": false,
+      "top1_score": 0.731
+    },
+    {
+      "idx": 11,
+      "id": "g055",
+      "category": "Оплата",
+      "query": "квитанция криво отображается куда обратиться",
+      "client_lat_ms": 11785,
+      "server_lat_ms": {
+        "retrieval": 9897,
+        "generation": 1461,
+        "total": 11359
+      },
+      "is_fallback": false,
+      "top1_score": 0.571
+    },
+    {
+      "idx": 12,
+      "id": "g067",
+      "category": "Тарифы",
+      "query": "что такое тариф+ для авто",
+      "client_lat_ms": 16529,
+      "server_lat_ms": {
+        "retrieval": 9040,
+        "generation": 2911,
+        "total": 11952
+      },
+      "is_fallback": false,
+      "top1_score": 0.728
+    },
+    {
+      "idx": 13,
+      "id": "g062",
+      "category": "Продвинуть объявление",
+      "query": "как работает выделние цветом",
+      "client_lat_ms": 13483,
+      "server_lat_ms": {
+        "retrieval": 8811,
+        "generation": 4463,
+        "total": 13275
+      },
+      "is_fallback": false,
+      "top1_score": 0.727
+    },
+    {
+      "idx": 14,
+      "id": "g068",
+      "category": "Авито для бизнеса",
+      "query": "как зарегистрироваться как компания",
+      "client_lat_ms": 14375,
+      "server_lat_ms": {
+        "retrieval": 10086,
+        "generation": 4088,
+        "total": 14174
+      },
+      "is_fallback": false,
+      "top1_score": 0.726
+    },
+    {
+      "idx": 15,
+      "id": "g056",
+      "category": "Оплата",
+      "query": "пополнился не тот баланс что делать",
+      "client_lat_ms": 13149,
+      "server_lat_ms": {
+        "retrieval": 9454,
+        "generation": 3499,
+        "total": 12953
+      },
+      "is_fallback": false,
+      "top1_score": 0.729
+    },
+    {
+      "idx": 16,
+      "id": "g043",
+      "category": "Профиль",
+      "query": "хочу сменить имя в профиле",
+      "client_lat_ms": 9867,
+      "server_lat_ms": {
+        "retrieval": 8350,
+        "generation": 1326,
+        "total": 9677
+      },
+      "is_fallback": false,
+      "top1_score": 0.717
+    },
+    {
+      "idx": 17,
+      "id": "g086",
+      "category": "Проблемы с объявлением",
+      "query": "почему мало просмотров у меня",
+      "client_lat_ms": 12492,
+      "server_lat_ms": {
+        "retrieval": 9196,
+        "generation": 3082,
+        "total": 12278
+      },
+      "is_fallback": false,
+      "top1_score": 0.729
+    },
+    {
+      "idx": 18,
+      "id": "g099",
+      "category": "Отклонили объявление: что делать",
+      "query": "почему отклонили объявление с вакансией для несовершеннолетних",
+      "client_lat_ms": 16719,
+      "server_lat_ms": {
+        "retrieval": 7995,
+        "generation": 3110,
+        "total": 11105
+      },
+      "is_fallback": false,
+      "top1_score": 0.722
+    },
+    {
+      "idx": 19,
+      "id": "g033",
+      "category": "Безопасность",
+      "query": "сосед звонит и говорит что мой профиль на авито украли и пишут с моего имени что",
+      "client_lat_ms": 14853,
+      "server_lat_ms": {
+        "retrieval": 9648,
+        "generation": 4993,
+        "total": 14642
+      },
+      "is_fallback": false,
+      "top1_score": 0.682
+    },
+    {
+      "idx": 20,
+      "id": "g063",
+      "category": "Продвинуть объявление",
+      "query": "что такое xl объявление",
+      "client_lat_ms": 12793,
+      "server_lat_ms": {
+        "retrieval": 9121,
+        "generation": 3158,
+        "total": 12279
+      },
+      "is_fallback": false,
+      "top1_score": 0.731
+    },
+    {
+      "idx": 21,
+      "id": "g094",
+      "category": "Как опубликовать объявление: самые важные советы",
+      "query": "как подать объявление о квартире",
+      "client_lat_ms": 12371,
+      "server_lat_ms": {
+        "retrieval": 8616,
+        "generation": 3230,
+        "total": 11847
+      },
+      "is_fallback": false,
+      "top1_score": 0.727
+    },
+    {
+      "idx": 22,
+      "id": "g066",
+      "category": "Тарифы",
+      "query": "какой тариф выбрать для авто",
+      "client_lat_ms": 13900,
+      "server_lat_ms": {
+        "retrieval": 8846,
+        "generation": 4533,
+        "total": 13380
+      },
+      "is_fallback": false,
+      "top1_score": 0.729
+    },
+    {
+      "idx": 23,
+      "id": "g095",
+      "category": "Как опубликовать объявление: самые важные советы",
+      "query": "как опубликовать объявление о товаре с нуля",
+      "client_lat_ms": 11289,
+      "server_lat_ms": {
+        "retrieval": 7530,
+        "generation": 3548,
+        "total": 11079
+      },
+      "is_fallback": false,
+      "top1_score": 0.689
+    },
+    {
+      "idx": 24,
+      "id": "g089",
+      "category": "Отклонили объявление: что делать",
+      "query": "объявление отклонили без причины как восстановить",
+      "client_lat_ms": 11696,
+      "server_lat_ms": {
+        "retrieval": 7850,
+        "generation": 3633,
+        "total": 11484
+      },
+      "is_fallback": false,
+      "top1_score": 0.717
+    },
+    {
+      "idx": 25,
+      "id": "g058",
+      "category": "Оплата",
+      "query": "хочу вывыести деньги с авито доставки",
+      "client_lat_ms": 13448,
+      "server_lat_ms": {
+        "retrieval": 9332,
+        "generation": 3909,
+        "total": 13242
+      },
+      "is_fallback": false,
+      "top1_score": 0.713
+    },
+    {
+      "idx": 26,
+      "id": "g079",
+      "category": "Мои объявления",
+      "query": "как временно снять объявление",
+      "client_lat_ms": 11545,
+      "server_lat_ms": {
+        "retrieval": 7841,
+        "generation": 3488,
+        "total": 11330
+      },
+      "is_fallback": false,
+      "top1_score": 0.731
+    },
+    {
+      "idx": 27,
+      "id": "g073",
+      "category": "Связаться с пользователем",
+      "query": "сообщения не отправляются что делать",
+      "client_lat_ms": 14037,
+      "server_lat_ms": {
+        "retrieval": 9815,
+        "generation": 4015,
+        "total": 13831
+      },
+      "is_fallback": false,
+      "top1_score": 0.708
+    },
+    {
+      "idx": 28,
+      "id": "g045",
+      "category": "Профиль",
+      "query": "не могу подтвердить почту",
+      "client_lat_ms": 12501,
+      "server_lat_ms": {
+        "retrieval": 9177,
+        "generation": 3097,
+        "total": 12274
+      },
+      "is_fallback": false,
+      "top1_score": 0.668
+    },
+    {
+      "idx": 29,
+      "id": "g093",
+      "category": "Как опубликовать объявление: самые важные советы",
+      "query": "как разместить объявление",
+      "client_lat_ms": 12715,
+      "server_lat_ms": {
+        "retrieval": 8954,
+        "generation": 3535,
+        "total": 12490
+      },
+      "is_fallback": false,
+      "top1_score": 0.731
+    },
+    {
+      "idx": 30,
+      "id": "g042",
+      "category": "Профиль",
+      "query": "забыл пороль как восстановить",
+      "client_lat_ms": 12434,
+      "server_lat_ms": {
+        "retrieval": 7961,
+        "generation": 4073,
+        "total": 12034
+      },
+      "is_fallback": false,
+      "top1_score": 0.671
+    }
+  ]
+}
