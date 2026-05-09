@@ -379,7 +379,7 @@ _Сюда выносим то, что касается всего проекта
 - [x] Блок 3 — Cross-encoder reranker `bge-reranker-v2-m3` (top-20 → top-5)
 - [x] Блок 3.5 — Refusal threshold calibration (0.0 → 0.6125)
 - [x] Блок 4 — top_k=3 после reranker (cost/latency) ⚠️ cost $0.00577 — не дотянул до PRD ≤$0.005 на $0.00077, нужно prompt caching (roadmap)
-- [ ] Блок 5 — Деплой на прод + замер latency на проде
+- [x] Блок 5 — Деплой на прод + замер latency ⚠️ reranker откатили (P95=24s на shared CPU → base+10 → Recall@5 пробил stop) → final state = Sprint 4 retrieval + Sprint 5 Блоки 1+2 generation
 - [ ] Блок 6 — Финальный прогон + декомпозиция + апдейт `eval_results.md`
 
 ### Заметки
@@ -413,6 +413,11 @@ _Сюда выносим то, что касается всего проекта
 - Сделал: `backend/main.py` AnswerRequest top_k default 5→3; `scripts/eval.py` slice `hits[:5]` → `hits[:3]` в вызове `generation.generate`. Retrieval по-прежнему возвращает top_k=10 для метрики MRR@10.
 - Получил: **Cost per query $0.0068 → $0.00577 (−15%)** недобор PRD на $0.00077; **Faithfulness non-fb +3.7 п.п. (0.6629→0.7000)**; **Latency локально prod-like P50 6068→5148ms (−15%) P95 9199→7143ms (−22%)** — ожидание −10% превышено; Recall@5/MRR@10/Refusal без изменений ✓; Relevance non-fb −0.12 (минор регрессия); input tokens avg 3985→3353 (−16%), output 514→483 (−6%); $2.47 paid (полный rerun, 271/291 misses).
 - Важно: PRD-цель cost $0.005 нереалистична на текущей архитектуре — system_prompt (~600) + tool definition (~900) = ~1500 токенов фиксированный input + ~750 чанки + ~500 output → потолок $0.0058 без prompt caching; roadmap-кандидат — Anthropic prompt caching на system+tool (TTL 5 мин, −90% cached input). Cumulative cost/latency-эффект Sprint 5 — весь от блока 4 (reranker нейтрален по cost, добавляет +1.5s к retrieval компенсируется −19% generation).
+
+**Блок 5 — Деплой на прод + reality check (полный путь v2-m3 → base+10 → откат):**
+- Сделал: 3 деплоя за день — (1) v2-m3+20 как было; (2) base+10 (Variant 2) + hotfix Pydantic int_from_float в `last_search_timings`; (3) откат reranker `USE_RERANKER=false` + threshold 0.55→0.3 + top_k 3→5; финальный eval rerun из cache ($0 paid, 308/308 hits).
+- Получил: P95 24.27s (v2-m3) → 9.66s (base+10, Recall@5 пробил stop 0.80<0.83) → **7.32s ✓ PRD ≤8s**; финальный Recall@5 0.8125 = Sprint 4 baseline (reranker не дожил), **Faithfulness 0.6907** на non-fb (+24.7 п.п. от Блоков 1+2), Refusal 1.0 ✓, Cost ~$0.0068 (top_k=5 вернул input avg 3985); $2.46 paid за base+10 eval.
+- Важно: главный win Sprint 5 — Faithfulness через judge rewrite + safety priming (Блоки 1+2, независимы от reranker). Reranker оставлен в коде как opt-in opt-flag на dedicated CPU; Блок 4 cost/latency-выигрыш потерян вместе с reranker'ом (top_k=3 без фильтра релевантности теряет контекст). Two методолог. находки добавлены в журнал: pre-deployment latency-замер на target hardware ОБЯЗАТЕЛЕН, и Pydantic v2 не coerces float→int с fractional part — каждое изменение response schema требует curl smoke на ВСЕ endpoints его использующие.
 
 ### Блокеры
 
