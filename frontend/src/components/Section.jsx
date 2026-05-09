@@ -26,11 +26,20 @@ const components = {
   code: ({ children }) => <code className={styles.code}>{children}</code>,
 };
 
+// Sprint 5 Block 5 follow-up: модель иногда отдаёт '•' (или копирует из чанка
+// с U+2022/U+00B7/U+25CF/U+2219) — react-markdown НЕ парсит как list-item,
+// строки схлопываются в один <p>. Нормализуем в '- ' до рендера.
+function normalizeBullets(text) {
+  if (!text) return text;
+  return text.replace(/^[\s]*[•·●∙]\s+/gm, "- ");
+}
+
 export default function Section({ title, body }) {
+  const normalized = normalizeBullets(body);
   return (
     <section className={styles.section}>
       <h3 className={styles.title}>{title}</h3>
-      {body && <Markdown components={components}>{body}</Markdown>}
+      {normalized && <Markdown components={components}>{normalized}</Markdown>}
     </section>
   );
 }

@@ -117,7 +117,7 @@ ANSWER_TOOL = {
                     "type": "object",
                     "properties": {
                         "title": {"type": "string"},
-                        "body": {"type": "string", "description": "Может содержать markdown."},
+                        "body": {"type": "string", "description": "Markdown. Для перечислений 2+ пунктов — list по строкам, каждая начинается с '- ' (дефис + пробел). НЕ используй символ '•' (bullet) — он не парсится фронтом и схлопывается в абзац."},
                     },
                     "required": ["title", "body"],
                 },
