@@ -164,12 +164,12 @@ def search(query: str, top_k: int = 5) -> list[SearchHit]:
 
     if reranker is None:
         last_search_timings = {
-            "embed_ms": round(t_embed, 1),
-            "chroma_ms": round(t_chroma, 1),
-            "rerank_ms": 0.0,
+            "embed_ms": int(round(t_embed)),
+            "chroma_ms": int(round(t_chroma)),
+            "rerank_ms": 0,
             "fetch_k": fetch_k,
             "reranker": False,
-            "total_ms": round((_t.perf_counter() - t0) * 1000, 1),
+            "total_ms": int(round((_t.perf_counter() - t0) * 1000)),
         }
         hits: list[SearchHit] = []
         for chunk_id, doc, meta, dist in zip(ids, documents, metadatas, distances):
@@ -191,12 +191,12 @@ def search(query: str, top_k: int = 5) -> list[SearchHit]:
     )[:top_k]
 
     last_search_timings = {
-        "embed_ms": round(t_embed, 1),
-        "chroma_ms": round(t_chroma, 1),
-        "rerank_ms": round(t_rerank, 1),
+        "embed_ms": int(round(t_embed)),
+        "chroma_ms": int(round(t_chroma)),
+        "rerank_ms": int(round(t_rerank)),
         "fetch_k": fetch_k,
         "reranker": True,
-        "total_ms": round((_t.perf_counter() - t0) * 1000, 1),
+        "total_ms": int(round((_t.perf_counter() - t0) * 1000)),
     }
 
     return [
