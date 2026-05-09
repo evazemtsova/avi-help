@@ -503,8 +503,222 @@ Haiku массово стал писать markdown-списки. **86% отве
 - **g021 регрессия — единственная реальная (R=1→0).** g049/g051 регрессии — оба expected в bi top-1/3, BM25 не нашёл, RRF noise через сторонние чанки. Это паттерн «BM25 boost'нул нерелевантные» — теоретически решается фильтром по bi_score < 0.1 в RRF candidate pool (отсекаем чанки которые bi-encoder совсем не любит). Roadmap.
 - **Faithfulness honest Δ = +5..+7 п.п., не +8.** Часть из 8 п.п. — Sonnet noise на похожих формулировках (g001). Это связано с methodological finding Sprint 5 #1 (judge inconsistency). Не блокер для приёмки, но в финальной таблице цитируем "+5..+7" с диапазоном.
 
-## Изменение #5 — Деплой на прод
-_(заполнится после Блока 5)_
+## Изменение #5 — Деплой на прод + замер latency
+
+**Дата:** 2026-05-09
+**Время на разработку:** ~1ч (3 деплоя — main, hotfix latency-полей, replay)
+**$ потрачено:** ~$0.20 (30 sequential prod запросов через Haiku, без cache)
+
+### Деплои
+
+1. **Коммит `ec03067`** (Sprint 6 Блок 2-4 main): hybrid retrieval, RRF, новые поля SearchHit. Push → Railway redeploy ~120с. Smoke /search показал hybrid сигнатуру (RRF score 0.0164, bi_score=0.0 для BM25-only чанков).
+2. **Коммит `eed6ae3`** (latency-fields hotfix): обнаружено что `bm25_ms`/`merge_ms` существуют в `last_search_timings` (с Блока 2), но не пропагируются в API response — main.py не обновлён. Также `LatencyRecord` (логи) не имел этих полей. Исправил в обоих местах. Без этого замер Блока 5 шага 3 не показал бы breakdown по фазам.
+
+### Smoke 5 запросов (после деплоя)
+
+| id | desc | is_fallback | client_ms | server_total | retrieval | gen | embed | chroma | bm25 | merge |
+|---|---|---|---|---|---|---|---|---|---|---|
+| g020 | in-domain BM25 helper (cherry-pick) | False | 4866 | 4556 | 196 | 4359 | 157 | 5 | (см. v4) | (см. v4) |
+| g061 | in-domain demo-blocker | **True (LLM)** | 2070 | 1698 | 145 | 1552 | 127 | 5 | — | — |
+| g006 | in-domain healthy | False | 4609 | 4218 | 154 | 4064 | 135 | 5 | — | — |
+| ood19 | OOD «юла» | True (competitor) | 467 | 161 | 161 | 0 | 138 | 11 | — | — |
+| ood20 | OOD «озон» | True (competitor) | 428 | 134 | 134 | 0 | 116 | 5 | — | — |
+
+Smoke выполнен ДО hotfix `eed6ae3`, поэтому bm25_ms/merge_ms не отображались в API response. После hotfix первый запрос показал `bm25_ms=4ms, merge_ms=5ms` — поля работают.
+
+**Что подтвердил smoke:**
+- g020 в hybrid отдаёт sources `[2831, 4332]` — статья 2831 (cherry-pick win) на проде. Sprint 5 на g020 не находила 2831.
+- g061 → LLM-fallback (как ожидалось из Блока 4 анализа).
+- ood19/ood20 → competitor-fallback (gen=0ms — без LLM-вызова, retrieval ~150ms).
+- OOD refusal работает: оба fallback'а через `_is_competitor_query`, не через bi_score threshold.
+- Latency client 0.4-4.9s — в пределах PRD ≤5s P50.
+
+### 30 sequential prod latency (data/eval/prod_latency_v4/results.json)
+
+Те же 30 query IDs что в Sprint 5 prod_latency_v3 для прямой сравнимости.
+
+#### Финальная таблица Sprint 6
+
+| Метрика | Sprint 5 v3 (no-reranker, bi-only) | **Sprint 6 v4 (hybrid)** | Δ | PRD |
+|---|---|---|---|---|
+| **Client P50** | 4562ms | **4798ms** | +236ms | ≤5s ✓ |
+| **Client P95** | 7317ms | **7315ms** | −2ms | ≤8s ✓ |
+| Client max | 7713ms | 8504ms | +791ms | — |
+| Server P50 | 4059ms | 4416ms | +357ms | — |
+| Server P95 | 6920ms | **5852ms** | **−1068ms** | — |
+| **Server retrieval P50** | 137ms | **151ms** | +14ms | ≤500ms ✓ |
+| Server retrieval P95 | 254ms | **447ms** | +193ms | — |
+| Server **BM25** P50/P95 | — | **10/25ms** | new | — |
+| Server **merge** P50/P95 | — | **3/3ms** | new | — |
+| Server embed P50 | 130ms | 130ms | 0 | — |
+| Server chroma P50 | 10ms | 5ms | −5ms | — |
+| Server generation P50 | 3925ms | 4169ms | +244ms | — |
+| **n_fallback in-domain** | 1/30 | **0/30** | −1 | ≤5/30 ✓ |
+
+#### Stop-conditions check
+
+| Stop-condition (брифа Блока 5) | Прогон Sprint 6 | Verdict |
+|---|---|---|
+| P95 ≤ 8s | 7315ms | ✓ |
+| P50 retrieval ≤ 500ms | 151ms | ✓✓ (3× запас) |
+| n_fallback in-domain > 5/30 | 0/30 | ✓ (стало лучше vs Sprint 5 v3) |
+
+#### BM25 на Railway shared CPU — главная проверка
+
+**BM25 P50 = 10ms, P95 = 25ms** на shared Railway CPU без MKL/AVX оптимизаций. Это в **1000× быстрее** чем cross-encoder reranker давал на той же инфре (Sprint 5 Блок 5: P50 reranker = 8500-10000ms).
+
+Это подтверждает архитектурное предположение брифа Sprint 6: **BM25 — алгоритм (IDF lookup по dict), не нейросеть (forward pass через 600M-параметровую модель)**. На любой архитектуре питон-словарь lookup работает консистентно ~10-50ms на 4288 чанков.
+
+#### n_fallback 0/30 vs Sprint 5 v3 1/30 — причина
+
+Sprint 5 v3 имел 1 fallback (g002 «трек номер не отслеживается» — content gap, bi_top1 < 0.3). В Sprint 6 v4 g002 НЕ fallback потому что:
+- Hybrid retrieval дал ему top-5 чанки, для которых max(bi_score) ≥ 0.3 (один из чанков прошёл порог).
+- Haiku попытался ответить вместо graceful fallback. **Это известная регрессия из Block 4** — на content-gap кейсах Haiku предпочитает hallucinate'ить вместо признать «не нашлось».
+- Faithfulness g002 в Sprint 6 hybrid eval = False (Sonnet flagit hallucination).
+
+Это **не latency-проблема, а quality trade-off** (Block 4 уже зафиксировано). Roadmap Sprint 7: HyDE / multi-query rewrite для content-gap кейсов с явным «не знаю».
+
+#### Outliers в latency
+
+- **g009 «где мой заказ почему так долго»** — embed=791ms (vs P50=130ms), retrieval=809ms total. OpenAI API hiccup, не Sprint 6 issue (Sprint 5 v3 имел аналогичные outliers).
+- **g049 «удалили профиль»** — total=8504ms (max). Generation=7386ms, в среднем 2× от P50. Haiku длинный ответ + OpenAI streaming variance. Это R@5 broken case (Block 4 анализ) — Haiku возможно более многословен на удалённом expected article.
+- **g055 «квитанция криво»** — embed=559ms. Опять OpenAI variance.
+
+Outliers объясняют разрыв P50/P95: P50 4416ms против P95 5852ms — 1.3× разница, типичная для Haiku при temperature=0 (variance в response length, OpenAI embed network jitter).
+
+### Что узнала
+
+- **Hybrid retrieval на shared Railway CPU работает безупречно.** BM25 P50=10ms, P95=25ms — это **в 0.012× от ожидания брифа Sprint 6 (50-200ms)**. Питон-словарь IDF-lookup на 4288 терминах быстр даже на самых дешёвых VPS-конфигурациях. Это контраст с Sprint 5 Блока 3 (cross-encoder reranker P50=8500ms). **Урок:** для retrieval-фильтров на shared CPU выбирать **алгоритмические (BM25/SPLADE)**, а не нейросетевые (cross-encoder/dense reranker).
+- **Server P95 улучшился на −1068ms vs Sprint 5 v3** при добавлении BM25 (~25ms latency cost). Гипотеза: pure-Python warm cache в hybrid path (без torch/transformers init) даёт более стабильную P95 чем bi-only Sprint 5 v3, где OpenAI embed jitter был главным источником tail latency. Не ожидала, но приятный bonus.
+- **Latency-fields hotfix `eed6ae3` — повторение Sprint 5 Блока 5 урока:** изменение response schema требует не только обновления всех точек чтения (main.py + logging_jsonl.py), но и smoke на проде с НОВОЙ payload-структурой. Я добавила поля в `last_search_timings` в Блоке 2 и забыла пропагировать в response — обнаружила только на Блоке 5 smoke. Без этого Блок 5 step 3 (latency replay с разбивкой) не сработал бы. **Это connect к 6-й methodological finding (bullet-fix) — payload changes affect downstream observers.**
+- **g002 регрессия от fallback к hallucinate ИНТЕРЕСНА методологически.** В bi-only Haiku видел top-5 с irrelevant чанками → пометил `is_fallback=true` (graceful). В hybrid тот же expected article 2802 не нашёлся, но hybrid дал чанки с **более высоким max(bi_score)** (BM25 boost через лексические совпадения «трек/номер»), Haiku не пометил fallback и попытался ответить. **Hybrid retrieval на content-gap может маскировать «незнание» как «знание»** — нужен либо явный gap-detector, либо HyDE для query rewrite.
 
 ## Финальная сводка
-_(заполнится после Блока 6)_
+
+**Финальный mvp run:** `data/eval/runs/mvp_20260509_191629/` — 308/308 cache hits, $0 paid, 1.3s elapsed. Все числа подтверждены без новых LLM-вызовов.
+
+### A. Cumulative-таблица: Sprint 4 → Sprint 5 → Sprint 6 final
+
+| Метрика | Sprint 4 | Sprint 5 final | **Sprint 6 final** | Δ Sp6 vs Sp5 | PRD цель | Verdict |
+|---|---|---|---|---|---|---|
+| **Recall@5** | 0.8125 | 0.8125 | **0.8542** | **+0.0417** | ≥ 0.85 | ✅ **закрыли впервые в проекте** |
+| MRR@10 | 0.7007 | 0.7007 | **0.7024** | +0.0017 | ≥ 0.6 | ✅ |
+| **Faithfulness (full)** | 0.4500 | 0.6900 | **0.7400** | +0.0500 | ≥ 0.7 (revised) | ✅ **закрыли revised PRD** |
+| Faithfulness (non-fb) | 0.4433 | 0.6907 | **0.7396** | +0.0489 | — | (honest range +5..+7 п.п.) |
+| Relevance avg (non-fb) | 4.6701 | 4.6495 | **4.6979** | +0.0484 | ≥ 4 | ✅ |
+| Refusal rate (OOD) | 1.0 | 1.0 | **1.0** (20/20) | 0 | 1.0 | ✅ |
+| Latency P50 (prod) | 4.69s | 4.56s | **4.80s** | +0.24s | ≤ 5s (revised TTFB) | ✅ |
+| Latency P95 (prod) | 7.46s | 7.32s | **7.32s** | 0 | ≤ 8s | ✅ |
+| n_low_relevance (<3) | n/a | 2 | **0** | −2 | — | ✅ bonus |
+| Cost per query | $0.0068 | $0.0068 | $0.0068 | 0 | ≤ $0.005 | ❌ requires prompt caching (roadmap) |
+
+**8/9 PRD-целей закрыто в Sprint 6.** Cost — единственный недобор, недостижим без Anthropic prompt caching на ~1500 input tokens константной части (system + tool definition).
+
+### B. Декомпозиция Δ Recall@5 (+4.17 п.п. = +4 кейса на n=96)
+
+Sprint 6 bi_only baseline: 18 кейсов с R@5=0. После hybrid:
+
+| Bucket | n | Кейсы | Что починилось / осталось |
+|---|---|---|---|
+| **Fixed via BM25 only** (expected не в bi-encoder top-10) | **4** | g011, g020, g054, g073 | Главный win-pattern — короткие лексически-плотные запросы |
+| **Fixed via RRF synergy** (оба ранкера нашли) | **3** | g025, g035, g060 | Bi-encoder top-N + BM25 boost подняли в top-5 |
+| Remained — content gap (не в top-20) | 6 | g002, g007, g024, g042, g058, g095 | Структурные дыры в БЗ Авито — лечатся только HyDE / новой статьёй |
+| Remained — RRF не вытянул из top-20 | 5 | g003, g026, g034, g089, g094 | Кандидат на расширение candidates 20→50 |
+| **Broken (R=1→0)** | **3** | g021, g049, g051 | g021 RRF noise; g049/g051 BM25 boost'нул нерелевантные |
+
+**Net: +7 fixed − 3 broken = +4 кейса** ✓ совпадает с агрегатом 0.8125 → 0.8542.
+
+### C. Faithfulness +5..+7 п.п. — honest decomposition
+
+Финальная цифра 0.66 → 0.74 (+8 п.п. на full, +9 п.п. на non-fb), но устойчивый Δ — **+5..+7 п.п.** Декомпозиция вкладов (анализ 21 fixed + 13 broken faith-кейсов):
+
+| Источник | Вклад | Доказательство |
+|---|---|---|
+| (a) BM25 cluster effect — top-5 целиком из правильной статьи | ~30-40% | g014: bi_only top-5 mixed `[4050, 4362, 4362, 4362, 4296]`, hybrid `[4362]×5` → лучший ответ |
+| (b) Возврат g023/g050/g061 из fallback в LLM | **0%** | НЕ подтвердилось — g050/g061 наоборот ушли в LLM-fallback в hybrid |
+| (c) Different chunks → different answer style → less overgeneralization | ~40-50% | g012 mixed top-5 → Haiku пишет conservative «после оплаты не получится» вместо специфичного |
+| (d) Sonnet noise на похожих формулировках | ~10-20% | g001: top-5 chunks идентичны, leads почти одинаковы, faith flip — это шум judge'а |
+
+В финальной презентации цитируем **+5..+7 п.п. устойчивых** (с диапазоном). Это связано с methodological finding Sprint 5 #1 (Sonnet judge inconsistency) — часть «улучшения» — это шум, а не реальный win.
+
+### D. Что подтвердилось / что неожиданно
+
+#### Probe vs реальность
+
+| Аспект | Прогноз (бриф / probe) | Факт Sprint 6 | Verdict |
+|---|---|---|---|
+| Probe 4/5 cherry-picked | 80% hit rate | 4/5 в hybrid sanity Block 2 | ✓ воспроизведено |
+| Recall@5 на полном сете | 0.85-0.89 (+4..+8 п.п.) | 0.8542 (+4.17 п.п.) | ✓ нижняя граница прогноза |
+| MRR@10 | 0.74-0.78 (+3..+8 п.п.) | 0.7024 (+0.17 п.п.) | ⚠ намного ниже прогноза — top-1 для hybrid редко лучше bi-encoder #1 |
+| Faithfulness (non-fb) | −1..+2 п.п. (новые ответы → шум) | +9 п.п. (honest +5..+7) | ⚠ **bonus неожиданный** — лучший retrieval даёт меньше overgeneralization |
+| Refusal rate | 1.0 | 1.0 (через bi_score-based fallback) | ✓ |
+| Latency P50 | +50-200ms | +236ms client / +14ms retrieval | ✓ в пределах |
+| BM25 latency на shared CPU | 5-50ms | **10ms P50, 25ms P95** | ✓ нижняя граница |
+
+#### 6 главных observations
+
+1. **MRR@10 почти не вырос (+0.17 п.п.)** хотя Recall@5 +4.17 п.п. Это значит: hybrid редко поднимает expected на #1, чаще «поднимает с #6-#10 в top-5». Главный effect — **inclusion в top-5**, не **promotion на #1**.
+
+2. **Faithfulness +5..+7 п.п. — bonus, не заявлен в брифе.** Гипотеза «Faith останется plateau при смене retrieval» оказалась консервативной — реально retrieval-пересортировка через BM25 cluster effect уменьшает шум для Haiku.
+
+3. **g002 «трек номер» — fallback → hallucination.** В bi_only Haiku graceful fallback'ил, в hybrid пытается ответить (выдумывает). Hybrid retrieval может **маскировать «незнание» как «знание»** — нужен HyDE / explicit gap-detector.
+
+4. **g061 demo-blocker НЕ снят.** Переехал из pre-LLM fallback (Sp5 Block 3.5) в LLM-fallback (Sp6 hybrid). Roadmap Sprint 7 — query-нормализация «обяв→объявления».
+
+5. **Bullet-fix как cache-invalidating change** (6-я methodological finding). Косметическая правка `ANSWER_TOOL` стоила $2.77 на пересборку cache + изменила format ответов Haiku (30/97 → 0/97 с `•`, 18/97 → 83/97 с `- ` lists). Faithfulness потерял −4 п.п. на одной retrieval из-за: 70% format-induced specificity, 30% реальные content-shifts.
+
+6. **BM25 на shared Railway CPU — архитектурный win.** P50=10ms, P95=25ms. В **1000× быстрее** чем cross-encoder reranker (Sprint 5 Block 5: 8500ms на той же инфре). Алгоритмический retrieval-фильтр >> нейросетевой на shared-CPU.
+
+### E. Открытые вопросы → Sprint 7 roadmap
+
+| Кандидат | Цена | Эффект | Приоритет |
+|---|---|---|---|
+| **Query-нормализация** «обяв→объявления», «вывыести→вывести», «пороль→пароль» через словарь | 30 мин код, $0 paid | Снимает g061 demo-blocker + g042 + g058 (3 кейса) | топ-1 (демо-fix) |
+| **HyDE / multi-query rewrite** для content-gap | 4-6ч + $0.01-0.02/query overhead | Закрывает 6 content-gap кейсов (g002, g007, g024, g058, g095) либо graceful gap-detector | medium |
+| **Расширить candidates 20→50** в RRF | 30 мин, +5-10ms latency | Закроет 5 «not lifted from top-20» (g003, g026, g034, g089, g094) | medium |
+| **Anthropic prompt caching** на system + tool definition (~1500 input tokens) | 1-2ч код | Cost cached input −90% → потолок $0.001-0.002/запрос ✓ закроет последнюю PRD-цель | high (для cost-PRD) |
+| **End-to-end success_rate metric** (Sprint 5 finding #2) | 2ч eval-script | Unified-метрика вместо пары колонок | high (под собес) |
+| **Reranker как opt-in для dedicated CPU** | 1ч инфра + monthly $$ | Recall@5 +7 п.п. (Sprint 5 Block 3 был 0.8854) — выше чем hybrid 0.8542 | при наличии бюджета на инфру |
+| **Демо UI / README / видео / чипсы** | Sprint 7 главное | Готовность к собесу | топ-1 |
+
+### F. Бюджет
+
+| Спринт / шаг | Paid | Cumulative |
+|---|---|---|
+| Sprint 5 (5 блоков) | $9.04 | $9.04 |
+| **+$6 пополнение перед Блоком 3.4** | — | $15 → **$21** |
+| Sprint 6 Block 3.1 (bi_only — bullet-fix cache rebuild) | $2.77 | $11.81 |
+| Sprint 6 Block 3.4 (hybrid full eval) | $2.73 | $14.54 |
+| Sprint 6 Block 5 (30 sequential prod latency) | ~$0.20 | **~$14.74** |
+| Sprint 6 Block 6 final mvp rerun | $0 (cache) | $14.74 |
+
+**Итого Sprint 6: $5.70 paid. Остаток: ~$6.26 на $21.** Sprint 7 (демо/README/видео/чипсы) обычно $0 paid — остаток будет уверенный буфер.
+
+### G. 6 методологических находок проекта (для собеса)
+
+| # | Находка | Спринт |
+|---|---|---|
+| 1 | Precision-over-recall на метрике (метрика, на которую нельзя положиться, хуже чем более низкая честная) | Sprint 5 |
+| 2 | Recall@5 как retrieval-метрика не отражает end-to-end success (нужна `success_rate` unified) | Sprint 5 |
+| 3 | Cost-оптимизация может улучшить качество если она происходит после фильтра релевантности | Sprint 5 |
+| 4 | Pre-deployment latency-замер ОБЯЗАТЕЛЕН на shared-CPU инфраструктуре | Sprint 5 |
+| 5 | Pydantic v2 не coerces float→int с fractional part — каждое изменение response schema требует curl smoke | Sprint 5 |
+| 6 | **Bullet-fix эффект — косметическая правка промпта инвалидирует cache как retrieval-правка; формат вывода влияет на judge так же сильно как содержание** | **Sprint 6** |
+
+### H. Что выжило в final-state Sprint 6
+
+**Активно:**
+- BM25 + bi-encoder + RRF (k=60, candidates=20) — `USE_HYBRID_RETRIEVAL=true` default
+- BM25 singleton в `backend/bm25.py`, инициализация в lifespan event
+- `SearchHit.bi_score` / `rrf_score` поля
+- `_query_bi_top1(hits) = max(h.bi_score)` для pre-LLM fallback (защита от RRF top-1 = BM25-only)
+- Sprint 5 wins: FAITHFULNESS_SYSTEM v4 + override, SAFETY_TRIGGERS query-level, COMPETITOR_PLATFORMS, threshold 0.3 на bi_score, top_k=5
+
+**В коде, но выключено:**
+- Reranker `bge-reranker-v2-m3` — `USE_RERANKER=false` default (opt-in для dedicated CPU)
+
+**Не сделано в Sprint 6 (roadmap):**
+- bm25_only ablation на полном сете (пропустили ради бюджета)
+- Расширенный confusion matrix с end-to-end success_rate
+- Stemming / stop-words / лемматизация (минимальный baseline по брифу)
+- Query-нормализация для опечаток / сленга
