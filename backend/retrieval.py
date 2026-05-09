@@ -14,9 +14,11 @@ EMBEDDING_MODEL = "text-embedding-3-small"
 COLLECTION_NAME = "avi_help"
 
 # Sprint 5 Блок 3: cross-encoder reranker.
-RERANKER_MODEL = os.getenv("RERANKER_MODEL", "BAAI/bge-reranker-v2-m3")
+# Sprint 5 Блок 5: production reality check — v2-m3 на shared Railway CPU дал
+# P95=24s (PRD ≤8s). Перешли на base + 10 кандидатов (см. журнал, Изменение #5).
+RERANKER_MODEL = os.getenv("RERANKER_MODEL", "BAAI/bge-reranker-base")
 USE_RERANKER = os.getenv("USE_RERANKER", "true").lower() in ("1", "true", "yes")
-RERANKER_CANDIDATES = int(os.getenv("RERANKER_CANDIDATES", "20"))
+RERANKER_CANDIDATES = int(os.getenv("RERANKER_CANDIDATES", "10"))
 
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent
 _DEFAULT_CHROMA_PATH = _PROJECT_ROOT / "data" / "chroma"
