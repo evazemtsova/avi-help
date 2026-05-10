@@ -94,6 +94,10 @@ class LatencyRecord(BaseModel):
     bm25_ms: Optional[int] = None
     merge_ms: Optional[int] = None
     rerank_fetch_k: Optional[int] = None
+    # Sprint 7 Block 1: spell-correction (None в legacy записях).
+    spell_ms: Optional[int] = None
+    original_query: Optional[str] = None
+    corrections: Optional[dict[str, str]] = None
 
 
 class RequestLogEntry(BaseModel):

@@ -11,6 +11,7 @@ from openai import OpenAI
 from pydantic import BaseModel, Field
 
 import bm25 as bm25_module
+import spell as spell_module
 
 EMBEDDING_MODEL = "text-embedding-3-small"
 COLLECTION_NAME = "avi_help"
@@ -37,6 +38,17 @@ USE_HYBRID_RETRIEVAL = os.getenv("USE_HYBRID_RETRIEVAL", "true").lower() in (
 )
 HYBRID_CANDIDATES = int(os.getenv("HYBRID_CANDIDATES", "20"))
 RRF_K = int(os.getenv("RRF_K", "60"))
+
+# Sprint 7 Блок 1: spell-correction для query (SymSpell-like, vocab из BM25
+# corpus). Закрывает Sp6 failure cases с опечатками: g042 «пороль», g058
+# «вывыести». Default true — коррекция консервативная (только OOV токены ≥4
+# симв, edit-distance ≤ 1, кандидат с corpus_freq ≥ 2). Для ablation
+# выставить USE_SPELL_CORRECTION=false.
+USE_SPELL_CORRECTION = os.getenv("USE_SPELL_CORRECTION", "true").lower() in (
+    "1",
+    "true",
+    "yes",
+)
 
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent
 _DEFAULT_CHROMA_PATH = _PROJECT_ROOT / "data" / "chroma"
@@ -234,6 +246,19 @@ def search(query: str, top_k: int = 5) -> list[SearchHit]:
     t0 = _t.perf_counter()
     collection = get_chroma_collection()
 
+    # Sprint 7 Блок 1: spell-correction перед обоими ретриверами. Применяется
+    # к одной строке — bi-encoder и BM25 ищут по уже-исправленному query.
+    # Если коррекций нет — `query` не меняется, `corrections` пустой dict.
+    original_query = query
+    corrections: dict[str, str] = {}
+    t_spell = 0.0
+    if USE_SPELL_CORRECTION:
+        corrector = spell_module.get_corrector()
+        if corrector is not None:
+            t_spell_start = _t.perf_counter()
+            query, corrections = corrector.correct_query(query)
+            t_spell = (_t.perf_counter() - t_spell_start) * 1000
+
     t_embed_start = _t.perf_counter()
     embedding = embed_query(query)
     t_embed = (_t.perf_counter() - t_embed_start) * 1000
@@ -288,9 +313,12 @@ def search(query: str, top_k: int = 5) -> list[SearchHit]:
             "rerank_ms": int(round(t_rerank)),
             "bm25_ms": 0,
             "merge_ms": 0,
+            "spell_ms": int(round(t_spell)),
             "fetch_k": fetch_k,
             "mode": "reranker",
             "total_ms": int(round((_t.perf_counter() - t0) * 1000)),
+            "original_query": original_query if corrections else None,
+            "corrections": corrections or None,
         }
         # В reranker-режиме score = sigmoid logit (Sprint 5 семантика);
         # bi_score из изначальной cosine, rrf_score=None.
@@ -333,9 +361,12 @@ def search(query: str, top_k: int = 5) -> list[SearchHit]:
             "rerank_ms": 0,
             "bm25_ms": int(round(t_bm25)),
             "merge_ms": int(round(t_merge)),
+            "spell_ms": int(round(t_spell)),
             "fetch_k": fetch_k,
             "mode": "hybrid",
             "total_ms": int(round((_t.perf_counter() - t0) * 1000)),
+            "original_query": original_query if corrections else None,
+            "corrections": corrections or None,
         }
         return merged
 
@@ -346,9 +377,12 @@ def search(query: str, top_k: int = 5) -> list[SearchHit]:
         "rerank_ms": 0,
         "bm25_ms": 0,
         "merge_ms": 0,
+        "spell_ms": int(round(t_spell)),
         "fetch_k": fetch_k,
         "mode": "bi_only",
         "total_ms": int(round((_t.perf_counter() - t0) * 1000)),
+        "original_query": original_query if corrections else None,
+        "corrections": corrections or None,
     }
     return bi_hits[:top_k]
 

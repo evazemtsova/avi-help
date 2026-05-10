@@ -28,6 +28,7 @@ from anthropic import Anthropic  # noqa: E402
 import bm25 as bm25_module  # noqa: E402
 import generation  # noqa: E402
 import retrieval  # noqa: E402
+import spell as spell_module  # noqa: E402
 from llm_cache import (  # noqa: E402
     CachedAnthropic,
     DEFAULT_CACHE_PATH,
@@ -994,6 +995,19 @@ def main():
         print(f"[eval] BM25 ready ({bm25_module.get_searcher().size} chunks)")
     except Exception as e:
         print(f"[eval] BM25 init failed (continuing without): {e!r}",
+              file=sys.stderr)
+
+    # Sprint 7 Block 1: spell-corrector vocab из BM25-корпуса. Если
+    # USE_SPELL_CORRECTION=false — corrector не используется в search(),
+    # но init дешёвый (~100ms) и не мешает ablation.
+    try:
+        searcher = bm25_module.get_searcher()
+        if searcher is not None:
+            corrector = spell_module.init_from_vocab(searcher.vocab_frequencies())
+            print(f"[eval] spell ready (vocab={corrector.vocab_size}, "
+                  f"deletes={corrector.index_size})")
+    except Exception as e:
+        print(f"[eval] spell init failed (continuing without): {e!r}",
               file=sys.stderr)
 
     apply_config(args.config)

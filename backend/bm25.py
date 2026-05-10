@@ -126,6 +126,20 @@ class BM25Searcher:
     def size(self) -> int:
         return len(self._chunk_ids)
 
+    def vocab_frequencies(self) -> dict[str, int]:
+        """Возвращает {token: total_corpus_frequency} по всем чанкам.
+
+        Используется `spell.init_from_vocab()` для построения SymSpell-словаря —
+        переиспользуем уже-токенизированный корпус BM25, чтобы spell-vocab был
+        строго подмножеством того, что ищет BM25 (одинаковая токенизация = нет
+        false-mismatch «корректировка → токен которого нет в индексе»).
+        """
+        freqs: dict[str, int] = {}
+        for doc_freqs in self._bm25.doc_freqs:
+            for word, count in doc_freqs.items():
+                freqs[word] = freqs.get(word, 0) + count
+        return freqs
+
 
 # === Module-level singleton (used by FastAPI lifespan in main.py) ===
 

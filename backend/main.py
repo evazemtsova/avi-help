@@ -25,6 +25,7 @@ load_dotenv()
 
 from bm25 import init_from_chroma as init_bm25_from_chroma
 from generation import GenerationResult, generate, generate_stream
+from spell import init_from_vocab as init_spell_from_vocab
 from logging_jsonl import (
     FeedbackLogEntry,
     LatencyRecord,
@@ -88,11 +89,12 @@ app.add_middleware(
 
 _RETRIEVAL_INIT_ERROR: str | None = None
 _BM25_INIT_ERROR: str | None = None
+_SPELL_INIT_ERROR: str | None = None
 
 
 @app.on_event("startup")
 def _startup() -> None:
-    global _RETRIEVAL_INIT_ERROR, _BM25_INIT_ERROR
+    global _RETRIEVAL_INIT_ERROR, _BM25_INIT_ERROR, _SPELL_INIT_ERROR
     try:
         _bootstrap_chroma_if_empty()
     except Exception as e:
@@ -117,6 +119,25 @@ def _startup() -> None:
         except Exception as e:
             _BM25_INIT_ERROR = f"BM25 init failed: {e!r}"
             print(_BM25_INIT_ERROR, file=sys.stderr)
+
+    # Sprint 7 Блок 1: spell-corrector vocab из BM25-корпуса. Идёт после BM25
+    # (требует готовый searcher). Best effort — если упало, retrieval работает
+    # без коррекции (`spell.get_corrector()` вернёт None в search()).
+    if _BM25_INIT_ERROR is None:
+        try:
+            t0 = time.perf_counter()
+            vocab = searcher.vocab_frequencies()
+            corrector = init_spell_from_vocab(vocab)
+            elapsed_ms = (time.perf_counter() - t0) * 1000
+            print(
+                f"[spell] corrector built: vocab={corrector.vocab_size}, "
+                f"delete_index={corrector.index_size} in {elapsed_ms:.0f}ms",
+                file=sys.stderr,
+            )
+            _SPELL_INIT_ERROR = None
+        except Exception as e:
+            _SPELL_INIT_ERROR = f"Spell init failed: {e!r}"
+            print(_SPELL_INIT_ERROR, file=sys.stderr)
 
 
 def _client_ip(request: Request) -> Optional[str]:
@@ -167,6 +188,7 @@ def health():
         "status": "ok",
         "retrieval_ready": _RETRIEVAL_INIT_ERROR is None,
         "bm25_ready": _BM25_INIT_ERROR is None,
+        "spell_ready": _SPELL_INIT_ERROR is None,
     }
 
 
@@ -278,6 +300,9 @@ def answer_sync(
         "bm25_ms": breakdown.get("bm25_ms"),
         "merge_ms": breakdown.get("merge_ms"),
         "rerank_fetch_k": breakdown.get("fetch_k"),
+        "spell_ms": breakdown.get("spell_ms"),
+        "original_query": breakdown.get("original_query"),
+        "corrections": breakdown.get("corrections"),
     }
 
     background_tasks.add_task(
@@ -345,10 +370,16 @@ async def answer(req: AnswerRequest, request: Request):
             return
 
         t_done = time.perf_counter()
+        # Sprint 7 Block 1: пробрасываем spell-correction в лог /answer (SSE).
+        import retrieval as _retrieval
+        breakdown = _retrieval.last_search_timings or {}
         latency = {
             "retrieval": int((t_retrieval - t0) * 1000),
             "generation": int((t_done - t_retrieval) * 1000),
             "total": int((t_done - t0) * 1000),
+            "spell_ms": breakdown.get("spell_ms"),
+            "original_query": breakdown.get("original_query"),
+            "corrections": breakdown.get("corrections"),
         }
         # SSE-стрим уже отправлен — пишем лог inline (BackgroundTasks тут
         # стартует только после ответа, что в SSE = после закрытия стрима).
