@@ -427,10 +427,60 @@ def feedback_endpoint(
 
 # === Admin: чтение логов ===
 
+ADMIN_HTML_PATH = Path(__file__).resolve().parent / "admin.html"
+
+
+@app.get("/admin")
+def admin_ui():
+    """Статичная HTML-страница для просмотра логов запросов и фидбека.
+    Сама страница не требует авторизации (UI только отображается);
+    данные тянутся через `/admin/logs` с заголовком `x-admin-token`."""
+    if not ADMIN_HTML_PATH.exists():
+        raise HTTPException(status_code=404, detail="admin.html missing")
+    return FileResponse(ADMIN_HTML_PATH, media_type="text/html")
+
+
 def _check_admin(token: Optional[str]) -> None:
     expected = os.getenv("ADMIN_TOKEN")
     if not expected or token != expected:
         raise HTTPException(status_code=401, detail="unauthorized")
+
+
+def _enrich_retrieval_with_titles(items: list[dict]) -> None:
+    """Inplace добавляет в каждый retrieval-чанк поля title/article_url из Chroma.
+    Делает один collection.get(ids=...) на все уникальные chunk_id для batch-эффективности.
+    Если Chroma не готова — silently skip (admin UI отрендерит без заголовков)."""
+    try:
+        col = get_chroma_collection()
+    except Exception:
+        return
+    all_ids: set[str] = set()
+    for it in items:
+        for r in (it.get("retrieval") or []):
+            cid = r.get("chunk_id")
+            if cid:
+                all_ids.add(cid)
+    if not all_ids:
+        return
+    try:
+        res = col.get(ids=list(all_ids), include=["metadatas"])
+    except Exception:
+        return
+    by_id: dict[str, dict] = {}
+    for cid, meta in zip(res.get("ids") or [], res.get("metadatas") or []):
+        meta = meta or {}
+        by_id[cid] = {
+            "title": meta.get("title", ""),
+            "article_url": meta.get("article_url", ""),
+            "category": meta.get("category", ""),
+        }
+    for it in items:
+        for r in (it.get("retrieval") or []):
+            info = by_id.get(r.get("chunk_id"))
+            if info:
+                r["title"] = info["title"]
+                r["article_url"] = info["article_url"]
+                r["category"] = info["category"]
 
 
 @app.get("/admin/logs")
@@ -438,12 +488,15 @@ def admin_logs(
     date: str,
     limit: int = 100,
     kind: str = "requests",
+    enrich: bool = False,
     x_admin_token: Optional[str] = Header(None),
 ):
     _check_admin(x_admin_token)
     if kind not in ("requests", "feedback"):
         raise HTTPException(status_code=400, detail="kind must be requests or feedback")
     items = read_logs(date, kind=kind, limit=limit)
+    if enrich and kind == "requests":
+        _enrich_retrieval_with_titles(items)
     return {"date": date, "kind": kind, "count": len(items), "items": items}
 
 

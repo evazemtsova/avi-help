@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>А-Помощь — Admin Logs</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #1a1d24;
+    --panel-2: #232730;
+    --border: #2c313c;
+    --text: #e6e8ed;
+    --muted: #8a91a3;
+    --accent: #6aa6ff;
+    --ok: #5cd97a;
+    --warn: #f5a623;
+    --err: #ff6464;
+    --feedback-up: #5cd97a;
+    --feedback-down: #ff6464;
+    --tag-bg: #2a2f3b;
+    --code-bg: #11141a;
+    --highlight: #ffd86b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  }
+  header {
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  header h1 {
+    font-size: 16px;
+    margin: 0 16px 0 0;
+    font-weight: 600;
+  }
+  header label {
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  header input, header select, header button {
+    background: var(--panel-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 6px 10px;
+    font: inherit;
+    font-size: 13px;
+  }
+  header input[type="text"] { min-width: 180px; }
+  header input[type="password"] { min-width: 180px; font-family: monospace; }
+  header button {
+    background: var(--accent);
+    color: #0f1115;
+    border-color: var(--accent);
+    cursor: pointer;
+    font-weight: 600;
+  }
+  header button:hover { filter: brightness(1.1); }
+  header .checkbox { flex-direction: row; align-items: center; gap: 6px; }
+
+  .stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 12px 20px;
+    background: var(--panel-2);
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .stats .stat strong { color: var(--accent); margin-right: 4px; }
+  .stats .stat .muted { color: var(--muted); margin-left: 4px; font-size: 12px; }
+
+  main { padding: 16px 20px; }
+  .empty {
+    color: var(--muted);
+    text-align: center;
+    padding: 60px 20px;
+  }
+  .err-msg {
+    background: #3a1f1f;
+    color: var(--err);
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    border: 1px solid #5a2a2a;
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    font-size: 13px;
+  }
+  .card .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: baseline;
+    margin-bottom: 6px;
+  }
+  .card .row.head {
+    font-size: 12px;
+    color: var(--muted);
+    border-bottom: 1px dashed var(--border);
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+  }
+  .card .row.head .ts { color: var(--text); font-weight: 600; }
+  .tag {
+    background: var(--tag-bg);
+    border-radius: 3px;
+    padding: 1px 7px;
+    font-size: 11px;
+    color: var(--text);
+    font-family: ui-monospace, SFMono-Regular, monospace;
+  }
+  .tag.ok    { background: #1f3a25; color: var(--ok); }
+  .tag.warn  { background: #3a2f1a; color: var(--warn); }
+  .tag.err   { background: #3a1f1f; color: var(--err); }
+  .tag.fb-up   { background: #1f3a25; color: var(--feedback-up); }
+  .tag.fb-down { background: #3a1f1f; color: var(--feedback-down); }
+  .tag.spell { background: #2a2f4a; color: #a8b8ff; }
+
+  .card .query {
+    font-size: 14px;
+    margin: 4px 0 8px 0;
+    word-break: break-word;
+  }
+  .card .query .label {
+    color: var(--muted);
+    font-size: 11px;
+    margin-right: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .card .query mark {
+    background: rgba(255, 216, 107, 0.2);
+    color: var(--highlight);
+    border-radius: 2px;
+    padding: 0 2px;
+  }
+  .card .corrections {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .card .corrections .arrow { color: var(--highlight); }
+
+  .card .latency {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 12px;
+    color: var(--muted);
+    margin: 6px 0;
+  }
+  .card .latency .field { color: var(--text); margin-right: 1px; }
+  .card .latency .sep { color: var(--border); margin: 0 6px; }
+
+  .card .retrieval {
+    margin-top: 6px;
+    font-size: 12px;
+  }
+  .card .retrieval .ret-row {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+    padding: 2px 0;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+  }
+  .card .retrieval .rank   { color: var(--muted); width: 28px; text-align: right; }
+  .card .retrieval .chunk  { color: var(--accent); width: 110px; }
+  .card .retrieval .score  { color: var(--muted); width: 60px; text-align: right; }
+  .card .retrieval .title  {
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .card .retrieval .cat {
+    color: var(--muted);
+    font-size: 11px;
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  }
+  .card .retrieval a { color: var(--accent); text-decoration: none; }
+  .card .retrieval a:hover { text-decoration: underline; }
+
+  .card .meta {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .card .meta .field strong { color: var(--text); margin-left: 3px; }
+
+  .card details { margin-top: 8px; }
+  .card details summary {
+    cursor: pointer;
+    color: var(--accent);
+    font-size: 12px;
+    user-select: none;
+  }
+  .card details pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 10px;
+    margin: 6px 0 0 0;
+    overflow-x: auto;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 11px;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .reqid {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>А-Помощь · Admin Logs</h1>
+  <label>Token
+    <input type="password" id="token" placeholder="ADMIN_TOKEN" autocomplete="off">
+  </label>
+  <label>Дата
+    <input type="text" id="date" placeholder="YYYY-MM-DD">
+  </label>
+  <label>Limit
+    <input type="text" id="limit" value="100" style="width: 70px;">
+  </label>
+  <label>Фильтр запроса
+    <input type="text" id="search" placeholder="substring">
+  </label>
+  <label class="checkbox">
+    <input type="checkbox" id="onlyFallback"> только fallback
+  </label>
+  <label class="checkbox">
+    <input type="checkbox" id="onlyErrors"> только errors
+  </label>
+  <label class="checkbox">
+    <input type="checkbox" id="onlyCorrections"> только spell-corrected
+  </label>
+  <button id="reload">Загрузить</button>
+</header>
+
+<div class="stats" id="stats"></div>
+
+<main id="main">
+  <div class="empty">Введите ADMIN_TOKEN и нажмите «Загрузить».</div>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const todayISO = () => new Date().toISOString().slice(0, 10);
+
+// Restore from localStorage
+$("token").value = localStorage.getItem("admin_token") || "";
+$("date").value = localStorage.getItem("admin_date") || todayISO();
+
+function escapeHtml(s) {
+  if (s == null) return "";
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function fmtMs(ms) {
+  if (ms == null) return "—";
+  if (ms < 1000) return ms + "ms";
+  return (ms / 1000).toFixed(2) + "s";
+}
+
+function fmtCost(c) {
+  if (c == null) return "—";
+  if (c === 0) return "$0";
+  if (c < 0.001) return "<$0.001";
+  return "$" + c.toFixed(4);
+}
+
+function percentile(arr, p) {
+  if (!arr.length) return null;
+  const s = [...arr].sort((a, b) => a - b);
+  const i = Math.min(s.length - 1, Math.floor(s.length * p / 100));
+  return s[i];
+}
+
+function renderStats(items, feedback) {
+  const totals = items.length;
+  const errors = items.filter(i => i.error_type).length;
+  const fallbacks = items.filter(i => i.is_fallback).length;
+  const corrections = items.filter(i => i.latency_ms?.corrections).length;
+  const totalCost = items.reduce((s, i) => s + (i.cost_usd || 0), 0);
+  const lat = items.map(i => i.latency_ms?.total).filter(x => x != null);
+  const ups = feedback.filter(f => f.rating === "up").length;
+  const downs = feedback.filter(f => f.rating === "down").length;
+
+  $("stats").innerHTML = `
+    <span class="stat"><strong>${totals}</strong>запросов</span>
+    <span class="stat"><strong>${errors}</strong>errors</span>
+    <span class="stat"><strong>${fallbacks}</strong>fallback <span class="muted">${totals ? Math.round(100 * fallbacks / totals) + "%" : ""}</span></span>
+    <span class="stat"><strong>${corrections}</strong>spell-corrected</span>
+    <span class="stat"><strong>${fmtMs(percentile(lat, 50))}</strong>P50 total</span>
+    <span class="stat"><strong>${fmtMs(percentile(lat, 95))}</strong>P95 total</span>
+    <span class="stat"><strong>${fmtCost(totalCost)}</strong>cost total</span>
+    <span class="stat"><strong>${ups}</strong>👍 / <strong>${downs}</strong>👎</span>
+  `;
+}
+
+function highlightCorrections(query, corrections) {
+  if (!corrections) return escapeHtml(query);
+  let q = escapeHtml(query);
+  for (const orig of Object.keys(corrections)) {
+    const re = new RegExp("\\b" + orig.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b", "gi");
+    q = q.replace(re, `<mark>${escapeHtml(orig)}</mark>`);
+  }
+  return q;
+}
+
+function renderLatency(lat) {
+  if (!lat) return "";
+  const fields = [
+    ["embed", lat.embed_ms],
+    ["chroma", lat.chroma_ms],
+    ["bm25", lat.bm25_ms],
+    ["merge", lat.merge_ms],
+    ["spell", lat.spell_ms],
+    ["rerank", lat.rerank_ms],
+  ].filter(([_, v]) => v != null && v !== 0);
+  const parts = fields.map(([n, v]) => `<span class="field">${n}</span> ${v}ms`).join('<span class="sep">·</span>');
+  const head = `<span class="field">total</span> ${lat.total ?? "?"}ms = retr ${lat.retrieval ?? "?"}ms + gen ${lat.generation ?? "?"}ms`;
+  return `<div class="latency">${head}${parts ? '<span class="sep">·</span>' + parts : ""}</div>`;
+}
+
+function renderRetrieval(items) {
+  if (!items?.length) return "";
+  const rows = items.slice(0, 10).map((r, i) => {
+    const score = r.score != null ? r.score.toFixed(4) : "—";
+    const url = r.article_url || "";
+    const title = r.title || "(нет в Chroma)";
+    const cat = r.category || "";
+    const titleHtml = url
+      ? `<a href="${escapeHtml(url)}" target="_blank" rel="noreferrer">${escapeHtml(title)}</a>`
+      : escapeHtml(title);
+    return `<div class="ret-row">
+      <span class="rank">#${i + 1}</span>
+      <span class="chunk">${escapeHtml(r.chunk_id || "?")}</span>
+      <span class="score">${score}</span>
+      <span class="title">${titleHtml}</span>
+      <span class="cat">${escapeHtml(cat)}</span>
+    </div>`;
+  }).join("");
+  return `<div class="retrieval">${rows}</div>`;
+}
+
+function renderCard(item, feedbackByReqId) {
+  const lat = item.latency_ms || {};
+  const ts = item.ts ? item.ts.replace("T", " ").replace("Z", " UTC") : "?";
+  const fb = feedbackByReqId.get(item.request_id);
+  const tags = [];
+  tags.push(`<span class="tag">${escapeHtml(item.endpoint || "?")}</span>`);
+  if (item.model) tags.push(`<span class="tag">${escapeHtml(item.model)}</span>`);
+  if (item.is_fallback) tags.push(`<span class="tag warn">fallback</span>`);
+  if (item.error_type) tags.push(`<span class="tag err">${escapeHtml(item.error_type)}</span>`);
+  if (lat.corrections) tags.push(`<span class="tag spell">spell ✏️</span>`);
+  if (fb) tags.push(`<span class="tag fb-${fb.rating}">${fb.rating === "up" ? "👍" : "👎"}</span>`);
+
+  const queryHtml = highlightCorrections(item.query || "", lat.corrections);
+  const correctionsHtml = lat.corrections
+    ? `<div class="corrections">corrections: ${Object.entries(lat.corrections)
+        .map(([o, c]) => `<code>${escapeHtml(o)}</code> <span class="arrow">→</span> <code>${escapeHtml(c)}</code>`).join(", ")}
+        ${lat.original_query ? ` · <span style="opacity:.7">orig:</span> "${escapeHtml(lat.original_query)}"` : ""}
+      </div>`
+    : "";
+
+  const meta = [];
+  if (item.usage) meta.push(`<span class="field">tokens<strong>${item.usage.input_tokens ?? 0} in / ${item.usage.output_tokens ?? 0} out</strong></span>`);
+  if (item.cost_usd != null) meta.push(`<span class="field">cost<strong>${fmtCost(item.cost_usd)}</strong></span>`);
+  if (item.ip_hash) meta.push(`<span class="field">ip_hash<strong>${escapeHtml(item.ip_hash)}</strong></span>`);
+
+  const errorBlock = item.error_type
+    ? `<div class="err-msg" style="margin-top:8px">${escapeHtml(item.error_type)}: ${escapeHtml(item.error_msg || "")}</div>`
+    : "";
+
+  const rawJson = JSON.stringify(item, null, 2);
+  const fbBlock = fb
+    ? `<details><summary>Feedback запись</summary><pre>${escapeHtml(JSON.stringify(fb, null, 2))}</pre></details>`
+    : "";
+
+  return `<div class="card">
+    <div class="row head">
+      <span class="ts">${escapeHtml(ts)}</span>
+      ${tags.join(" ")}
+      <span class="reqid" style="margin-left:auto">${escapeHtml(item.request_id || "")}</span>
+    </div>
+    <div class="query"><span class="label">Query</span>${queryHtml}</div>
+    ${correctionsHtml}
+    ${renderLatency(lat)}
+    ${renderRetrieval(item.retrieval)}
+    ${errorBlock}
+    <div class="meta">${meta.join("")}</div>
+    ${fbBlock}
+    <details><summary>Raw JSON</summary><pre>${escapeHtml(rawJson)}</pre></details>
+  </div>`;
+}
+
+function applyFilters(items) {
+  const q = $("search").value.trim().toLowerCase();
+  const onlyFb = $("onlyFallback").checked;
+  const onlyErr = $("onlyErrors").checked;
+  const onlyCorr = $("onlyCorrections").checked;
+  return items.filter(it => {
+    if (q && !(it.query || "").toLowerCase().includes(q)) return false;
+    if (onlyFb && !it.is_fallback) return false;
+    if (onlyErr && !it.error_type) return false;
+    if (onlyCorr && !it.latency_ms?.corrections) return false;
+    return true;
+  });
+}
+
+let lastItems = [];
+let lastFeedback = [];
+
+function render() {
+  const items = applyFilters(lastItems);
+  const fbMap = new Map(lastFeedback.map(f => [f.request_id, f]));
+  renderStats(items, lastFeedback.filter(f => items.some(i => i.request_id === f.request_id)));
+  if (!items.length) {
+    $("main").innerHTML = `<div class="empty">Нет записей по фильтру.</div>`;
+    return;
+  }
+  // Newest first
+  const sorted = [...items].sort((a, b) => (b.ts || "").localeCompare(a.ts || ""));
+  $("main").innerHTML = sorted.map(it => renderCard(it, fbMap)).join("");
+}
+
+async function fetchKind(kind, date, limit, token, enrich) {
+  const params = new URLSearchParams({ date, kind, limit: String(limit) });
+  if (enrich) params.set("enrich", "true");
+  const res = await fetch(`/admin/logs?${params}`, {
+    headers: { "x-admin-token": token },
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`${kind}: HTTP ${res.status} ${text}`);
+  }
+  const data = await res.json();
+  return data.items || [];
+}
+
+async function load() {
+  const token = $("token").value.trim();
+  const date = $("date").value.trim();
+  const limit = parseInt($("limit").value, 10) || 100;
+  if (!token) {
+    $("main").innerHTML = `<div class="err-msg">Введи ADMIN_TOKEN</div>`;
+    return;
+  }
+  if (!date) {
+    $("main").innerHTML = `<div class="err-msg">Введи дату YYYY-MM-DD</div>`;
+    return;
+  }
+  localStorage.setItem("admin_token", token);
+  localStorage.setItem("admin_date", date);
+  $("main").innerHTML = `<div class="empty">Загружаю…</div>`;
+  $("stats").innerHTML = "";
+  try {
+    const [reqs, fbs] = await Promise.all([
+      fetchKind("requests", date, limit, token, true),
+      fetchKind("feedback", date, limit, token, false),
+    ]);
+    lastItems = reqs;
+    lastFeedback = fbs;
+    render();
+  } catch (e) {
+    $("main").innerHTML = `<div class="err-msg">${escapeHtml(e.message)}</div>`;
+  }
+}
+
+$("reload").addEventListener("click", load);
+for (const id of ["search", "onlyFallback", "onlyErrors", "onlyCorrections"]) {
+  $(id).addEventListener("input", () => render());
+  $(id).addEventListener("change", () => render());
+}
+$("date").addEventListener("keydown", (e) => { if (e.key === "Enter") load(); });
+$("token").addEventListener("keydown", (e) => { if (e.key === "Enter") load(); });
+
+// Auto-load if token + date present
+if ($("token").value && $("date").value) load();
+</script>
+
+</body>
+</html>
