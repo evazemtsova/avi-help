@@ -238,7 +238,52 @@
     font-size: 11px;
     color: var(--muted);
   }
+
+  /* Flatpickr overrides — match admin dark theme */
+  .flatpickr-calendar {
+    background: var(--panel) !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: 0 6px 28px rgba(0,0,0,.6) !important;
+    font-family: inherit !important;
+  }
+  .flatpickr-months, .flatpickr-weekdays {
+    background: var(--panel-2) !important;
+  }
+  .flatpickr-current-month, .flatpickr-monthDropdown-months,
+  .flatpickr-weekday, .flatpickr-day {
+    color: var(--text) !important;
+  }
+  .flatpickr-day:hover, .flatpickr-day.prevMonthDay:hover, .flatpickr-day.nextMonthDay:hover {
+    background: var(--panel-2) !important;
+    border-color: var(--border) !important;
+  }
+  .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange,
+  .flatpickr-day.selected:hover, .flatpickr-day.startRange:hover, .flatpickr-day.endRange:hover {
+    background: var(--accent) !important;
+    border-color: var(--accent) !important;
+    color: #0f1115 !important;
+  }
+  .flatpickr-day.inRange {
+    background: rgba(106,166,255,.18) !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    color: var(--text) !important;
+  }
+  .flatpickr-day.today { border-color: var(--accent) !important; }
+  .flatpickr-day.flatpickr-disabled, .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay {
+    color: var(--muted) !important;
+    opacity: .45;
+  }
+  .flatpickr-prev-month svg, .flatpickr-next-month svg { fill: var(--text) !important; }
+  .flatpickr-prev-month:hover svg, .flatpickr-next-month:hover svg { fill: var(--accent) !important; }
+  .numInput, .flatpickr-monthDropdown-months {
+    background: var(--panel-2) !important;
+    color: var(--text) !important;
+    border: none !important;
+  }
+  #date { min-width: 210px; cursor: pointer; }
 </style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 <body>
 
@@ -247,8 +292,8 @@
   <label>Token
     <input type="password" id="token" placeholder="ADMIN_TOKEN" autocomplete="off">
   </label>
-  <label>Дата
-    <input type="text" id="date" placeholder="YYYY-MM-DD">
+  <label>Дата / Период
+    <input type="text" id="date" placeholder="YYYY-MM-DD" readonly>
   </label>
   <label>Limit
     <input type="text" id="limit" value="100" style="width: 70px;">
@@ -274,13 +319,23 @@
   <div class="empty">Введите ADMIN_TOKEN и нажмите «Загрузить».</div>
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
 const $ = (id) => document.getElementById(id);
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
 // Restore from localStorage
 $("token").value = localStorage.getItem("admin_token") || "";
-$("date").value = localStorage.getItem("admin_date") || todayISO();
+const savedFrom = localStorage.getItem("admin_date_from") || localStorage.getItem("admin_date") || todayISO();
+const savedTo   = localStorage.getItem("admin_date_to")   || savedFrom;
+const fp = flatpickr($("date"), {
+  mode: "range",
+  dateFormat: "Y-m-d",
+  maxDate: "today",
+  defaultDate: savedFrom === savedTo ? [savedFrom] : [savedFrom, savedTo],
+  locale: { rangeSeparator: " → " },
+  disableMobile: true,
+});
 
 function escapeHtml(s) {
   if (s == null) return "";
@@ -460,6 +515,19 @@ function render() {
   $("main").innerHTML = sorted.map(it => renderCard(it, fbMap)).join("");
 }
 
+function getDatesInRange(start, end) {
+  const dates = [];
+  const cur = new Date(start);
+  const last = new Date(end);
+  cur.setHours(0, 0, 0, 0);
+  last.setHours(0, 0, 0, 0);
+  while (cur <= last) {
+    dates.push(cur.toISOString().slice(0, 10));
+    cur.setDate(cur.getDate() + 1);
+  }
+  return dates;
+}
+
 async function fetchKind(kind, date, limit, token, enrich) {
   const params = new URLSearchParams({ date, kind, limit: String(limit) });
   if (enrich) params.set("enrich", "true");
@@ -476,24 +544,32 @@ async function fetchKind(kind, date, limit, token, enrich) {
 
 async function load() {
   const token = $("token").value.trim();
-  const date = $("date").value.trim();
   const limit = parseInt($("limit").value, 10) || 100;
   if (!token) {
     $("main").innerHTML = `<div class="err-msg">Введи ADMIN_TOKEN</div>`;
     return;
   }
-  if (!date) {
-    $("main").innerHTML = `<div class="err-msg">Введи дату YYYY-MM-DD</div>`;
+  const sel = fp.selectedDates;
+  if (!sel.length) {
+    $("main").innerHTML = `<div class="err-msg">Выбери дату или период</div>`;
     return;
   }
+  const dateList = getDatesInRange(sel[0], sel[1] || sel[0]);
   localStorage.setItem("admin_token", token);
-  localStorage.setItem("admin_date", date);
+  localStorage.setItem("admin_date_from", dateList[0]);
+  localStorage.setItem("admin_date_to", dateList[dateList.length - 1]);
   $("main").innerHTML = `<div class="empty">Загружаю…</div>`;
   $("stats").innerHTML = "";
   try {
+    const fetchRange = async (kind, enrich) => {
+      const all = await Promise.all(
+        dateList.map(d => fetchKind(kind, d, limit, token, enrich))
+      );
+      return all.flat();
+    };
     const [reqs, fbs] = await Promise.all([
-      fetchKind("requests", date, limit, token, true),
-      fetchKind("feedback", date, limit, token, false),
+      fetchRange("requests", true),
+      fetchRange("feedback", false),
     ]);
     lastItems = reqs;
     lastFeedback = fbs;
@@ -508,11 +584,10 @@ for (const id of ["search", "onlyFallback", "onlyErrors", "onlyCorrections"]) {
   $(id).addEventListener("input", () => render());
   $(id).addEventListener("change", () => render());
 }
-$("date").addEventListener("keydown", (e) => { if (e.key === "Enter") load(); });
 $("token").addEventListener("keydown", (e) => { if (e.key === "Enter") load(); });
 
-// Auto-load if token + date present
-if ($("token").value && $("date").value) load();
+// Auto-load if token present (date pre-filled from localStorage)
+if ($("token").value) load();
 </script>
 
 </body>
