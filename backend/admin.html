@@ -328,7 +328,10 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
 const $ = (id) => document.getElementById(id);
-const todayISO = () => new Date().toISOString().slice(0, 10);
+const todayISO = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+};
 
 // Restore from localStorage
 $("token").value = localStorage.getItem("admin_token") || "";
@@ -524,14 +527,19 @@ function render() {
   $("main").innerHTML = sorted.map(it => renderCard(it, fbMap)).join("");
 }
 
+function dateToYMD(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
 function getDatesInRange(start, end) {
   const dates = [];
   const cur = new Date(start);
   const last = new Date(end);
-  cur.setHours(0, 0, 0, 0);
-  last.setHours(0, 0, 0, 0);
+  // Set noon local time — avoids UTC conversion shifting the date across midnight
+  cur.setHours(12, 0, 0, 0);
+  last.setHours(12, 0, 0, 0);
   while (cur <= last) {
-    dates.push(cur.toISOString().slice(0, 10));
+    dates.push(dateToYMD(cur));
     cur.setDate(cur.getDate() + 1);
   }
   return dates;
