@@ -310,6 +310,12 @@
   <label class="checkbox">
     <input type="checkbox" id="onlyCorrections"> только spell-corrected
   </label>
+  <label>Сортировка
+    <select id="sortOrder">
+      <option value="desc">Сначала новые</option>
+      <option value="asc">Сначала старые</option>
+    </select>
+  </label>
   <button id="reload">Загрузить</button>
 </header>
 
@@ -510,8 +516,11 @@ function render() {
     $("main").innerHTML = `<div class="empty">Нет записей по фильтру.</div>`;
     return;
   }
-  // Newest first
-  const sorted = [...items].sort((a, b) => (b.ts || "").localeCompare(a.ts || ""));
+  const asc = $("sortOrder").value === "asc";
+  const sorted = [...items].sort((a, b) => {
+    const cmp = (a.ts || "").localeCompare(b.ts || "");
+    return asc ? cmp : -cmp;
+  });
   $("main").innerHTML = sorted.map(it => renderCard(it, fbMap)).join("");
 }
 
@@ -580,7 +589,7 @@ async function load() {
 }
 
 $("reload").addEventListener("click", load);
-for (const id of ["search", "onlyFallback", "onlyErrors", "onlyCorrections"]) {
+for (const id of ["search", "onlyFallback", "onlyErrors", "onlyCorrections", "sortOrder"]) {
   $(id).addEventListener("input", () => render());
   $(id).addEventListener("change", () => render());
 }
