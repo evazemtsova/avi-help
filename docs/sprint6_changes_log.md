@@ -755,3 +755,51 @@ Sprint 6 bi_only baseline: 18 кейсов с R@5=0. После hybrid:
 ---
 
 **Sprint 6 ✅ закрыт окончательно.** Все артефакты в репо: журнал (этот файл), `docs/eval_results.md` (Sprint 6 final), `docs/eval_results_sprint5.md` (Sp5 архив), `data/eval/prod_latency_v4/results.json`, `data/eval/runs/{bi_only_20260509_174555, mvp_20260509_181603, mvp_20260509_191629, mvp_retrieval_only_20260509_181027}/`. Прод: `https://avi-help-production.up.railway.app/` (hybrid mode active, `bm25_ready: true` в `/health`).
+
+---
+
+## Post-sprint addenda (2026-05-11): soft-redirect + adaptive bi-routing
+
+После закрытия Sprint 6 на проде всплыл класс fallback-кейсов вида «правильная статья в топ-K, но конкретный чанк покрывает узкий подкейс, а не общий вопрос». Триггерный кейс: `request_id eab9e505…` — «Как опубликовать объявление в категории Авто и транспорт». В hybrid top-5 попадает `4371_007` (статья «Размещаю новое объявление» в section «Авто и транспорт») — но конкретно этот чанк про «авто под заказ» (ИП, договор с поставщиком). LLM по правилу №1 «опирайся только на фрагменты» отказывалась отвечать → canned hard-fallback без ссылок.
+
+### Диагностика (что было найдено в коде)
+
+- **`score` в логе ≠ качество**: в hybrid режиме это `rrf_score` (~0.02-0.03), а pre-LLM fallback решается по `max(bi_score) < 0.3`. Из-за этого по логу нельзя было отличить pre-LLM fallback от LLM-side отказа. Добавлено поле `bi_score` в `RetrievalRecord` (коммит `c15c23e`).
+- **Embedding пайплайн (`scripts/build_index.py:120`)** эмбедит только `chunk_text`. `section`/`category` лежат в Chroma metadata, в вектор не идут. → bi-encoder «не видит» что чанк помечен «Авто и транспорт», ранжирует исключительно по содержанию body. Это объясняет почему обзорный `4371_000` (текст про «автомобиль», «ГАИ») вне bi-top-50, а `4371_007` (текст с фразой «в категории Авто») попадает на bi-rank #2.
+- **BM25 на этом запросе натаскивает мусор**: 18 из 20 BM25-кандидатов имеют `bi_score=0` (лексические совпадения на «Авто», «Тариф», «опубликовать» в статьях про тарифы / отметки / профессиональный план в Работе). Два из них (`4364_028`, `4244_001`) попали в финальный top-5 через RRF — обзорные чанки правильной статьи не попадают.
+
+### Что испробовано (с цифрами на golden_set, 100 q, baseline recall@5=0.82 / MRR=0.6657)
+
+| Подход | recall@5 | MRR@5 | Δrecall | ΔMRR | Решение |
+|---|---|---|---|---|---|
+| Bi 2x : BM25 1x weighted RRF | 0.8100 | 0.6590 | −1.0 | −0.7 | отброшен |
+| Bi 3x : BM25 1x | 0.8200 | 0.6600 | 0 | −0.6 | отброшен |
+| Bi 5x : BM25 1x | 0.8100 | 0.6715 | −1.0 | +0.6 | отброшен |
+| Drop bi<0.3 фильтр | 0.8100 | 0.6640 | −1.0 | −0.2 | отброшен |
+| Bi-only (BM25 off) | 0.7800 | 0.6660 | **−4.0** | 0 | подтверждает ценность BM25 |
+| Article-level concentration (sum of top-3) | (не проверен) | — | — | — | гипотеза провалилась на нашем кейсе: 4374 имеет агрегат 2.06 > 4371 1.99, sum-based буст только усиливает неверный выбор |
+| **Adaptive bi-only (T4: bi<0.3 в топе + top1_bi≥0.6)** | **0.8200** | **0.6782** | **0** | **+1.2** | ✅ катим |
+
+T4-триггер: 13% запросов на golden_set. 0 broken / 0 fixed — recall-сет идентичен, но правильные статьи поднимаются в ранке (отсюда +1.2pp MRR). На нашем кейсе срабатывает (top-1 bi=0.7181, в топе 2 чанка с bi=0), top-5 переключается с hybrid-set на bi-only-set, LLM выдаёт ответ вместо soft-redirect.
+
+### Что задеплоено
+
+**1. Soft-redirect в `backend/prompts.py`** (коммит `380209f`). Третий исход у LLM между «answer» и «hard-fallback»: если в чанках есть статья очевидно про тему запроса, но содержание чанка не отвечает — `is_fallback=true` с непустым `sources_used` и lead'ом-перенаправлением «откройте статью X». Существующая логика `generation.py:331-336` уже сохраняет LLM-lead когда sources_used непустой — Python-кода менять не пришлось.
+
+Проверено на 4-классах (наш кейс / OOD / точный in-domain / шумный retrieval): на проблемном — переход hard-fallback→soft-redirect; на остальных трёх — поведение идентично baseline'у. Регрессий нет.
+
+**2. Adaptive bi-only routing T4 в `backend/retrieval.py`** (коммит `d031e44`). После hybrid `_rrf_merge`, если в результате есть чанк с `bi_score < ADAPTIVE_BI_THRESHOLD` (default 0.3) И `max(bi_score) >= ADAPTIVE_TOP1_THRESHOLD` (default 0.6) — возвращаем `bi_hits[:top_k]` вместо merged. Второй retrieval не запускается (bi-кандидаты уже в памяти).
+
+Наблюдаемость: `latency_ms.adaptive_bi: bool` в логах + зелёный тег **adaptive-bi** в админке. Откат — `ADAPTIVE_BI_ROUTING=false` через env, без деплоя.
+
+### Bottleneck, который НЕ решён
+
+Обзорный чанк `4371_000` (содержит общую инструкцию «выберите вид объявления → Продаю личный автомобиль или Приобретён на продажу») остаётся **вне bi-top-50**, потому что его embedding посчитан без metadata. Никакое post-processing (фильтрация, перевзвешивание, agg) на top-K кандидатов это не чинит.
+
+Реальный fix — на уровне индексации: embedить `[section] [category] [title]` префикс вместе с `chunk_text`. Это пересборка индекса + golden_set re-baseline. Записать в Sprint 7 roadmap как кандидата на отдельный блок («metadata-aware embedding»), если по логам adaptive-bi rate остаётся > 20% или soft-redirect rate > 5%.
+
+### Метрики для контроля на проде (после раскатки)
+
+- `latency_ms.adaptive_bi == true` rate. Ожидаем ~13% от non-OOD. Резкий скачок → подвинуть пороги.
+- `is_fallback=true AND sources_used != []` rate (soft-redirect). Если > 5% — класс не редкий, есть смысл идти в metadata-aware embedding.
+- Recall не отслеживается на проде (нет ground-truth), но MRR-эффект должен косвенно проявиться через рост positive-feedback (👍) на запросах с adaptive_bi=true.
