@@ -223,7 +223,9 @@ def _build_request_log(
         query=query,
         ip_hash=hash_ip(ip),
         endpoint=endpoint,
-        retrieval=[RetrievalRecord(chunk_id=h.chunk_id, score=round(h.score, 4))
+        retrieval=[RetrievalRecord(chunk_id=h.chunk_id,
+                                   score=round(h.score, 4),
+                                   bi_score=round(h.bi_score, 4))
                    for h in hits],
         is_fallback=is_fallback,
         model=model,

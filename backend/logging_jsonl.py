@@ -76,6 +76,9 @@ def now_iso() -> str:
 class RetrievalRecord(BaseModel):
     chunk_id: str
     score: float
+    # bi-encoder cosine top-1 используется для pre-LLM fallback (max(bi_score) < 0.3).
+    # `score` в hybrid-режиме = rrf_score и о близости запроса ничего не говорит.
+    bi_score: Optional[float] = None
 
 
 class UsageRecord(BaseModel):

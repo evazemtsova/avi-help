@@ -186,6 +186,8 @@
   .card .retrieval .rank   { color: var(--muted); width: 28px; text-align: right; }
   .card .retrieval .chunk  { color: var(--accent); width: 110px; }
   .card .retrieval .score  { color: var(--muted); width: 60px; text-align: right; }
+  .card .retrieval .bi     { color: var(--muted); width: 60px; text-align: right; }
+  .card .retrieval .bi.low { color: #c44; }
   .card .retrieval .title  {
     color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
@@ -441,6 +443,8 @@ function renderRetrieval(items) {
   if (!items?.length) return "";
   const rows = items.slice(0, 10).map((r, i) => {
     const score = r.score != null ? r.score.toFixed(4) : "—";
+    const bi = r.bi_score != null ? r.bi_score.toFixed(4) : "—";
+    const biClass = (r.bi_score != null && r.bi_score < 0.3) ? "bi low" : "bi";
     const url = r.article_url || "";
     const title = r.title || "(нет в Chroma)";
     const cat = r.category || "";
@@ -450,7 +454,8 @@ function renderRetrieval(items) {
     return `<div class="ret-row">
       <span class="rank">#${i + 1}</span>
       <span class="chunk">${escapeHtml(r.chunk_id || "?")}</span>
-      <span class="score">${score}</span>
+      <span class="score" title="rrf score">${score}</span>
+      <span class="${biClass}" title="bi-encoder cosine (fallback при max<0.3)">${bi}</span>
       <span class="title">${titleHtml}</span>
       <span class="cat">${escapeHtml(cat)}</span>
     </div>`;
