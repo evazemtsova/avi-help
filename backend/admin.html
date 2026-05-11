@@ -233,6 +233,21 @@
     word-break: break-word;
   }
 
+  .copy-btn {
+    background: var(--panel-2);
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1px 8px;
+    font: 11px/1.6 ui-monospace, SFMono-Regular, monospace;
+    cursor: pointer;
+    margin-left: 8px;
+    vertical-align: middle;
+    transition: color .1s, border-color .1s;
+  }
+  .copy-btn:hover { color: var(--text); border-color: var(--accent); }
+  .copy-btn.ok    { color: var(--ok);  border-color: var(--ok); }
+
   .reqid {
     font-family: ui-monospace, SFMono-Regular, monospace;
     font-size: 11px;
@@ -473,8 +488,10 @@ function renderCard(item, feedbackByReqId) {
     : "";
 
   const rawJson = JSON.stringify(item, null, 2);
-  const fbBlock = fb
-    ? `<details><summary>Feedback запись</summary><pre>${escapeHtml(JSON.stringify(fb, null, 2))}</pre></details>`
+  const fbJson  = fb ? JSON.stringify(fb, null, 2) : null;
+  const copyBtn = `<button class="copy-btn" onclick="event.stopPropagation();var b=this,p=b.closest('details').querySelector('pre');navigator.clipboard.writeText(p.textContent).then(function(){b.textContent='✓';b.classList.add('ok');setTimeout(function(){b.textContent='Copy';b.classList.remove('ok')},1500)})">Copy</button>`;
+  const fbBlock = fbJson
+    ? `<details><summary>Feedback запись${copyBtn}</summary><pre>${escapeHtml(fbJson)}</pre></details>`
     : "";
 
   return `<div class="card">
@@ -490,7 +507,7 @@ function renderCard(item, feedbackByReqId) {
     ${errorBlock}
     <div class="meta">${meta.join("")}</div>
     ${fbBlock}
-    <details><summary>Raw JSON</summary><pre>${escapeHtml(rawJson)}</pre></details>
+    <details><summary>Raw JSON${copyBtn}</summary><pre>${escapeHtml(rawJson)}</pre></details>
   </div>`;
 }
 
