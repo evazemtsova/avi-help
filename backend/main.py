@@ -305,6 +305,7 @@ def answer_sync(
         "spell_ms": breakdown.get("spell_ms"),
         "original_query": breakdown.get("original_query"),
         "corrections": breakdown.get("corrections"),
+        "adaptive_bi": breakdown.get("adaptive_bi"),
     }
 
     background_tasks.add_task(
@@ -382,6 +383,7 @@ async def answer(req: AnswerRequest, request: Request):
             "spell_ms": breakdown.get("spell_ms"),
             "original_query": breakdown.get("original_query"),
             "corrections": breakdown.get("corrections"),
+            "adaptive_bi": breakdown.get("adaptive_bi"),
         }
         # SSE-стрим уже отправлен — пишем лог inline (BackgroundTasks тут
         # стартует только после ответа, что в SSE = после закрытия стрима).

@@ -39,6 +39,19 @@ USE_HYBRID_RETRIEVAL = os.getenv("USE_HYBRID_RETRIEVAL", "true").lower() in (
 HYBRID_CANDIDATES = int(os.getenv("HYBRID_CANDIDATES", "20"))
 RRF_K = int(os.getenv("RRF_K", "60"))
 
+# Adaptive bi-only routing (T4 trigger). После hybrid RRF, если в top-K есть
+# хотя бы один чанк с `bi_score < 0.3` (BM25-only мусор) И top-1 bi_score ≥ 0.6
+# (bi-encoder уверен) — возвращаем bi-only top-K вместо hybrid. Эмпирика на
+# golden_set: 0pp recall, +1.2pp MRR, 13% trigger rate. Цель: убрать BM25-шум
+# из контекста LLM на запросах, где bi-encoder сам справляется.
+ADAPTIVE_BI_ROUTING = os.getenv("ADAPTIVE_BI_ROUTING", "true").lower() in (
+    "1",
+    "true",
+    "yes",
+)
+ADAPTIVE_BI_THRESHOLD = float(os.getenv("ADAPTIVE_BI_THRESHOLD", "0.3"))
+ADAPTIVE_TOP1_THRESHOLD = float(os.getenv("ADAPTIVE_TOP1_THRESHOLD", "0.6"))
+
 # Sprint 7 Блок 1: spell-correction для query (SymSpell-like, vocab из BM25
 # corpus). Закрывает Sp6 failure cases с опечатками: g042 «пороль», g058
 # «вывыести». Default true — коррекция консервативная (только OOV токены ≥4
@@ -355,6 +368,16 @@ def search(query: str, top_k: int = 5) -> list[SearchHit]:
         )
         t_merge = (_t.perf_counter() - t_merge_start) * 1000
 
+        # T4 adaptive routing: BM25 натащил bi=0 чанков, но bi-encoder уверен →
+        # доверяемся вектору, возвращаем bi-only. См. ADAPTIVE_* константы.
+        adaptive_bi = False
+        if ADAPTIVE_BI_ROUTING and merged:
+            has_low_bi = any(h.bi_score < ADAPTIVE_BI_THRESHOLD for h in merged)
+            max_bi = max((h.bi_score for h in merged), default=0.0)
+            if has_low_bi and max_bi >= ADAPTIVE_TOP1_THRESHOLD:
+                adaptive_bi = True
+                merged = bi_hits[:top_k]
+
         last_search_timings = {
             "embed_ms": int(round(t_embed)),
             "chroma_ms": int(round(t_chroma)),
@@ -363,7 +386,8 @@ def search(query: str, top_k: int = 5) -> list[SearchHit]:
             "merge_ms": int(round(t_merge)),
             "spell_ms": int(round(t_spell)),
             "fetch_k": fetch_k,
-            "mode": "hybrid",
+            "mode": "hybrid_adaptive_bi" if adaptive_bi else "hybrid",
+            "adaptive_bi": adaptive_bi,
             "total_ms": int(round((_t.perf_counter() - t0) * 1000)),
             "original_query": original_query if corrections else None,
             "corrections": corrections or None,

@@ -101,6 +101,8 @@ class LatencyRecord(BaseModel):
     spell_ms: Optional[int] = None
     original_query: Optional[str] = None
     corrections: Optional[dict[str, str]] = None
+    # T4 adaptive routing: true когда hybrid→bi-only переключение сработало.
+    adaptive_bi: Optional[bool] = None
 
 
 class RequestLogEntry(BaseModel):

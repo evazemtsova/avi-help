@@ -137,6 +137,7 @@
   .tag.fb-up   { background: #1f3a25; color: var(--feedback-up); }
   .tag.fb-down { background: #3a1f1f; color: var(--feedback-down); }
   .tag.spell { background: #2a2f4a; color: #a8b8ff; }
+  .tag.adaptive { background: #1a3a2a; color: #8aedb8; }
 
   .card .query {
     font-size: 14px;
@@ -473,6 +474,7 @@ function renderCard(item, feedbackByReqId) {
   if (item.is_fallback) tags.push(`<span class="tag warn">fallback</span>`);
   if (item.error_type) tags.push(`<span class="tag err">${escapeHtml(item.error_type)}</span>`);
   if (lat.corrections) tags.push(`<span class="tag spell">spell ✏️</span>`);
+  if (lat.adaptive_bi) tags.push(`<span class="tag adaptive">adaptive-bi</span>`);
   if (fb) tags.push(`<span class="tag fb-${fb.rating}">${fb.rating === "up" ? "👍" : "👎"}</span>`);
 
   const queryHtml = highlightCorrections(item.query || "", lat.corrections);
